@@ -1,0 +1,22 @@
+$(".lookup").click(function (event) {
+    event.preventDefault();
+
+    let id = $("input[name=competencia_id]").val();
+    let _token = $('meta[name="csrf-token"]').attr('content');
+
+    $.ajax({
+        url: "/ajax",
+        type: "POST",
+        data: {
+            id: id,
+            _token: _token
+        },
+        success: function (response) {
+            console.log(response);
+            if (response) {
+                $('.success').text(response.success);
+                //$("#ajaxform")[0].reset();
+            }
+        },
+    });
+});
