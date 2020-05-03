@@ -1,5 +1,5 @@
 .action-buttons {
-    height: 2px;
+    height: 25px;
     width: 25px;
     padding: 0;
 }
@@ -12,6 +12,6 @@
     margin-left: 10px;
 }
 
-.filter {
-    padding-bottom: 10px;
+.new-row {
+    background-color: #2a9055;
 }

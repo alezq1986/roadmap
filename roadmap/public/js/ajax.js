@@ -1,21 +1,23 @@
 $(".lookup").click(function (event) {
     event.preventDefault();
 
-    let id = $("input[name=competencia_id]").val();
+    let modelo = $(".lookup").attr('modelo');
+    let id = $("input[name=" + modelo.toLowerCase() + '_id]').val();
     let _token = $('meta[name="csrf-token"]').attr('content');
 
     $.ajax({
-        url: "/ajax",
+        url: "/ajax.js",
         type: "POST",
         data: {
+            class: modelo,
             id: id,
             _token: _token
         },
         success: function (response) {
             console.log(response);
+            criarLookupModal(modelo, response.success);
             if (response) {
                 $('.success').text(response.success);
-                //$("#ajaxform")[0].reset();
             }
         },
     });

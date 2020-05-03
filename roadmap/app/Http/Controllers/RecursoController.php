@@ -48,6 +48,7 @@ class RecursoController extends Controller
             $recursos = Recurso::where($where)->orderBy('id', 'ASC')->paginate(10);
 
         } else {
+
             $recursos = Recurso::orderBy('id', 'ASC')->paginate(10);
         }
 
@@ -109,7 +110,10 @@ class RecursoController extends Controller
      */
     public function edit(Recurso $recurso)
     {
-        return view('recursos.edit', ['recurso' => $recurso]);
+
+        $competencias = $recurso->competencias;
+
+        return view('recursos.edit', ['recurso' => $recurso, 'competencias' => $competencias]);
     }
 
     /**

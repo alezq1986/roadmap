@@ -3,18 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class AjaxController extends Controller
 {
     public function ajaxRequestPost(Request $request)
     {
 
-        $data = $request->all();
+        $classe = 'App\\' . $request->input('class');
 
+        if (is_numeric($request->input('id'))) {
+
+            $resultado = $classe::where('id', '=', $request->input('id'))->get();
+
+        } else {
+
+            $resultado = $classe::where('descricao', 'ilike', "%{$request->input('id')}%")->get();
+
+        }
 
         return response()->json([
-            'success' => 'get your data'
+            'success' => $resultado
         ]);
 
     }

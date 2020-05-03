@@ -103,7 +103,7 @@
                     </div>
                     <div class="tab-pane fade" id="pills-competencias" role="tabpanel"
                          aria-labelledby="pills-principal-tab">
-                        <div class="card">
+                        <div class="card mb-5">
                             <div class="card-header">{{ __('Competencias') }}</div>
                             <div class="card-body">
                                 <form method="POST" action="">
@@ -118,9 +118,11 @@
                                                        class="form-control" name="competencia_id"
                                                        autofocus>
                                                 <div class="input-group-append">
-                                                    <button class="input-group-text lookup">
+                                                    <button class="input-group-text lookup"
+                                                            modelo="Competencia">
                                                         <i class="fa fa-search"></i>
                                                     </button>
+                                                    @include('layouts.modal')
                                                 </div>
                                             </div>
                                         </div>
@@ -128,11 +130,38 @@
                                     <div class="form-group row mb-0">
                                         <div class="col-md-6 offset-md-4">
                                             <button type="submit" class="btn btn-primary">
-                                                {{ __('Atualizar') }}
+                                                {{ __('Incluir') }}
                                             </button>
                                         </div>
                                     </div>
                                 </form>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">{{ __('Competencias') }}</div>
+                            <div class="card-body">
+                                <table class="table table-striped mt-2" id="competencias">
+                                    <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Descrição</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($competencias as $competencia)
+                                        <tr>
+                                            <td>{{ $competencia->id }}</td>
+                                            <td>{{ $competencia->descricao }}</td>
+                                            <td>
+                                                <a type="button" class="btn btn-danger action-buttons">
+                                                    <i class="fa fa-trash fa-sm"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

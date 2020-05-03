@@ -10,7 +10,7 @@ class Recurso extends Model
 
     public function competencias()
     {
-        return $this->belongsToMany('App\Competencia');
+        return $this->belongsToMany('App\Competencia')->orderBy('id', 'ASC');
     }
 
     public function equipes()
