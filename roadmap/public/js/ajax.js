@@ -14,11 +14,39 @@ $(".lookup").click(function (event) {
             _token: _token
         },
         success: function (response) {
-            console.log(response);
+
             criarLookupModal(modelo, response.success);
+
             if (response) {
-                $('.success').text(response.success);
+
+                console.log(response);
+
             }
         },
     });
 });
+
+
+function ajaxRequest(modelo, id) {
+
+    let _token = $('meta[name="csrf-token"]').attr('content');
+    var objDiferido = $.Deferred();
+
+    $.ajax({
+        url: "/ajax.js",
+        type: "POST",
+        data: {
+            class: modelo,
+            id: id,
+            _token: _token
+        },
+        success: function (response) {
+
+            objDiferido.resolve(response);
+
+        },
+    });
+
+    return objDiferido.promise()
+
+}

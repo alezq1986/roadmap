@@ -8,10 +8,15 @@
     color: white;
 }
 
+.main-buttons {
+    width: 100px;
+}
+
+
 .nav-container {
     margin-left: 10px;
 }
 
 .new-row {
-    background-color: #2a9055;
+    background-color: #98dfb6;
 }

@@ -105,11 +105,11 @@
                                     <td>{{ $recurso->data_fim }}</td>
                                     <td>
                                         <a class="btn btn-primary action-buttons"
-                                           href="{{ route('recursos.edit', $recurso->id) }}">
+                                           href="{{ route('recursos.edit', $recurso) }}">
                                             <i class="fa fa-edit fa-sm"></i>
                                         </a>
-                                        <a type="button" class="btn btn-danger action-buttons">
-                                            <i class="fa fa-trash fa-sm"></i>
+                                        <a class="btn btn-danger action-buttons">
+                                            <i class="fa fa-edit fa-trash"></i>
                                         </a>
                                     </td>
                                 </tr>

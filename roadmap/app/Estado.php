@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Estado extends Model
 {
+    protected $fillable = ['codigo_interno', 'pais_id',
+        'sigla', 'descricao'];
+
     public function paises()
     {
         return $this->belongsTo('App\Pais');

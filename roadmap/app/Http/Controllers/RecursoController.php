@@ -99,7 +99,7 @@ class RecursoController extends Controller
      */
     public function show(Recurso $recurso)
     {
-        //
+
     }
 
     /**
@@ -152,7 +152,10 @@ class RecursoController extends Controller
      */
     public function destroy(Recurso $recurso)
     {
-        //
+
+        $recurso->destroy();
+
+        return redirect('recursos/');
     }
 
     protected function recursoValidator(Request $request)
@@ -163,4 +166,10 @@ class RecursoController extends Controller
             'data_fim' => ['required', 'date'],
         ]);
     }
+
+    public function testes()
+    {
+
+    }
+
 }

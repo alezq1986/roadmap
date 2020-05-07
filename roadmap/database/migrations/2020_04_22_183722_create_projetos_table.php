@@ -18,6 +18,7 @@ class CreateProjetosTable extends Migration
             $table->string('descricao', 100);
             $table->smallInteger('prioridade');
             $table->unique(['prioridade']);
+            $table->foreignId('equipe_id')->constrained();
             $table->timestamps();
         });
     }

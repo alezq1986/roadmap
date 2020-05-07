@@ -6,7 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Atividade extends Model
 {
-    public function atividades()
+    protected $fillable =
+        ['atividade_codigo', 'projeto_id',
+            'descricao', 'competencia_id',
+            'prazo', 'data_inicio_real',
+            'data_fim_real', 'recurso_id',
+            'percentual_real'
+        ];
+
+    public function projetos()
     {
         return $this->belongsTo('App\Projeto');
     }

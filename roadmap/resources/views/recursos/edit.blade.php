@@ -13,6 +13,16 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
+                <div class="row mb-2 pb-2 border-bottom">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary main-buttons" form="form-recurso">
+                            {{ __('Atualizar') }}
+                        </button>
+                        <button class="btn btn-danger main-buttons">
+                            {{ __('Excluir') }}
+                        </button>
+                    </div>
+                </div>
                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" id="pills-principal-tab" data-toggle="pill" href="#pills-principal"
@@ -29,7 +39,7 @@
                         <div class="card">
                             <div class="card-header">{{ __('Editar recurso') }}</div>
                             <div class="card-body">
-                                <form method="POST" action="{{ route('recursos.update', $recurso) }}">
+                                <form method="POST" id="form-recurso" action="{{ route('recursos.update', $recurso) }}">
                                     @method('PUT')
                                     @csrf
 
@@ -90,13 +100,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group row mb-0">
-                                        <div class="col-md-6 offset-md-4">
-                                            <button type="submit" class="btn btn-primary">
-                                                {{ __('Atualizar') }}
-                                            </button>
-                                        </div>
-                                    </div>
+
                                 </form>
                             </div>
                         </div>
@@ -129,7 +133,7 @@
                                     </div>
                                     <div class="form-group row mb-0">
                                         <div class="col-md-6 offset-md-4">
-                                            <button type="submit" class="btn btn-primary">
+                                            <button class="btn btn-primary include-child">
                                                 {{ __('Incluir') }}
                                             </button>
                                         </div>
@@ -140,7 +144,7 @@
                         <div class="card">
                             <div class="card-header">{{ __('Competencias') }}</div>
                             <div class="card-body">
-                                <table class="table table-striped mt-2" id="competencias">
+                                <table class="table table-striped mt-2" id="Competencia">
                                     <thead>
                                     <tr>
                                         <th>Id</th>

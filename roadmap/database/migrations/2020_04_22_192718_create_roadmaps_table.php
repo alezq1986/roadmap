@@ -15,6 +15,7 @@ class CreateRoadmapsTable extends Migration
     {
         Schema::create('roadmaps', function (Blueprint $table) {
             $table->id();
+            $table->date('data_base');
             $table->timestamps();
         });
     }

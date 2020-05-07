@@ -8,6 +8,8 @@ class Pais extends Model
 {
     protected $table = 'paises';
 
+    protected $fillable = ['codigo_bacen', 'descricao'];
+
     public function estados()
     {
         return $this->hasMany('App\Estado');
