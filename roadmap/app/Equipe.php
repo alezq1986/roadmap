@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Recurso;
 use Illuminate\Database\Eloquent\Model;
 
 class Equipe extends Model

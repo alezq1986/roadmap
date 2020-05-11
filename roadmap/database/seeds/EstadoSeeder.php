@@ -1,5 +1,6 @@
 <?php
 
+use App\Estado;
 use Illuminate\Database\Seeder;
 
 class EstadoSeeder extends Seeder
@@ -38,6 +39,5 @@ class EstadoSeeder extends Seeder
         $e25 = Estado::create(['descricao' => 'Mato Grosso', 'codigo_interno' => 51, 'pais_id' => 30, 'sigla' => 'MT']);
         $e26 = Estado::create(['descricao' => 'Goiás', 'codigo_interno' => 52, 'pais_id' => 30, 'sigla' => 'GO']);
         $e27 = Estado::create(['descricao' => 'Distrito Federal', 'codigo_interno' => 53, 'pais_id' => 30, 'sigla' => 'DF']);
-
     }
 }

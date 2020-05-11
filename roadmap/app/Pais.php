@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Estado;
+use App\Feriado;
 use Illuminate\Database\Eloquent\Model;
 
 class Pais extends Model
@@ -17,6 +19,6 @@ class Pais extends Model
 
     public function feriados()
     {
-        return $this->morphMany('App\Feriado', 'entidades');
+        return $this->morphMany('App\Feriado', 'entidade', 'entidade_tipo');
     }
 }

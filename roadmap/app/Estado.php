@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Pais;
+use App\Municipio;
+use App\Feriado;
 use Illuminate\Database\Eloquent\Model;
 
 class Estado extends Model
@@ -9,7 +12,7 @@ class Estado extends Model
     protected $fillable = ['codigo_interno', 'pais_id',
         'sigla', 'descricao'];
 
-    public function paises()
+    public function pais()
     {
         return $this->belongsTo('App\Pais');
     }
@@ -21,6 +24,6 @@ class Estado extends Model
 
     public function feriados()
     {
-        return $this->morphMany('App\Feriado', 'entidades');
+        return $this->morphMany('App\Feriado', 'entidade', 'entidade_tipo');
     }
 }

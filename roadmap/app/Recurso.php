@@ -2,6 +2,11 @@
 
 namespace App;
 
+use App\Bloqueio;
+use App\Competencia;
+use App\Equipe;
+use App\Alocacao;
+use App\Roadmap;
 use Illuminate\Database\Eloquent\Model;
 
 class Recurso extends Model
@@ -23,18 +28,34 @@ class Recurso extends Model
         return $this->hasMany('App\Bloqueio');
     }
 
-    public function alocacoes(Roadmap $roadmap)
+    public function alocacoes()
     {
-        return DB::table('atividade_roadmap')->where(['roadmap_id', '=', $roadmap->id])->get();
+        return $this->hasMany('App\Alocacao');
+    }
+
+    public function alocacoesRoadmap(Roadmap $roadmap)
+    {
+        return $this->alocacoes->where('roadmap_id', '=', $roadmap->id);
     }
 
     public function datasIndisponiveis(Roadmap $roadmap, $prioridade = null)
     {
-        $alocacoes = $this->alocacoes($roadmap);
-        dd($alocacoes);
+        $alocacoes = $this->alocacoesRoadmap($roadmap);
+
+        $bloqueios = $this->bloqueios;
+
+
         if (!is_null($prioridade)) {
-            //
+            $alocacoes = $alocacoes->filter(function ($alocacao) use ($prioridade) {
+
+                return $alocacao->atividade->projeto->prioridade < $prioridade;
+
+            });
         }
+
+        $datas_indisponiveis = $alocacoes->collect($bloqueios);
+
+        return $datas_indisponiveis;
     }
 
 }

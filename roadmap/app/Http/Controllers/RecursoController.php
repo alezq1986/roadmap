@@ -3,6 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Recurso;
+use App\Feriado;
+use App\FuncoesData;
+use App\Roadmap;
+use App\Pais;
+use App\Estado;
+use App\Municipio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -167,8 +173,30 @@ class RecursoController extends Controller
         ]);
     }
 
+
     public function testes()
     {
+//        $m = Municipio::find(3832);
+//
+//        $e = Estado::find(20);
+//
+//        $p = Pais::find(30);
+//
+//        $feriados =  Feriado::feriadosPorLocal($e);
+//
+//        $dia_util_teste = FuncoesData::ehDiaUtil('2020-07-09', $feriados, 0);
+//
+//        dd($dia_util_teste);
+
+
+//        $recurso = Recurso::find(1);
+//
+//        $roadmap = Roadmap::find(1);
+//
+//        $alocacoes = $recurso->datasIndisponiveis($roadmap, 10);
+//
+//        dd($alocacoes);
+
 
     }
 

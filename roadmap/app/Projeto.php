@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Atividade;
 use Illuminate\Database\Eloquent\Model;
 
 class Projeto extends Model

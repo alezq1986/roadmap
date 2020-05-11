@@ -2,6 +2,10 @@
 
 namespace App;
 
+use App\Projeto;
+use App\Competencia;
+use App\Alocacao;
+use App\Roadmap;
 use Illuminate\Database\Eloquent\Model;
 
 class Atividade extends Model
@@ -14,12 +18,12 @@ class Atividade extends Model
             'percentual_real'
         ];
 
-    public function projetos()
+    public function projeto()
     {
         return $this->belongsTo('App\Projeto');
     }
 
-    public function competencias()
+    public function competencia()
     {
         return $this->belongsTo('App\Competencia');
     }
@@ -27,6 +31,11 @@ class Atividade extends Model
     public function roadmaps()
     {
         return $this->belongsToMany('App\Roadmap');
+    }
+
+    public function alocacoes()
+    {
+        return $this->hasMany('App\Alocacao');
     }
 
     public function depende_de()

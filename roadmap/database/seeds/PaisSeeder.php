@@ -1,5 +1,6 @@
 <?php
 
+use App\Pais;
 use Illuminate\Database\Seeder;
 
 class PaisSeeder extends Seeder

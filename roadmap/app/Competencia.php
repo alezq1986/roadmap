@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Recurso;
+use App\Atividade;
 use Illuminate\Database\Eloquent\Model;
 
 class Competencia extends Model

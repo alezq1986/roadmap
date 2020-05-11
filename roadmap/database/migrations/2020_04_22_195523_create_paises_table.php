@@ -17,6 +17,7 @@ class CreatePaisesTable extends Migration
             $table->id();
             $table->integer('codigo_bacen');
             $table->string('descricao', 100);
+            $table->timestamps();
         });
     }
 

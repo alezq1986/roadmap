@@ -20,9 +20,8 @@ class CreateAtividadesTable extends Migration
             $table->string('descricao', 100);
             $table->foreignId('competencia_id')->constrained();
             $table->integer('prazo');
-            $table->date('data_inicio_real');
-            $table->date('data_fim_real');
-            $table->foreignId('recurso_id')->constrained();
+            $table->date('data_inicio_real')->nullable();
+            $table->date('data_fim_real')->nullable();
             $table->decimal('percentual_real', 5, 2);
             $table->unique(['atividade_codigo', 'projeto_id']);
             $table->timestamps();
