@@ -11,33 +11,61 @@ class FuncoesData extends Model
     /**
      * @param $data
      * @param Collection $feriados
-     * @param int $formato : 0 - string, 1 - time
      * @return int
      */
-    public static function ehDiaUtil($data, Collection $feriados, $formato = 0)
+    public static function ehDiaUtil($data, Collection $feriados)
     {
-
-        if (!$formato) {
+        if (!is_integer($data)) {
             $data = strtotime($data);
-
-            $feriados->map(function ($feriado, $key) {
-                $feriado->data = strtotime($feriado->data);
-            });
         }
+
+
+        $feriados->map(function ($feriado) {
+
+            if (!is_integer($feriado->data)) {
+                $feriado->data = strtotime($feriado->data);
+            }
+
+        });
+
         return ($feriados->contains('data', $data) || date("N", $data) >= 6) ? 0 : 1;
     }
 
-    public static function ehDiaLivre($data, Collection $feriados, Collection $datas_indisponiveis, $formato = 0)
+    /**
+     * @param $data
+     * @param Collection $feriados
+     * @param Collection $datas_indisponiveis
+     * @return int
+     */
+    public static function ehDiaLivre($data, Collection $feriados, Collection $datas_indisponiveis)
     {
-
-
-        if (!$formato) {
+        if (!is_integer($data)) {
             $data = strtotime($data);
-
-            $feriados->map(function ($feriado) {
-                $feriado->data = strtotime($feriado->data);
-            });
         }
+
+        $feriados->map(function ($feriado) {
+
+            if (!is_integer($feriado->data)) {
+                $feriado->data = strtotime($feriado->data);
+            }
+
+        });
+
+        $datas_indisponiveis = $datas_indisponiveis->map(function ($data_indisponivel, $key) {
+
+            if (!is_integer($data_indisponivel['data_inicio'])) {
+                $data_inicio = strtotime($data_indisponivel['data_inicio']);
+            } else {
+                $data_inicio = $data_indisponivel['data_inicio'];
+            }
+
+            if (!is_integer($data_indisponivel['data_fim'])) {
+                $data_fim = strtotime($data_indisponivel['data_fim']);
+            } else {
+                $data_fim = $data_indisponivel['data_fim'];
+            }
+            return ['data_inicio' => $data_inicio, 'data_fim' => $data_fim];
+        });
 
         $livre = 1;
 
@@ -58,13 +86,52 @@ class FuncoesData extends Model
 
         foreach ($datas_indisponiveis as $data_indisponivel) {
 
-            if ($data >= $data_indisponivel->data_inicio && $data <= $data_indisponivel->data_fim) {
+            if ($data >= $data_indisponivel['data_inicio'] && $data <= $data_indisponivel['data_fim']) {
 
                 $livre = 0;
 
                 return $livre;
             }
         }
+
         return $livre;
     }
+
+    /**
+     * @param $data
+     * @param $dias
+     * @param Collection $feriados
+     * @return false|string
+     */
+    public static function moverDiaUtil($data, $dias, Collection $feriados)
+    {
+        if (!is_integer($data)) {
+            $data = strtotime($data);
+        }
+
+        $feriados->map(function ($feriado) {
+
+            if (!is_integer($feriado->data)) {
+                $feriado->data = strtotime($feriado->data);
+            }
+
+        });
+
+        $falta_mover = $dias;
+
+        while ($dias != 0 && $falta_mover != 0) {
+
+            $data = $data + ($dias > 0 ? 86400 : -86400);
+
+            if (self::ehDiaUtil($data, $feriados) == 1) {
+
+                $dias > 0 ? $falta_mover-- : $falta_mover++;
+
+            }
+
+        }
+
+        return date('Y-m-d', $data);
+    }
 }
+

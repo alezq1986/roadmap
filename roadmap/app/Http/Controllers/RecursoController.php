@@ -176,26 +176,53 @@ class RecursoController extends Controller
 
     public function testes()
     {
+//        // TESTE DIA ÚTIL
+//
 //        $m = Municipio::find(3832);
 //
 //        $e = Estado::find(20);
 //
 //        $p = Pais::find(30);
 //
-//        $feriados =  Feriado::feriadosPorLocal($e);
+//        $feriados =  Feriado::feriadosPorLocal($m);
 //
-//        $dia_util_teste = FuncoesData::ehDiaUtil('2020-07-09', $feriados, 0);
+//        $dia_util_teste = FuncoesData::ehDiaUtil('2020-07-09', $feriados);
 //
 //        dd($dia_util_teste);
 
-
+//        // TESTE DIA LIVRE
+//
+//        $m = Municipio::find(3832);
+//
+//        $e = Estado::find(20);
+//
+//        $p = Pais::find(30);
+//
+//        $feriados =  Feriado::feriadosPorLocal($m);
+//
 //        $recurso = Recurso::find(1);
 //
 //        $roadmap = Roadmap::find(1);
 //
-//        $alocacoes = $recurso->datasIndisponiveis($roadmap, 10);
+//        $datas_indisponiveis = $recurso->datasIndisponiveis($roadmap, 10);
 //
-//        dd($alocacoes);
+//        $dia_livre_teste = FuncoesData::ehDiaLivre('2020-04-27', $feriados, $datas_indisponiveis);
+//
+//        dd($dia_livre_teste);
+
+//        // TESTE MOVER DIA UTIL
+//
+//        $m = Municipio::find(3832);
+//
+//        $e = Estado::find(20);
+//
+//        $p = Pais::find(30);
+//
+//        $feriados =  Feriado::feriadosPorLocal($m);
+//
+//        $mover_dia_util_teste = FuncoesData::moverDiaUtil('2020-04-09', 1, $feriados);
+//
+//        dd($mover_dia_util_teste);
 
 
     }

@@ -40,10 +40,11 @@ class Recurso extends Model
 
     public function datasIndisponiveis(Roadmap $roadmap, $prioridade = null)
     {
-        $alocacoes = $this->alocacoesRoadmap($roadmap);
+        $datas_indisponiveis = collect();
 
         $bloqueios = $this->bloqueios;
 
+        $alocacoes = $this->alocacoesRoadmap($roadmap);
 
         if (!is_null($prioridade)) {
             $alocacoes = $alocacoes->filter(function ($alocacao) use ($prioridade) {
@@ -53,7 +54,15 @@ class Recurso extends Model
             });
         }
 
-        $datas_indisponiveis = $alocacoes->collect($bloqueios);
+        foreach ($bloqueios as $bloqueio) {
+            $datas_indisponiveis->push(['data_inicio' => $bloqueio->data_inicio, 'data_fim' => $bloqueio->data_fim]);
+        }
+
+        foreach ($alocacoes as $alocacao) {
+            $datas_indisponiveis->push(['data_inicio' => $alocacao->data_inicio_proj, 'data_fim' => $alocacao->data_fim_proj]);
+        }
+
+        $datas_indisponiveis = $datas_indisponiveis->sortBy('data_inicio')->values();
 
         return $datas_indisponiveis;
     }
