@@ -66,7 +66,6 @@ class Atividade extends Model
 
             $primeira_data_recurso = $recurso->calcularPrimeiraData($this, $roadmap);
 
-
             if (!isset($primeira_data)) {
 
                 $primeira_data = $primeira_data_recurso;
@@ -81,18 +80,11 @@ class Atividade extends Model
 
                     $primeiro_recurso = $recurso;
 
-                } else {
-
                 }
-
-
             }
 
         }
-
-        return array($primeiro_recurso, $primeira_data);
-
+        return array('recurso' => $primeiro_recurso, 'data' => $primeira_data);
     }
-
 
 }

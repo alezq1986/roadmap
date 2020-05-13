@@ -80,8 +80,15 @@ class Recurso extends Model
      * @param Collection $feriados
      * @return mixed|null
      */
-    public function calcularPrimeiraData(Atividade $atividade, Roadmap $roadmap, Collection $feriados)
+    public function calcularPrimeiraData(Atividade $atividade, Roadmap $roadmap, Collection $feriados = null)
     {
+        if (is_null($feriados)) {
+            $municipio_padrao = Parametro::where('codigo', '=', 1)->first();
+
+            $municipio = Municipio::find($municipio_padrao->valor);
+
+            $feriados = Feriado::feriadosPorLocal($municipio);
+        }
 
         $prazo = $atividade->prazo;
 

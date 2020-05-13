@@ -229,6 +229,16 @@ class RecursoController extends Controller
 //
 //        dd($calcular_primeira_data_teste);
 
+//        // TESTE CALCULAR MELHOR RECURSO
+//
+        $roadmap = Roadmap::find(1);
+
+        $atividade = Atividade::find(5);
+
+        $calular_melhor_recurso = $atividade->calcularMelhorRecurso($roadmap);
+
+        dd($calular_melhor_recurso);
+
     }
 
 }
