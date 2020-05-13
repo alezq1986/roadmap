@@ -13,6 +13,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
+                {{-- Botões --}}
                 <div class="row mb-2 pb-2 border-bottom">
                     <div class="col-md-12">
                         <button type="submit" class="btn btn-primary main-buttons" form="form-recurso">
@@ -23,6 +24,7 @@
                         </button>
                     </div>
                 </div>
+                {{-- Navegação --}}
                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" id="pills-principal-tab" data-toggle="pill" href="#pills-principal"
@@ -32,8 +34,14 @@
                         <a class="nav-link" id="pills-competencias-tab" data-toggle="pill" href="#pills-competencias"
                            role="tab" aria-controls="pills-competencias" aria-selected="false">Competências</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-equipes-tab" data-toggle="pill" href="#pills-equipes"
+                           role="tab" aria-controls="pills-equipes" aria-selected="false">Equipes</a>
+                    </li>
                 </ul>
+                {{-- Conteúdo da navegação --}}
                 <div class="tab-content" id="pills-tabContent">
+                    {{-- Aba Principal --}}
                     <div class="tab-pane fade show active" id="pills-principal" role="tabpanel"
                          aria-labelledby="pills-principal-tab">
                         <div class="card">
@@ -105,6 +113,7 @@
                             </div>
                         </div>
                     </div>
+                    {{-- Aba Competências --}}
                     <div class="tab-pane fade" id="pills-competencias" role="tabpanel"
                          aria-labelledby="pills-principal-tab">
                         <div class="card mb-5">
@@ -133,7 +142,8 @@
                                     </div>
                                     <div class="form-group row mb-0">
                                         <div class="col-md-6 offset-md-4">
-                                            <button class="btn btn-primary include-child">
+                                            <button class="btn btn-primary include-child"
+                                                    modelo="Competencia">
                                                 {{ __('Incluir') }}
                                             </button>
                                         </div>
@@ -144,7 +154,7 @@
                         <div class="card">
                             <div class="card-header">{{ __('Competencias') }}</div>
                             <div class="card-body">
-                                <table class="table table-striped mt-2" id="Competencia">
+                                <table class="table table-striped mt-2 tabela-filha" id="Competencia">
                                     <thead>
                                     <tr>
                                         <th>Id</th>
@@ -157,6 +167,72 @@
                                         <tr>
                                             <td>{{ $competencia->id }}</td>
                                             <td>{{ $competencia->descricao }}</td>
+                                            <td>
+                                                <a type="button" class="btn btn-danger action-buttons">
+                                                    <i class="fa fa-trash fa-sm"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Aba Equipes --}}
+                    <div class="tab-pane fade" id="pills-equipes" role="tabpanel"
+                         aria-labelledby="pills-principal-tab">
+                        <div class="card mb-5">
+                            <div class="card-header">{{ __('Equipes') }}</div>
+                            <div class="card-body">
+                                <form method="POST" action="">
+                                    @csrf
+
+                                    <div class="form-group row">
+                                        <label for="equipe_id"
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Equipes') }}</label>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <input id="equipe_id" type="text"
+                                                       class="form-control" name="equipe_id"
+                                                       autofocus>
+                                                <div class="input-group-append">
+                                                    <button class="input-group-text lookup"
+                                                            modelo="Equipe">
+                                                        <i class="fa fa-search"></i>
+                                                    </button>
+                                                    @include('layouts.modal')
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row mb-0">
+                                        <div class="col-md-6 offset-md-4">
+                                            <button class="btn btn-primary include-child"
+                                                    modelo="Equipe">
+                                                {{ __('Incluir') }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">{{ __('Equipes') }}</div>
+                            <div class="card-body">
+                                <table class="table table-striped mt-2 tabela-filha" id="Equipe">
+                                    <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Descrição</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($equipes as $equipe)
+                                        <tr>
+                                            <td>{{ $equipe->id }}</td>
+                                            <td>{{ $equipe->descricao }}</td>
                                             <td>
                                                 <a type="button" class="btn btn-danger action-buttons">
                                                     <i class="fa fa-trash fa-sm"></i>

@@ -11,6 +11,7 @@ use App\Pais;
 use App\Estado;
 use App\Municipio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class RecursoController extends Controller
@@ -120,7 +121,9 @@ class RecursoController extends Controller
 
         $competencias = $recurso->competencias;
 
-        return view('recursos.edit', ['recurso' => $recurso, 'competencias' => $competencias]);
+        $equipes = $recurso->equipes;
+
+        return view('recursos.edit', ['recurso' => $recurso, 'competencias' => $competencias, 'equipes' => $equipes]);
     }
 
     /**
@@ -147,6 +150,39 @@ class RecursoController extends Controller
 
             $recurso->save();
 
+            if ($request->session()->has('filhos')) {
+
+                foreach ($request->session()->get('filhos') as $filho) {
+
+                    switch ($filho['modelo']) {
+
+                        case 'Competencia':
+
+                            DB::table('competencia_recurso')->insertOrIgnore([
+                                'recurso_id' => $recurso->id,
+                                'competencia_id' => $filho['id']
+                            ]);
+
+                            break;
+                        case 'Equipe':
+
+                            DB::table('equipe_recurso')->insertOrIgnore([
+                                'recurso_id' => $recurso->id,
+                                'equipe_id' => $filho['id']
+                            ]);
+
+                            break;
+
+                        default:
+                    }
+
+
+                }
+
+                $request->session()->forget('filhos');
+
+            }
+
             return redirect('recursos/');
         }
     }
@@ -160,7 +196,7 @@ class RecursoController extends Controller
     public function destroy(Recurso $recurso)
     {
 
-        $recurso->destroy();
+        $recurso->destroy($recurso->id);
 
         return redirect('recursos/');
     }
@@ -174,71 +210,5 @@ class RecursoController extends Controller
         ]);
     }
 
-
-    public function testes()
-    {
-//        // TESTE DIA ÚTIL
-//
-//        $dia_util_teste = FuncoesData::ehDiaUtil('2020-07-09');
-//
-//        dd($dia_util_teste);
-
-//        // TESTE DIA LIVRE
-//
-//        $recurso = Recurso::find(1);
-//
-//        $roadmap = Roadmap::find(1);
-//
-//        $datas_indisponiveis = $recurso->datasIndisponiveis($roadmap, 10);
-//
-//        $dia_livre_teste = FuncoesData::ehDiaLivre('2020-04-27', $datas_indisponiveis);
-//
-//        dd($dia_livre_teste);
-
-//        // TESTE MOVER DIA UTIL
-//
-//        $mover_dia_util_teste = FuncoesData::moverDiaUtil('2020-04-09', 1);
-//
-//        dd($mover_dia_util_teste);
-
-//        // TESTE CALCULAR DIAS
-//
-//        $di = collect([array('data_inicio'=>'2020-04-03', 'data_fim'=>'2020-04-08')]);
-//
-//        $calcular_dias_teste = FuncoesData::calcularDias('2020-04-01', '2020-04-26', 3,0, $di);
-//
-//        dd($calcular_dias_teste);
-
-//        // TESTE DATA FIM
-//
-//        $di = collect([array('data_inicio'=>'2020-04-03', 'data_fim'=>'2020-04-08')]);
-//
-//        $data_fim_teste = FuncoesData::calcularDataFim('2020-03-18', 13, $di);
-//
-//        dd($data_fim_teste);
-
-//        // TESTE CALCULAR PRIMEIRA DATA
-//
-//        $roadmap = Roadmap::find(1);
-//
-//        $recurso = Recurso::find(1);
-//
-//        $atividade = Atividade::find(5);
-//
-//        $calcular_primeira_data_teste = $recurso->calcularPrimeiraData($atividade, $roadmap);
-//
-//        dd($calcular_primeira_data_teste);
-
-//        // TESTE CALCULAR MELHOR RECURSO
-//
-        $roadmap = Roadmap::find(1);
-
-        $atividade = Atividade::find(5);
-
-        $calular_melhor_recurso = $atividade->calcularMelhorRecurso($roadmap);
-
-        dd($calular_melhor_recurso);
-
-    }
 
 }

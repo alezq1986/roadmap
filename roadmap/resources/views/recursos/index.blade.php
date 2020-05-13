@@ -108,9 +108,15 @@
                                            href="{{ route('recursos.edit', $recurso) }}">
                                             <i class="fa fa-edit fa-sm"></i>
                                         </a>
-                                        <a class="btn btn-danger action-buttons">
-                                            <i class="fa fa-edit fa-trash"></i>
-                                        </a>
+                                        <form class="d-inline" method="POST"
+                                              action="{{ route('recursos.destroy', $recurso) }}"
+                                              onsubmit="return confirm('Tem certeza que deseja remover {{$recurso->nome}} ?')">
+                                            @csrf
+                                            @method("DELETE")
+                                            <button type="submit" class="btn btn-danger action-buttons">
+                                                <i class="fa fa-edit fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach
