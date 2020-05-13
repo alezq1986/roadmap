@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Atividade;
 use App\Recurso;
 use App\Feriado;
 use App\FuncoesData;
@@ -178,27 +179,11 @@ class RecursoController extends Controller
     {
 //        // TESTE DIA ÚTIL
 //
-//        $m = Municipio::find(3832);
-//
-//        $e = Estado::find(20);
-//
-//        $p = Pais::find(30);
-//
-//        $feriados =  Feriado::feriadosPorLocal($m);
-//
-//        $dia_util_teste = FuncoesData::ehDiaUtil('2020-07-09', $feriados);
+//        $dia_util_teste = FuncoesData::ehDiaUtil('2020-07-09');
 //
 //        dd($dia_util_teste);
 
 //        // TESTE DIA LIVRE
-//
-//        $m = Municipio::find(3832);
-//
-//        $e = Estado::find(20);
-//
-//        $p = Pais::find(30);
-//
-//        $feriados =  Feriado::feriadosPorLocal($m);
 //
 //        $recurso = Recurso::find(1);
 //
@@ -206,24 +191,43 @@ class RecursoController extends Controller
 //
 //        $datas_indisponiveis = $recurso->datasIndisponiveis($roadmap, 10);
 //
-//        $dia_livre_teste = FuncoesData::ehDiaLivre('2020-04-27', $feriados, $datas_indisponiveis);
+//        $dia_livre_teste = FuncoesData::ehDiaLivre('2020-04-27', $datas_indisponiveis);
 //
 //        dd($dia_livre_teste);
 
 //        // TESTE MOVER DIA UTIL
 //
-//        $m = Municipio::find(3832);
-//
-//        $e = Estado::find(20);
-//
-//        $p = Pais::find(30);
-//
-//        $feriados =  Feriado::feriadosPorLocal($m);
-//
-//        $mover_dia_util_teste = FuncoesData::moverDiaUtil('2020-04-09', 1, $feriados);
+//        $mover_dia_util_teste = FuncoesData::moverDiaUtil('2020-04-09', 1);
 //
 //        dd($mover_dia_util_teste);
 
+//        // TESTE CALCULAR DIAS
+//
+//        $di = collect([array('data_inicio'=>'2020-04-03', 'data_fim'=>'2020-04-08')]);
+//
+//        $calcular_dias_teste = FuncoesData::calcularDias('2020-04-01', '2020-04-26', 3,0, $di);
+//
+//        dd($calcular_dias_teste);
+
+//        // TESTE DATA FIM
+//
+//        $di = collect([array('data_inicio'=>'2020-04-03', 'data_fim'=>'2020-04-08')]);
+//
+//        $data_fim_teste = FuncoesData::calcularDataFim('2020-03-18', 13, $di);
+//
+//        dd($data_fim_teste);
+
+//        // TESTE CALCULAR PRIMEIRA DATA
+//
+//        $roadmap = Roadmap::find(1);
+//
+//        $recurso = Recurso::find(1);
+//
+//        $atividade = Atividade::find(5);
+//
+//        $calcular_primeira_data_teste = $recurso->calcularPrimeiraData($atividade, $roadmap);
+//
+//        dd($calcular_primeira_data_teste);
 
     }
 

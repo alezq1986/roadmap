@@ -38,13 +38,61 @@ class Atividade extends Model
         return $this->hasMany('App\Alocacao');
     }
 
-    public function depende_de()
-    {
-        $this->belongsToMany('App\Atividade', 'atividade_dependencia', 'dependencia_id', 'atividade_id');
-    }
-
     public function depende_para()
     {
-        $this->belongsToMany('App\Atividade', 'atividade_dependencia', 'atividade_id', 'dependencia_id');
+        return $this->belongsToMany('App\Atividade', 'atividade_dependencia', 'dependencia_id', 'atividade_id');
     }
+
+    public function depende_de()
+    {
+        return $this->belongsToMany('App\Atividade', 'atividade_dependencia', 'atividade_id', 'dependencia_id');
+    }
+
+
+    /**
+     * @param \App\Roadmap $roadmap
+     * @return array
+     */
+    public function calcularMelhorRecurso(Roadmap $roadmap)
+    {
+
+        $recursos = $this->competencia->recursos;
+
+        $primeiro_recurso = null;
+
+        $primeira_data = null;
+
+        foreach ($recursos as $recurso) {
+
+            $primeira_data_recurso = $recurso->calcularPrimeiraData($this, $roadmap);
+
+
+            if (!isset($primeira_data)) {
+
+                $primeira_data = $primeira_data_recurso;
+
+                $primeiro_recurso = $recurso;
+
+            } else {
+
+                if ($primeira_data_recurso < $primeira_data) {
+
+                    $primeira_data = $primeira_data_recurso;
+
+                    $primeiro_recurso = $recurso;
+
+                } else {
+
+                }
+
+
+            }
+
+        }
+
+        return array($primeiro_recurso, $primeira_data);
+
+    }
+
+
 }
