@@ -109,24 +109,31 @@ function criarLookupModal(modelo, data) {
 
 function inserirTabelaFilha(modelo, id) {
 
-    let dados = new Array();
-    let dado = new Object();
-    dado.modelo = modelo;
-    dado.id = id;
+    if ($("table[modelo=" + modelo + "]").find("tr#" + id).length > 0) {
+        alert('Esse registro já existe na tabela.');
+    } else {
 
-    dados.push(dado);
+        let dados = new Array();
+        let dado = new Object();
+        dado.modelo = modelo;
+        dado.id = id;
 
-    var data = ajaxRequest(dados, 'consultar');
+        dados.push(dado);
 
-    $.when(data).done(function (response) {
+        var data = ajaxRequest(dados, 'consultar');
 
-        $("table[modelo=" + modelo + "]>tbody").append(
-            "<tr></tr>" +
-            "<td class='new-row id'>" + response.success[0].id + "</td>" +
-            "<td class='new-row'>" + response.success[0].descricao + "</td>" +
-            "<td class='new-row'> <a type='button' class='btn btn-danger action-buttons remover-filho' new-id=" + response.success[0].id + "><i class='fa fa-trash fa-sm'></i></a></td>"
-        );
-    });
+        $.when(data).done(function (response) {
+
+            $("table[modelo=" + modelo + "]>tbody").append(
+                "<tr id=" + response.success[0].id + ">" +
+                "<td class='new-row id'>" + response.success[0].id + "</td>" +
+                "<td class='new-row'>" + response.success[0].descricao + "</td>" +
+                "<td class='new-row'> <a type='button' class='btn btn-danger action-buttons remover-filho' new-id=" + response.success[0].id + "><i class='fa fa-trash fa-sm'></i></a></td></tr>"
+            );
+
+        });
+
+    }
 
 }
 
