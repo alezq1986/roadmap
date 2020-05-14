@@ -24,3 +24,15 @@
 .deleted-row {
     background-color: #e9605c;
 }
+
+#results-list {
+    list-style-type: none;
+}
+
+#results-list > li {
+    padding: 2px;
+}
+
+#results-list > li:hover {
+    background-color: #6cb2eb;
+}

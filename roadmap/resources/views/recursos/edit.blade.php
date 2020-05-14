@@ -19,9 +19,15 @@
                         <button type="submit" class="btn btn-primary main-buttons" form="form-recurso">
                             {{ __('Atualizar') }}
                         </button>
-                        <button class="btn btn-danger main-buttons">
-                            {{ __('Excluir') }}
-                        </button>
+                        <form class="d-inline" method="POST"
+                              action="{{ route('recursos.destroy', $recurso) }}"
+                              onsubmit="return confirm('Tem certeza que deseja remover {{$recurso->nome}} ?')">
+                            @csrf
+                            @method("DELETE")
+                            <button type="submit" class="btn btn-danger main-buttons">
+                                {{ __('Excluir') }}
+                            </button>
+                        </form>
                     </div>
                 </div>
                 {{-- Navegação --}}
@@ -171,6 +177,11 @@
                                                 <a type="button" class="btn btn-danger action-buttons remover-filho">
                                                     <i class="fa fa-trash fa-sm"></i>
                                                 </a>
+                                                <a type="button" class="btn btn-primary action-buttons"
+                                                   href="{{ URL::route('competencias.update',$competencia) }}"
+                                                   target="_blank">
+                                                    <i class="fa fa-eye fa-sm"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -236,6 +247,10 @@
                                             <td>
                                                 <a type="button" class="btn btn-danger action-buttons remover-filho">
                                                     <i class="fa fa-trash fa-sm"></i>
+                                                </a>
+                                                <a type="button" class="btn btn-primary action-buttons"
+                                                   href="{{ URL::route('equipes.update',$equipe) }}" target="_blank">
+                                                    <i class="fa fa-eye fa-sm"></i>
                                                 </a>
                                             </td>
                                         </tr>

@@ -33,7 +33,9 @@ $(".lookup").click(function (event) {
 });
 
 $("#form-recurso").on("submit", function (event) {
+
     passarFilhosSessao();
+
 });
 
 $("table").on('click', '.remover-filho', function () {
@@ -52,6 +54,7 @@ $("table").on('click', '.remover-filho', function () {
 
 
 });
+
 
 function ajaxRequest(dados, acao) {
 
@@ -142,6 +145,7 @@ function removerTabelaFilha(modelo, id) {
     $("table[modelo=" + modelo + "]").find("tr#" + id).children().addClass('deleted-row');
 
 }
+
 
 function passarFilhosSessao() {
 

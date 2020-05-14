@@ -89,11 +89,77 @@ class RecursoController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         } else {
-            Recurso::create([
-                'nome' => $request->input('nome'),
-                'data_inicio' => $request->input('data_inicio'),
-                'data_fim' => $request->input('data_fim'),
-            ]);
+
+            DB::transaction(function () use ($request) {
+
+                $recurso = Recurso::create([
+                    'nome' => $request->input('nome'),
+                    'data_inicio' => $request->input('data_inicio'),
+                    'data_fim' => $request->input('data_fim'),
+                ]);
+
+                if ($request->session()->has('filhos')) {
+
+                    if (isset($request->session()->get('filhos')['filhos_incluir'])) {
+
+                        foreach ($request->session()->get('filhos')['filhos_incluir'] as $filho) {
+
+                            switch ($filho['modelo']) {
+
+                                case 'Competencia':
+
+                                    DB::table('competencia_recurso')->insertOrIgnore([
+                                        'recurso_id' => $recurso->id,
+                                        'competencia_id' => $filho['id']
+                                    ]);
+
+                                    break;
+                                case 'Equipe':
+
+                                    DB::table('equipe_recurso')->insertOrIgnore([
+                                        'recurso_id' => $recurso->id,
+                                        'equipe_id' => $filho['id']
+                                    ]);
+
+                                    break;
+
+                                default:
+                            }
+                        }
+                    }
+
+                    if (isset($request->session()->get('filhos')['filhos_deletar'])) {
+
+                        foreach ($request->session()->get('filhos')['filhos_deletar'] as $filho) {
+
+                            switch ($filho['modelo']) {
+
+                                case 'Competencia':
+
+                                    DB::table('competencia_recurso')->where(
+                                        'recurso_id', '=', $recurso->id
+                                    )->where(
+                                        'competencia_id', '=', $filho['id']
+                                    )->delete();
+
+                                    break;
+                                case 'Equipe':
+
+                                    DB::table('equipe_recurso')->where(
+                                        'recurso_id', '=', $recurso->id
+                                    )->where(
+                                        'equipe_id', '=', $filho['id']
+                                    )->delete();
+
+                                    break;
+
+                                default:
+                            }
+                        }
+                    }
+                    $request->session()->forget('filhos');
+                }
+            });
 
             return redirect('recursos/');
         }
