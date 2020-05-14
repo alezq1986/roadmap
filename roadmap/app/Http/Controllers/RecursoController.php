@@ -144,44 +144,76 @@ class RecursoController extends Controller
                 ->withInput();
         } else {
 
-            $recurso->nome = $request->input('nome');
-            $recurso->data_inicio = $request->input('data_inicio');
-            $recurso->data_fim = $request->input('data_fim');
+            DB::transaction(function () use ($request, $recurso) {
 
-            $recurso->save();
+                $recurso->nome = $request->input('nome');
+                $recurso->data_inicio = $request->input('data_inicio');
+                $recurso->data_fim = $request->input('data_fim');
 
-            if ($request->session()->has('filhos')) {
+                $recurso->save();
 
-                foreach ($request->session()->get('filhos') as $filho) {
+                if ($request->session()->has('filhos')) {
 
-                    switch ($filho['modelo']) {
+                    if (isset($request->session()->get('filhos')['filhos_incluir'])) {
 
-                        case 'Competencia':
+                        foreach ($request->session()->get('filhos')['filhos_incluir'] as $filho) {
 
-                            DB::table('competencia_recurso')->insertOrIgnore([
-                                'recurso_id' => $recurso->id,
-                                'competencia_id' => $filho['id']
-                            ]);
+                            switch ($filho['modelo']) {
 
-                            break;
-                        case 'Equipe':
+                                case 'Competencia':
 
-                            DB::table('equipe_recurso')->insertOrIgnore([
-                                'recurso_id' => $recurso->id,
-                                'equipe_id' => $filho['id']
-                            ]);
+                                    DB::table('competencia_recurso')->insertOrIgnore([
+                                        'recurso_id' => $recurso->id,
+                                        'competencia_id' => $filho['id']
+                                    ]);
 
-                            break;
+                                    break;
+                                case 'Equipe':
 
-                        default:
+                                    DB::table('equipe_recurso')->insertOrIgnore([
+                                        'recurso_id' => $recurso->id,
+                                        'equipe_id' => $filho['id']
+                                    ]);
+
+                                    break;
+
+                                default:
+                            }
+                        }
                     }
 
+                    if (isset($request->session()->get('filhos')['filhos_deletar'])) {
 
+                        foreach ($request->session()->get('filhos')['filhos_deletar'] as $filho) {
+
+                            switch ($filho['modelo']) {
+
+                                case 'Competencia':
+
+                                    DB::table('competencia_recurso')->where(
+                                        'recurso_id', '=', $recurso->id
+                                    )->where(
+                                        'competencia_id', '=', $filho['id']
+                                    )->delete();
+
+                                    break;
+                                case 'Equipe':
+
+                                    DB::table('equipe_recurso')->where(
+                                        'recurso_id', '=', $recurso->id
+                                    )->where(
+                                        'equipe_id', '=', $filho['id']
+                                    )->delete();
+
+                                    break;
+
+                                default:
+                            }
+                        }
+                    }
+                    $request->session()->forget('filhos');
                 }
-
-                $request->session()->forget('filhos');
-
-            }
+            });
 
             return redirect('recursos/');
         }
@@ -209,6 +241,5 @@ class RecursoController extends Controller
             'data_fim' => ['required', 'date'],
         ]);
     }
-
 
 }

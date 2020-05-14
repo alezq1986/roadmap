@@ -154,7 +154,7 @@
                         <div class="card">
                             <div class="card-header">{{ __('Competencias') }}</div>
                             <div class="card-body">
-                                <table class="table table-striped mt-2 tabela-filha" id="Competencia">
+                                <table class="table table-striped mt-2 tabela-filha" modelo="Competencia">
                                     <thead>
                                     <tr>
                                         <th>Id</th>
@@ -164,11 +164,11 @@
                                     </thead>
                                     <tbody>
                                     @foreach($competencias as $competencia)
-                                        <tr>
-                                            <td>{{ $competencia->id }}</td>
+                                        <tr id="{{ $competencia->id }}">
+                                            <td class="id">{{ $competencia->id }}</td>
                                             <td>{{ $competencia->descricao }}</td>
                                             <td>
-                                                <a type="button" class="btn btn-danger action-buttons">
+                                                <a type="button" class="btn btn-danger action-buttons remover-filho">
                                                     <i class="fa fa-trash fa-sm"></i>
                                                 </a>
                                             </td>
@@ -220,7 +220,7 @@
                         <div class="card">
                             <div class="card-header">{{ __('Equipes') }}</div>
                             <div class="card-body">
-                                <table class="table table-striped mt-2 tabela-filha" id="Equipe">
+                                <table class="table table-striped mt-2 tabela-filha" modelo="Equipe">
                                     <thead>
                                     <tr>
                                         <th>Id</th>
@@ -230,11 +230,11 @@
                                     </thead>
                                     <tbody>
                                     @foreach($equipes as $equipe)
-                                        <tr>
-                                            <td>{{ $equipe->id }}</td>
+                                        <tr id="{{ $equipe->id }}">
+                                            <td class="id">{{ $equipe->id }}</td>
                                             <td>{{ $equipe->descricao }}</td>
                                             <td>
-                                                <a type="button" class="btn btn-danger action-buttons">
+                                                <a type="button" class="btn btn-danger action-buttons remover-filho">
                                                     <i class="fa fa-trash fa-sm"></i>
                                                 </a>
                                             </td>

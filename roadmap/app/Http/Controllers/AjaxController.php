@@ -27,8 +27,10 @@ class AjaxController extends Controller
                 'success' => $resultado
             ]);
 
-        } elseif ($request->input('acao') == 'inserir') {
+        } elseif ($request->input('acao') == 'editar') {
+
             $request->session()->forget('filhos');
+
             $request->session()->put('filhos', $request->input('dados'));
         }
     }

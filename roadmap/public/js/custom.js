@@ -32,6 +32,27 @@ $(".lookup").click(function (event) {
 
 });
 
+$("#form-recurso").on("submit", function (event) {
+    passarFilhosSessao();
+});
+
+$("table").on('click', '.remover-filho', function () {
+
+    if ($(this).closest('td').hasClass('new-row')) {
+
+        $(this).closest('tr').remove();
+
+    } else {
+        let modelo = $(this).closest('table').attr('modelo');
+
+        let id = $(this).closest('tr').attr('id');
+
+        removerTabelaFilha(modelo, id);
+    }
+
+
+});
+
 function ajaxRequest(dados, acao) {
 
     let _token = $('meta[name="csrf-token"]').attr('content');
@@ -99,43 +120,58 @@ function inserirTabelaFilha(modelo, id) {
 
     $.when(data).done(function (response) {
 
-        $("table#" + modelo + ">tbody").append(
+        $("table[modelo=" + modelo + "]>tbody").append(
             "<tr></tr>" +
             "<td class='new-row id'>" + response.success[0].id + "</td>" +
             "<td class='new-row'>" + response.success[0].descricao + "</td>" +
-            "<td class='new-row'> <a type='button' class='btn btn-danger action-buttons'><i class='fa fa-trash fa-sm'></i></a></td>"
+            "<td class='new-row'> <a type='button' class='btn btn-danger action-buttons remover-filho' new-id=" + response.success[0].id + "><i class='fa fa-trash fa-sm'></i></a></td>"
         );
     });
 
 }
 
-function removerTabelaFilha(modelo, id, objeto) {
+function removerTabelaFilha(modelo, id) {
 
-    if (objeto.parent("td").hasClass("new-row")) {
-        objeto.parent("tr").remove()
-    }
+    $("table[modelo=" + modelo + "]").find("tr#" + id).children().addClass('deleted-row');
 
 }
 
-$("#form-recurso").on("submit", function (event) {
-
-    passarFilhosSessao();
-});
-
 function passarFilhosSessao() {
-    var dados = new Array();
 
+    let filhos = new Object();
+
+    let filhos_incluir = new Array();
+
+    let filhos_deletar = new Array();
 
     $('.new-row.id').each(function () {
 
         let c = new Object();
 
-        c.modelo = $(this).parents("table").attr('id');
+        c.modelo = $(this).parents("table").attr('modelo');
+
         c.id = parseInt($(this).text());
-        dados.push(c);
+
+        filhos_incluir.push(c);
+
+        filhos.filhos_incluir = filhos_incluir;
 
     });
 
-    var data = ajaxRequest(dados, 'inserir');
+    $('.deleted-row.id').each(function () {
+
+        let d = new Object();
+
+        d.modelo = $(this).parents("table").attr('modelo');
+
+        d.id = parseInt($(this).text());
+
+        filhos_deletar.push(d);
+
+        filhos.filhos_deletar = filhos_deletar;
+
+    });
+
+    var data = ajaxRequest(filhos, 'editar');
 
 }

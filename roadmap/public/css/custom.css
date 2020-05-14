@@ -20,3 +20,7 @@
 .new-row {
     background-color: #98dfb6;
 }
+
+.deleted-row {
+    background-color: #e9605c;
+}
