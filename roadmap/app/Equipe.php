@@ -12,4 +12,9 @@ class Equipe extends Model
         return $this->belongsToMany('App\Recurso');
     }
 
+    public function projeto()
+    {
+        return $this->belongsTo('App\Projeto');
+    }
+
 }

@@ -9,6 +9,8 @@ use App\Alocacao;
 use App\Roadmap;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class Recurso extends Model
 {
@@ -37,6 +39,113 @@ class Recurso extends Model
     public function alocacoesRoadmap(Roadmap $roadmap)
     {
         return $this->alocacoes->where('roadmap_id', '=', $roadmap->id);
+    }
+
+    public static function criarRecurso(Request $request)
+    {
+
+        DB::transaction(function () use ($request) {
+
+            $recurso = Recurso::create([
+                'nome' => $request->input('nome'),
+                'data_inicio' => $request->input('data_inicio'),
+                'data_fim' => $request->input('data_fim'),
+            ]);
+
+            while ($request->session()->get('aguardar')) {
+                $a = 1;
+            }
+
+            if ($request->session()->has('filhos')) {
+
+                $recurso->criarRecursoFilhos($request);
+            }
+        });
+    }
+
+    public static function atualizarRecurso(Request $request, Recurso $recurso)
+    {
+
+
+        DB::transaction(function () use ($request, $recurso) {
+
+            $recurso->nome = $request->input('nome');
+            $recurso->data_inicio = $request->input('data_inicio');
+            $recurso->data_fim = $request->input('data_fim');
+
+            $recurso->save();
+
+            while ($request->session()->get('aguardar')) {
+                $a = 1;
+            }
+
+            if ($request->session()->has('filhos')) {
+
+                $recurso->criarRecursoFilhos($request);
+            }
+        });
+    }
+
+    public function criarRecursoFilhos(Request $request)
+    {
+        if (isset($request->session()->get('filhos')['filhos_incluir'])) {
+
+            foreach ($request->session()->get('filhos')['filhos_incluir'] as $filho) {
+
+                switch ($filho['modelo']) {
+
+                    case 'Competencia':
+
+                        DB::table('competencia_recurso')->insertOrIgnore([
+                            'recurso_id' => $this->id,
+                            'competencia_id' => $filho['id']
+                        ]);
+
+                        break;
+                    case 'Equipe':
+
+                        DB::table('equipe_recurso')->insertOrIgnore([
+                            'recurso_id' => $this->id,
+                            'equipe_id' => $filho['id']
+                        ]);
+
+                        break;
+
+                    default:
+                }
+            }
+        }
+
+        if (isset($request->session()->get('filhos')['filhos_deletar'])) {
+
+            foreach ($request->session()->get('filhos')['filhos_deletar'] as $filho) {
+
+                switch ($filho['modelo']) {
+
+                    case 'Competencia':
+
+                        DB::table('competencia_recurso')->where(
+                            'recurso_id', '=', $this->id
+                        )->where(
+                            'competencia_id', '=', $filho['id']
+                        )->delete();
+
+                        break;
+                    case 'Equipe':
+
+                        DB::table('equipe_recurso')->where(
+                            'recurso_id', '=', $this->id
+                        )->where(
+                            'equipe_id', '=', $filho['id']
+                        )->delete();
+
+                        break;
+
+                    default:
+                }
+            }
+        }
+        $request->session()->forget('filhos');
     }
 
     /**

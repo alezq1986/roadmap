@@ -16,5 +16,6 @@ class EquipeSeeder extends Seeder
         $e2 = Equipe::create(['descricao' => 'Makro']);
         $e3 = Equipe::create(['descricao' => 'SaaS']);
         $e4 = Equipe::create(['descricao' => 'Projetos Novos']);
+        $e5 = Equipe::create(['descricao' => 'Inovação']);
     }
 }

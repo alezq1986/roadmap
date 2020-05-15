@@ -58,6 +58,18 @@
                                     @csrf
 
                                     <div class="form-group row">
+                                        <label for="id"
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Id') }}</label>
+                                        <div class="col-md-6">
+
+                                            <input id="id" type="number"
+                                                   class="form-control" name="id"
+                                                   value="{{ isset($recurso->id)?$recurso->id:old('id') }}"
+                                                   disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
                                         <label for="nome"
                                                class="col-md-4 col-form-label text-md-right">{{ __('Nome') }}</label>
                                         <div class="col-md-6">
@@ -178,7 +190,7 @@
                                                     <i class="fa fa-trash fa-sm"></i>
                                                 </a>
                                                 <a type="button" class="btn btn-primary action-buttons"
-                                                   href="{{ URL::route('competencias.update',$competencia) }}"
+                                                   href="{{ route('competencias.edit', $competencia) }}"
                                                    target="_blank">
                                                     <i class="fa fa-eye fa-sm"></i>
                                                 </a>
@@ -249,7 +261,8 @@
                                                     <i class="fa fa-trash fa-sm"></i>
                                                 </a>
                                                 <a type="button" class="btn btn-primary action-buttons"
-                                                   href="{{ URL::route('equipes.update',$equipe) }}" target="_blank">
+                                                   href="{{ route('equipes.edit', $equipe) }}"
+                                                   target="_blank">
                                                     <i class="fa fa-eye fa-sm"></i>
                                                 </a>
                                             </td>

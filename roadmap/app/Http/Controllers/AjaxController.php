@@ -22,7 +22,6 @@ class AjaxController extends Controller
 
             }
 
-
             return response()->json([
                 'success' => $resultado
             ]);
@@ -32,6 +31,12 @@ class AjaxController extends Controller
             $request->session()->forget('filhos');
 
             $request->session()->put('filhos', $request->input('dados'));
+
+            $request->session()->put('aguardar', 0);
+
+        } elseif ($request->input('acao') == 'aguardar') {
+
+            $request->session()->put('aguardar', 1);
         }
     }
 }

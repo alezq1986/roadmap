@@ -13,4 +13,9 @@ class Projeto extends Model
     {
         return $this->hasMany('App\Atividade');
     }
+
+    public function equipe()
+    {
+        return $this->hasOne('App\Equipe');
+    }
 }

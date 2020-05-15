@@ -1,4 +1,11 @@
-$(".include-child").click(function (event) {
+$("#projetos-prioriza").sortable({
+    stop: function (event, ui) {
+        alert("New position: " + ui.item.index());
+    }
+});
+
+
+$(".include-child").on('click', function (event) {
 
     event.preventDefault();
 
@@ -9,7 +16,7 @@ $(".include-child").click(function (event) {
 
 });
 
-$(".lookup").click(function (event) {
+$(".lookup").on('click', function (event) {
     event.preventDefault();
 
     let modelo = $(".lookup").attr('modelo');
@@ -32,7 +39,7 @@ $(".lookup").click(function (event) {
 
 });
 
-$("#form-recurso").on("submit", function (event) {
+$("#form-recurso").on('submit', function (event) {
 
     passarFilhosSessao();
 
@@ -125,6 +132,8 @@ function inserirTabelaFilha(modelo, id) {
 
         var data = ajaxRequest(dados, 'consultar');
 
+        var data2 = ajaxRequest(null, 'aguardar');
+
         $.when(data).done(function (response) {
 
             $("table[modelo=" + modelo + "]>tbody").append(
@@ -144,6 +153,7 @@ function removerTabelaFilha(modelo, id) {
 
     $("table[modelo=" + modelo + "]").find("tr#" + id).children().addClass('deleted-row');
 
+    var data = ajaxRequest(null, 'aguardar');
 }
 
 

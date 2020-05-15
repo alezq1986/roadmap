@@ -27,6 +27,6 @@ class CreateRoadmapsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('roadmaps');
+        Schema::dropIfExists('projetos');
     }
 }
