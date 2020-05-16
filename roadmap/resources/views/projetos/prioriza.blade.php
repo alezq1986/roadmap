@@ -13,7 +13,7 @@
     <div class="container">
         <div id="projetos-prioriza">
             @foreach($projetos as $projeto)
-                <div class="row projeto-card">
+                <div class="row projeto-card" projeto-prioridade="{{ $projeto->id }}">
                     <div class="card">
                         <div class="card-header">
                             <div class="row">

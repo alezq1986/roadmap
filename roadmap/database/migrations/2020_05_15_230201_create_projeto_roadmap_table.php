@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProjetosTable extends Migration
+class CreateProjetoRoadmapTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,12 @@ class CreateProjetosTable extends Migration
      */
     public function up()
     {
-        Schema::create('projetos', function (Blueprint $table) {
+        Schema::create('projeto_roadmap', function (Blueprint $table) {
             $table->id();
-            $table->string('descricao', 100);
-            $table->foreignId('equipe_id')->constrained();
-            $table->timestamps();
+            $table->foreignId('projeto_id')->constrained();
+            $table->foreignId('roadmap_id')->constrained();
+            $table->smallInteger('prioridade');
+            $table->unique(['prioridade', 'roadmap_id']);
         });
     }
 
@@ -28,6 +29,6 @@ class CreateProjetosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('projetos');
+        //
     }
 }

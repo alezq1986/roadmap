@@ -53,7 +53,7 @@ class Recurso extends Model
             ]);
 
             while ($request->session()->get('aguardar')) {
-                $a = 1;
+
             }
 
             if ($request->session()->has('filhos')) {
@@ -76,7 +76,7 @@ class Recurso extends Model
             $recurso->save();
 
             while ($request->session()->get('aguardar')) {
-                $a = 1;
+
             }
 
             if ($request->session()->has('filhos')) {
@@ -201,7 +201,11 @@ class Recurso extends Model
 
         $prazo = $atividade->prazo;
 
-        $datas_indisponiveis = $this->datasIndisponiveis($roadmap, $atividade->projeto->prioridade);
+        $prioridade = DB::table('projeto_roadmap')->select('prioridade')->where(
+            [['projeto_id', '=', $atividade->projeto->id], ['roadmap_id', '=', $roadmap->id]]
+        )->first()->prioridade;
+
+        $datas_indisponiveis = $this->datasIndisponiveis($roadmap, $prioridade);
 
         $dependencias = $atividade->depende_de;
 
