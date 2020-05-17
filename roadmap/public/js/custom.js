@@ -10,6 +10,7 @@ $(".include-child").on('click', function (event) {
     event.preventDefault();
 
     let modelo = $(this).attr('modelo');
+
     let id = $("input[name=" + modelo.toLowerCase() + '_id]').val();
 
     inserirTabelaFilha(modelo, id);
@@ -20,20 +21,24 @@ $(".lookup").on('click', function (event) {
     event.preventDefault();
 
     let modelo = $(".lookup").attr('modelo');
+
     let id = $("input[name=" + modelo.toLowerCase() + '_id]').val();
 
     let dados = new Array();
+
     let dado = new Object();
+
     dado.modelo = modelo;
+
     dado.id = id;
 
     dados.push(dado);
 
     var data = ajaxRequest(dados, 'consultar');
-    console.log(data);
+
 
     $.when(data).done(function (response) {
-        console.log(data);
+
         criarLookupModal(modelo, response.success);
     });
 
@@ -124,23 +129,42 @@ function inserirTabelaFilha(modelo, id) {
     } else {
 
         let dados = new Array();
+
         let dado = new Object();
+
         dado.modelo = modelo;
+
         dado.id = id;
 
         dados.push(dado);
 
         var data = ajaxRequest(dados, 'consultar');
 
-        var data2 = ajaxRequest(null, 'aguardar');
+        ajaxRequest(null, 'aguardar');
 
         $.when(data).done(function (response) {
 
+            var objeto = response.success[0];
+
+            var tabela = null;
+
+            var entries = Object.entries(objeto);
+
+            for (var i = 0; i < entries.length; i++) {
+
+                let entry = entries[i];
+
+                if (entry[0] == 'id' || entry[0] == 'nome' || entry[0] == 'descricao') {
+
+                    tabela = tabela + "<td class='new-row' coluna=" + entry[0] + " coluna-valor=" + entry[1] + ">" + entry[1] + "</td>";
+                }
+
+            }
+
             $("table[modelo=" + modelo + "]>tbody").append(
-                "<tr id=" + response.success[0].id + ">" +
-                "<td class='new-row id'>" + response.success[0].id + "</td>" +
-                "<td class='new-row'>" + response.success[0].descricao + "</td>" +
-                "<td class='new-row'> <a type='button' class='btn btn-danger action-buttons remover-filho' new-id=" + response.success[0].id + "><i class='fa fa-trash fa-sm'></i></a></td></tr>"
+                "<tr id=" + objeto.id + ">" +
+                tabela +
+                "<td class='new-row'> <a type='button' class='btn btn-danger action-buttons remover-filho'><i class='fa fa-trash fa-sm'></i></a></td></tr>"
             );
 
         });
@@ -156,7 +180,6 @@ function removerTabelaFilha(modelo, id) {
     var data = ajaxRequest(null, 'aguardar');
 }
 
-
 function passarFilhosSessao() {
 
     let filhos = new Object();
@@ -165,7 +188,7 @@ function passarFilhosSessao() {
 
     let filhos_deletar = new Array();
 
-    $('.new-row.id').each(function () {
+    $(".new-row[coluna='id']").each(function () {
 
         let c = new Object();
 
@@ -179,7 +202,7 @@ function passarFilhosSessao() {
 
     });
 
-    $('.deleted-row.id').each(function () {
+    $(".deleted-row[coluna='id']").each(function () {
 
         let d = new Object();
 

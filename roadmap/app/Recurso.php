@@ -7,6 +7,7 @@ use App\Competencia;
 use App\Equipe;
 use App\Alocacao;
 use App\Roadmap;
+use App\FuncoesFilhos;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -41,6 +42,9 @@ class Recurso extends Model
         return $this->alocacoes->where('roadmap_id', '=', $roadmap->id);
     }
 
+    /**
+     * @param Request $request
+     */
     public static function criarRecurso(Request $request)
     {
 
@@ -58,15 +62,17 @@ class Recurso extends Model
 
             if ($request->session()->has('filhos')) {
 
-                $recurso->criarRecursoFilhos($request);
+                FuncoesFilhos::criarFilhos($request, $recurso);
             }
         });
     }
 
+    /**
+     * @param Request $request
+     * @param Recurso $recurso
+     */
     public static function atualizarRecurso(Request $request, Recurso $recurso)
     {
-
-
         DB::transaction(function () use ($request, $recurso) {
 
             $recurso->nome = $request->input('nome');
@@ -81,71 +87,10 @@ class Recurso extends Model
 
             if ($request->session()->has('filhos')) {
 
-                $recurso->criarRecursoFilhos($request);
+                FuncoesFilhos::criarFilhos($request, $recurso);
+
             }
         });
-    }
-
-    public function criarRecursoFilhos(Request $request)
-    {
-        if (isset($request->session()->get('filhos')['filhos_incluir'])) {
-
-            foreach ($request->session()->get('filhos')['filhos_incluir'] as $filho) {
-
-                switch ($filho['modelo']) {
-
-                    case 'Competencia':
-
-                        DB::table('competencia_recurso')->insertOrIgnore([
-                            'recurso_id' => $this->id,
-                            'competencia_id' => $filho['id']
-                        ]);
-
-                        break;
-                    case 'Equipe':
-
-                        DB::table('equipe_recurso')->insertOrIgnore([
-                            'recurso_id' => $this->id,
-                            'equipe_id' => $filho['id']
-                        ]);
-
-                        break;
-
-                    default:
-                }
-            }
-        }
-
-        if (isset($request->session()->get('filhos')['filhos_deletar'])) {
-
-            foreach ($request->session()->get('filhos')['filhos_deletar'] as $filho) {
-
-                switch ($filho['modelo']) {
-
-                    case 'Competencia':
-
-                        DB::table('competencia_recurso')->where(
-                            'recurso_id', '=', $this->id
-                        )->where(
-                            'competencia_id', '=', $filho['id']
-                        )->delete();
-
-                        break;
-                    case 'Equipe':
-
-                        DB::table('equipe_recurso')->where(
-                            'recurso_id', '=', $this->id
-                        )->where(
-                            'equipe_id', '=', $filho['id']
-                        )->delete();
-
-                        break;
-
-                    default:
-                }
-            }
-        }
-        $request->session()->forget('filhos');
     }
 
     /**

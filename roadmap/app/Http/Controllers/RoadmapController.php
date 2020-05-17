@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Roadmap;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RoadmapController extends Controller
 {
@@ -49,7 +50,7 @@ class RoadmapController extends Controller
      */
     public function create()
     {
-        //
+        return view('roadmaps.create');
     }
 
     /**
@@ -60,7 +61,18 @@ class RoadmapController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = $this->roadmapValidator($request);
+
+        if ($validator->fails()) {
+            return redirect('roadmaps/create')
+                ->withErrors($validator)
+                ->withInput();
+        } else {
+
+            Roadmap::criarRoadmap($request);
+
+            return redirect('roadmaps/');
+        }
     }
 
     /**
@@ -82,7 +94,7 @@ class RoadmapController extends Controller
      */
     public function edit(Roadmap $roadmap)
     {
-        //
+        return view('roadmaps.edit', ['roadmap' => $roadmap]);
     }
 
     /**
@@ -94,7 +106,18 @@ class RoadmapController extends Controller
      */
     public function update(Request $request, Roadmap $roadmap)
     {
-        //
+        $validator = $this->roadmapValidator($request);
+
+        if ($validator->fails()) {
+            return redirect('roadmaps/' . $roadmap->id . '/edit')
+                ->withErrors($validator)
+                ->withInput();
+        } else {
+
+            $roadmap->atualizarRoadmap($request, $roadmap);
+
+            return redirect('roadmaps/');
+        }
     }
 
     /**
@@ -105,6 +128,15 @@ class RoadmapController extends Controller
      */
     public function destroy(Roadmap $roadmap)
     {
-        //
+        $roadmap->destroy($roadmap->id);
+
+        return redirect('roadmaps/');
+    }
+
+    protected function roadmapValidator(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'data_base' => ['required', 'date'],
+        ]);
     }
 }

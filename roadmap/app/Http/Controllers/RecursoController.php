@@ -132,7 +132,6 @@ class RecursoController extends Controller
      */
     public function update(Request $request, Recurso $recurso)
     {
-
         $validator = $this->recursoValidator($request);
 
         if ($validator->fails()) {
