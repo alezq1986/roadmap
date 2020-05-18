@@ -1,11 +1,3 @@
-
-$("#projetos-prioriza").sortable({
-    stop: function (event, ui) {
-        alert("New position: " + ui.item.index());
-    }
-});
-
-
 $(".include-child").on('click', function (event) {
 
     event.preventDefault();
@@ -222,19 +214,46 @@ function passarFilhosSessao() {
 
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+function passarProjetosSessao() {
 
-    var stepper_roadmap = new Stepper(document.querySelector('#roadmap-stepper'));
+    let filhos = new Object();
 
-    $(".next").on('click', function (event) {
-        stepper_roadmap.next();
+    let filhos_incluir = new Array();
+
+    let filhos_deletar = new Array();
+
+    $(".new-row[coluna='id']").each(function () {
+
+        let c = new Object();
+
+        c.modelo = $(this).parents("table").attr('modelo');
+
+        c.id = parseInt($(this).text());
+
+        filhos_incluir.push(c);
+
+        filhos.filhos_incluir = filhos_incluir;
+
     });
 
-    $(".previous").on('click', function (event) {
-        stepper_roadmap.previous();
+    $(".deleted-row[coluna='id']").each(function () {
+
+        let d = new Object();
+
+        d.modelo = $(this).parents("table").attr('modelo');
+
+        d.id = parseInt($(this).text());
+
+        filhos_deletar.push(d);
+
+        filhos.filhos_deletar = filhos_deletar;
+
     });
 
-})
+    var data = ajaxRequest(filhos, 'editar');
+
+}
+
 
 
 

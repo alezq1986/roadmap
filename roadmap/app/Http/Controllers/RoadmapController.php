@@ -6,6 +6,7 @@ use App\Equipe;
 use App\Projeto;
 use App\Roadmap;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class RoadmapController extends Controller
@@ -146,10 +147,18 @@ class RoadmapController extends Controller
     {
         $roadmap = Roadmap::find($id);
 
-        $projetos = $roadmap->projetos;
+        $projetos_alocados = DB::table('projeto_roadmap')->where('roadmap_id', '=', $roadmap->id);
 
-        $equipes = Equipe::all();
+        $projetos = DB::table('projetos')
+            ->select('projetos.id', 'projetos.descricao as projeto_descricao', 'projetos.status', 'projetos.status_aprovacao', 'projetos_alocados.roadmap_id', 'projetos_alocados.prioridade', 'equipes.descricao as equipe_descricao')
+            ->leftjoinSub($projetos_alocados, 'projetos_alocados', function ($leftJoinSub) {
+                $leftJoinSub->on('projetos.id', '=', 'projetos_alocados.id');
+            })
+            ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
+            ->whereNotIn('projetos.status', [3])
+            ->get();
 
-        return view('roadmaps.configura', ['projetos' => $projetos, 'equipes' => $equipes]);
+
+        return view('roadmaps.configura', ['projetos' => $projetos, 'roadmap' => $roadmap]);
     }
 }

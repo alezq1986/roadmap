@@ -24,7 +24,7 @@ class Roadmap extends Model
 
     public function projetos()
     {
-        return $this->belongsToMany('App\Projeto');
+        return $this->belongsToMany('App\Projeto')->withPivot('prioridade');
     }
 
     public static function criarRoadmap(Request $request)
