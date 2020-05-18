@@ -22,6 +22,11 @@ class Roadmap extends Model
         return $this->hasMany('App\Alocacao');
     }
 
+    public function projetos()
+    {
+        return $this->belongsToMany('App\Projeto');
+    }
+
     public static function criarRoadmap(Request $request)
     {
 

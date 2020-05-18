@@ -1,3 +1,4 @@
+
 $("#projetos-prioriza").sortable({
     stop: function (event, ui) {
         alert("New position: " + ui.item.index());
@@ -21,6 +22,7 @@ $(".lookup").on('click', function (event) {
     event.preventDefault();
 
     let modelo = $(".lookup").attr('modelo');
+
 
     let id = $("input[name=" + modelo.toLowerCase() + '_id]').val();
 
@@ -219,3 +221,20 @@ function passarFilhosSessao() {
     var data = ajaxRequest(filhos, 'editar');
 
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    var stepper_roadmap = new Stepper(document.querySelector('#roadmap-stepper'));
+
+    $(".next").on('click', function (event) {
+        stepper_roadmap.next();
+    });
+
+    $(".previous").on('click', function (event) {
+        stepper_roadmap.previous();
+    });
+
+})
+
+
+

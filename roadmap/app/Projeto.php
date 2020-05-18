@@ -18,4 +18,9 @@ class Projeto extends Model
     {
         return $this->hasOne('App\Equipe');
     }
+
+    public function roadmaps()
+    {
+        return $this->belongsToMany('App\Roadmap');
+    }
 }

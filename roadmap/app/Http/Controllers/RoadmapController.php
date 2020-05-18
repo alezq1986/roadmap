@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Equipe;
+use App\Projeto;
 use App\Roadmap;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -138,5 +140,16 @@ class RoadmapController extends Controller
         return Validator::make($request->all(), [
             'data_base' => ['required', 'date'],
         ]);
+    }
+
+    public function configura($id)
+    {
+        $roadmap = Roadmap::find($id);
+
+        $projetos = $roadmap->projetos;
+
+        $equipes = Equipe::all();
+
+        return view('roadmaps.configura', ['projetos' => $projetos, 'equipes' => $equipes]);
     }
 }

@@ -84,12 +84,4 @@ class ProjetoController extends Controller
         //
     }
 
-    public function prioriza()
-    {
-        $projetos = Projeto::all();
-
-        $equipes = Equipe::all();
-
-        return view('projetos.prioriza', ['projetos' => $projetos, 'equipes' => $equipes]);
-    }
 }
