@@ -16,7 +16,7 @@
                 {{-- Botões --}}
                 <div class="row mb-2 pb-2 border-bottom">
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-primary main-buttons" form="form-recurso">
+                        <button type="submit" class="btn btn-primary main-buttons" form="form-principal">
                             {{ __('Atualizar') }}
                         </button>
                         <form class="d-inline" method="POST"
@@ -53,7 +53,8 @@
                         <div class="card">
                             <div class="card-header">{{ __('Editar recurso') }}</div>
                             <div class="card-body">
-                                <form method="POST" id="form-recurso" action="{{ route('recursos.update', $recurso) }}">
+                                <form method="POST" id="form-principal"
+                                      action="{{ route('recursos.update', $recurso) }}">
                                     @method('PUT')
                                     @csrf
 

@@ -38,7 +38,7 @@ $(".lookup").on('click', function (event) {
 
 });
 
-$("#form-recurso").on('submit', function (event) {
+$("#form-principal").on('submit', function (event) {
 
     passarFilhosSessao();
 
@@ -77,8 +77,6 @@ function ajaxRequest(dados, acao) {
             _token: _token
         },
         success: function (response) {
-
-            console.log(response);
 
             objDiferido.resolve(response);
 
@@ -214,45 +212,7 @@ function passarFilhosSessao() {
 
 }
 
-function passarProjetosSessao() {
 
-    let filhos = new Object();
-
-    let filhos_incluir = new Array();
-
-    let filhos_deletar = new Array();
-
-    $(".new-row[coluna='id']").each(function () {
-
-        let c = new Object();
-
-        c.modelo = $(this).parents("table").attr('modelo');
-
-        c.id = parseInt($(this).text());
-
-        filhos_incluir.push(c);
-
-        filhos.filhos_incluir = filhos_incluir;
-
-    });
-
-    $(".deleted-row[coluna='id']").each(function () {
-
-        let d = new Object();
-
-        d.modelo = $(this).parents("table").attr('modelo');
-
-        d.id = parseInt($(this).text());
-
-        filhos_deletar.push(d);
-
-        filhos.filhos_deletar = filhos_deletar;
-
-    });
-
-    var data = ajaxRequest(filhos, 'editar');
-
-}
 
 
 

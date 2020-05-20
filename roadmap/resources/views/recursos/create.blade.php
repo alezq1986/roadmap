@@ -16,7 +16,7 @@
                 {{-- Botões --}}
                 <div class="row mb-2 pb-2 border-bottom">
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-primary main-buttons" form="form-recurso">
+                        <button type="submit" class="btn btn-primary main-buttons" form="form-principal">
                             {{ __('Cadastrar') }}
                         </button>
                     </div>
@@ -44,7 +44,7 @@
                         <div class="card">
                             <div class="card-header">{{ __('Cadastrar recurso') }}</div>
                             <div class="card-body">
-                                <form method="POST" id="form-recurso" action="{{ route('recursos.store') }}">
+                                <form method="POST" id="form-principal" action="{{ route('recursos.store') }}">
                                     @csrf
 
                                     <div class="form-group row">

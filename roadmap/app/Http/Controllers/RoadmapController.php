@@ -152,10 +152,11 @@ class RoadmapController extends Controller
         $projetos = DB::table('projetos')
             ->select('projetos.id', 'projetos.descricao as projeto_descricao', 'projetos.status', 'projetos.status_aprovacao', 'projetos_alocados.roadmap_id', 'projetos_alocados.prioridade', 'equipes.descricao as equipe_descricao')
             ->leftjoinSub($projetos_alocados, 'projetos_alocados', function ($leftJoinSub) {
-                $leftJoinSub->on('projetos.id', '=', 'projetos_alocados.id');
+                $leftJoinSub->on('projetos.id', '=', 'projetos_alocados.projeto_id');
             })
             ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
             ->whereNotIn('projetos.status', [3])
+            ->orderBy('projetos_alocados.prioridade', 'ASC')
             ->get();
 
 

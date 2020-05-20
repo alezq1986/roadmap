@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AjaxController extends Controller
 {
@@ -23,7 +24,9 @@ class AjaxController extends Controller
             }
 
             return response()->json([
-                'success' => $resultado
+
+                'resultado' => $resultado
+
             ]);
 
         } elseif ($request->input('acao') == 'editar') {
@@ -32,11 +35,56 @@ class AjaxController extends Controller
 
             $request->session()->put('filhos', $request->input('dados'));
 
+            return response()->json([
+
+                'resultado' => 0
+
+            ]);
+
             $request->session()->put('aguardar', 0);
+
 
         } elseif ($request->input('acao') == 'aguardar') {
 
             $request->session()->put('aguardar', 1);
+
+            return response()->json([
+
+                'resultado' => 0
+
+            ]);
+
+        } elseif ($request->input('acao') == 'atualizar-projetos') {
+
+            $dados = $request->input('dados');
+
+            try {
+                $resultado = DB::transaction(function () use ($dados) {
+
+                    DB::table('projeto_roadmap')->where('roadmap_id', '=', $dados['roadmap'])->delete();
+
+                    $max_id = DB::table('projeto_roadmap')->max('id');
+
+                    $max_id = is_null($max_id) ? 1 : $max_id;
+
+                    DB::update(DB::raw('ALTER SEQUENCE projeto_roadmap_id_seq RESTART WITH ' . $max_id));
+
+                    DB::table('projeto_roadmap')->insert($dados['projetos']);
+
+                });
+
+                return is_null($resultado) ? 0 : $resultado;
+
+            } catch (Exception $e) {
+
+                return 1;
+            }
+
+            return response()->json([
+
+                'resultado' => $resultado
+
+            ]);
         }
     }
 }
