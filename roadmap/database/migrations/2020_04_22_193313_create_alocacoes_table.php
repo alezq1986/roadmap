@@ -20,6 +20,7 @@ class CreateAlocacoesTable extends Migration
             $table->date('data_inicio_proj');
             $table->date('data_fim_proj');
             $table->foreignId('roadmap_id')->constrained()->onDelete('cascade');
+            $table->unique(['atividade_id', 'roadmap_id']);
             $table->timestamps();
         });
     }

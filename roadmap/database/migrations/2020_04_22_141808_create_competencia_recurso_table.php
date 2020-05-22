@@ -17,6 +17,7 @@ class CreateCompetenciaRecursoTable extends Migration
             $table->id();
             $table->foreignId('competencia_id')->constrained();
             $table->foreignId('recurso_id')->constrained();
+            $table->char('permite_aloc_automatica');
             $table->unique(['recurso_id', 'competencia_id']);
         });
     }

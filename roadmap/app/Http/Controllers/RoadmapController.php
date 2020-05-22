@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Equipe;
 use App\Projeto;
+use App\Atividade;
 use App\Roadmap;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class RoadmapController extends Controller
@@ -162,4 +164,5 @@ class RoadmapController extends Controller
 
         return view('roadmaps.configura', ['projetos' => $projetos, 'roadmap' => $roadmap]);
     }
+
 }

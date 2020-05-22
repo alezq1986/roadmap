@@ -12,10 +12,12 @@ class EquipeSeeder extends Seeder
      */
     public function run()
     {
-        $e1 = Equipe::create(['descricao' => 'Projetos Base']);
-        $e2 = Equipe::create(['descricao' => 'Makro']);
-        $e3 = Equipe::create(['descricao' => 'SaaS']);
-        $e4 = Equipe::create(['descricao' => 'Projetos Novos']);
-        $e5 = Equipe::create(['descricao' => 'Inovação']);
+        DB::update(DB::raw('truncate table equipes restart identity cascade'));
+
+        Equipe::create(['descricao' => 'Projetos Base']);
+        Equipe::create(['descricao' => 'Makro']);
+        Equipe::create(['descricao' => 'SaaS']);
+        Equipe::create(['descricao' => 'Projetos Novos']);
+        Equipe::create(['descricao' => 'Inovação']);
     }
 }

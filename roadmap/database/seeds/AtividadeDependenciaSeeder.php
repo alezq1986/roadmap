@@ -12,6 +12,9 @@ class AtividadeDependenciaSeeder extends Seeder
      */
     public function run()
     {
+
+        DB::update(DB::raw('truncate table atividade_dependencia restart identity cascade'));
+
         $atividades = Atividade::all();
 
         foreach ($atividades as $atividade) {

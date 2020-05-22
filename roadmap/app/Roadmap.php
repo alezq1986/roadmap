@@ -12,10 +12,6 @@ class Roadmap extends Model
 {
     protected $fillable = ['data_base'];
 
-    public function atividades()
-    {
-        return $this->belongsToMany('App\Atividade');
-    }
 
     public function alocacoes()
     {
@@ -26,6 +22,43 @@ class Roadmap extends Model
     {
         return $this->belongsToMany('App\Projeto')->withPivot('prioridade');
     }
+
+    public function atividades()
+    {
+        $projetos = $this->projetos;
+
+        $atividades = collect();
+
+        foreach ($projetos as $projeto) {
+
+            $atividades->push($projeto->atividades);
+
+        }
+        return $atividades->flatten();
+    }
+
+
+    public function alocar()
+    {
+        DB::update(DB::raw('truncate table alocacoes restart identity cascade'));
+
+        $atividades = $this->atividades();
+
+        foreach ($atividades as $atividade) {
+
+            $continuar = (parse_ini_file(storage_path('alocar.ini')))['continuar'];
+
+            if ($continuar == 1) {
+
+                $atividade->alocarAtividade($this);
+            } else {
+
+                break;
+            }
+        }
+
+    }
+
 
     public static function criarRoadmap(Request $request)
     {

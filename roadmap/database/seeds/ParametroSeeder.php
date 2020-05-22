@@ -1,8 +1,9 @@
 <?php
 
+use App\Parametro;
 use Illuminate\Database\Seeder;
 
-class AlocacoesSeeder extends Seeder
+class ParametroSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,7 +12,6 @@ class AlocacoesSeeder extends Seeder
      */
     public function run()
     {
-        DB::update(DB::raw('truncate table alocacoes restart identity cascade'));
-
+        Parametro::create(['codigo' => 1, 'valor' => 3832, 'descricao' => 'Município padrão']);
     }
 }

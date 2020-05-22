@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class Recurso extends Model
 {
@@ -35,6 +36,23 @@ class Recurso extends Model
     public function alocacoes()
     {
         return $this->hasMany('App\Alocacao');
+    }
+
+    public static function recursosCompetentes(Atividade $atividade)
+    {
+        $equipe = $atividade->projeto->equipe_id;
+
+        $competencia = $atividade->competencia_id;
+
+        $resultados = DB::table('recursos')->select('recursos.id', 'recursos.data_inicio', 'recursos.data_fim')
+            ->leftJoin('equipe_recurso', 'recursos.id', '=', 'equipe_recurso.recurso_id')
+            ->leftJoin('competencia_recurso', 'recursos.id', '=', 'competencia_recurso.recurso_id')
+            ->where('competencia_recurso.competencia_id', '=', $competencia)
+            ->where('equipe_recurso.equipe_id', '=', $equipe)
+            ->get();
+
+
+        return Recurso::hydrate($resultados->toArray());
     }
 
     public function alocacoesRoadmap(Roadmap $roadmap)
@@ -107,9 +125,12 @@ class Recurso extends Model
         $alocacoes = $this->alocacoesRoadmap($roadmap);
 
         if (!is_null($prioridade)) {
-            $alocacoes = $alocacoes->filter(function ($alocacao) use ($prioridade) {
 
-                return $alocacao->atividade->projeto->prioridade < $prioridade;
+            $alocacoes = $alocacoes->filter(function ($alocacao) use ($roadmap, $prioridade) {
+
+                $prioridade_projeto = (DB::table('projeto_roadmap')->where('projeto_id', '=', $alocacao->atividade->projeto->id)->where('roadmap_id', '=', $roadmap->id)->first())->prioridade;
+
+                return $prioridade_projeto < $prioridade;
 
             });
         }
@@ -124,7 +145,39 @@ class Recurso extends Model
 
         $datas_indisponiveis = $datas_indisponiveis->sortBy('data_inicio')->values();
 
-        return $datas_indisponiveis;
+        $datas_indisponiveis_consolidadas = collect();
+
+        $key = 0;
+
+        foreach ($datas_indisponiveis as $data_indisponivel) {
+
+            if ($datas_indisponiveis_consolidadas->count() == 0) {
+
+                $datas_indisponiveis_consolidadas->push($data_indisponivel);
+
+            } else {
+
+                if ($data_indisponivel['data_inicio'] < $datas_indisponiveis_consolidadas->get($key)['data_fim']) {
+
+                    $intervalo = ['data_inicio' => $datas_indisponiveis_consolidadas->get($key)['data_inicio'], 'data_fim' => max($datas_indisponiveis_consolidadas->get($key)['data_fim'], $data_indisponivel['data_fim'])];
+
+
+                } else {
+
+                    $intervalo = ['data_inicio' => $data_indisponivel['data_inicio'], 'data_fim' => $data_indisponivel['data_fim']];
+
+                    $key++;
+
+                }
+
+                $datas_indisponiveis_consolidadas->put($key, $intervalo);
+
+            }
+
+
+        }
+
+        return $datas_indisponiveis_consolidadas;
     }
 
 
@@ -146,18 +199,22 @@ class Recurso extends Model
 
         $prazo = $atividade->prazo;
 
-        $prioridade = DB::table('projeto_roadmap')->select('prioridade')->where(
-            [['projeto_id', '=', $atividade->projeto->id], ['roadmap_id', '=', $roadmap->id]]
-        )->first()->prioridade;
+        $prioridade = (DB::table('projeto_roadmap')->where('projeto_id', '=', $atividade->projeto->id)->where('roadmap_id', '=', $roadmap->id)->first())->prioridade;
 
         $datas_indisponiveis = $this->datasIndisponiveis($roadmap, $prioridade);
 
         $dependencias = $atividade->depende_de;
 
-        $ultima_data_dependencias = 0;
+        $ultima_data_dependencias = $roadmap->data_base;
 
         foreach ($dependencias as $dependencia) {
-            $data_fim_proj = $dependencia->alocacoes->where('roadmap_id', '=', $roadmap->id)->first()->data_fim_proj;
+
+            $alocacao = $dependencia->alocacoes->where('roadmap_id', '=', $roadmap->id)->first();
+
+            if (!is_null($alocacao)) {
+
+                $data_fim_proj = $alocacao->data_fim_proj;
+            }
 
             $ultima_data_dependencias = max($ultima_data_dependencias, $data_fim_proj);
 
@@ -165,10 +222,11 @@ class Recurso extends Model
 
         $primeira_data_apos_dependencias = FuncoesData::moverDiaUtil($ultima_data_dependencias, 1, $feriados);
 
-        $primeira_data_apos_indisponiveis = 0;
+        $primeira_data_apos_indisponiveis = FuncoesData::moverDiaUtil($roadmap->data_base, 1);
 
         if ($datas_indisponiveis) {
-            $ultima_data_indisponiveis = $datas_indisponiveis->max('data_fim');
+
+            $ultima_data_indisponiveis = max($datas_indisponiveis->max('data_fim'), $roadmap->data_base);
 
             $primeira_data_apos_indisponiveis = FuncoesData::moverDiaUtil($ultima_data_indisponiveis, 1, $feriados);
         }
@@ -178,11 +236,12 @@ class Recurso extends Model
         $datas_limite_recurso = array('data_inicio' => $this->data_inicio, 'data_fim' => $this->data_fim);
 
         if (FuncoesData::calcularDataFim($primeira_data_apos_dependencias_indisponiveis, $prazo, $datas_indisponiveis, $feriados) <= $datas_limite_recurso['data_fim']) {
+
             $primeira_data_recurso = $primeira_data_apos_dependencias_indisponiveis;
 
         } else {
 
-            $primeira_data_recurso = null;
+            $primeira_data_recurso = FuncoesData::moverDiaUtil($roadmap->data_base, 1);
 
         }
 
@@ -202,6 +261,7 @@ class Recurso extends Model
             }
 
         }
+
         return $primeira_data_recurso;
     }
 }

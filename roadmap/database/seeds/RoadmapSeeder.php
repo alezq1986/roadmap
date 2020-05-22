@@ -12,6 +12,8 @@ class RoadmapSeeder extends Seeder
      */
     public function run()
     {
-        $r1 = Roadmap::create(['data_base' => '2020-05-11', 'descricao' => 'Roadmap 11/5']);
+        DB::update(DB::raw('truncate table roadmaps restart identity cascade'));
+
+        Roadmap::create(['data_base' => '2020-05-11', 'descricao' => 'Roadmap 11/5']);
     }
 }

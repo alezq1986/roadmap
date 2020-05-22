@@ -64,9 +64,8 @@ class CompetenciaController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         } else {
-            Competencia::create([
-                'descricao' => $request->input('descricao'),
-            ]);
+
+            Competencia::criarCompetencia($request);
 
             return redirect('competencias/');
         }
@@ -112,9 +111,7 @@ class CompetenciaController extends Controller
                 ->withInput();
         } else {
 
-            $competencia->descricao = $request->input('descricao');
-
-            $competencia->save();
+            $competencia->atualizarCompetencia($request, $competencia);
 
             return redirect('competencias/');
 
@@ -129,7 +126,9 @@ class CompetenciaController extends Controller
      */
     public function destroy(Competencia $competencia)
     {
-        //
+        $competencia->destroy($competencia->id);
+
+        return redirect('competencias/');
     }
 
     protected function competenciaValidator(array $data)

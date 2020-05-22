@@ -6,8 +6,10 @@ use App\Projeto;
 use App\Competencia;
 use App\Alocacao;
 use App\Roadmap;
+use App\Recurso;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Atividade extends Model
 {
@@ -29,11 +31,6 @@ class Atividade extends Model
         return $this->belongsTo('App\Competencia');
     }
 
-    public function roadmaps()
-    {
-        return $this->belongsToMany('App\Roadmap');
-    }
-
     public function alocacoes()
     {
         return $this->hasMany('App\Alocacao');
@@ -49,6 +46,104 @@ class Atividade extends Model
         return $this->belongsToMany('App\Atividade', 'atividade_dependencia', 'atividade_id', 'dependencia_id');
     }
 
+    public function prioridade($roadmap)
+    {
+        $prioridade = integerValue(DB::table('projeto_roadmap')->where('projeto_id', '=', $this->projeto->id)->first()->prioridade);
+    }
+
+    public function alocarAtividade(Roadmap $roadmap)
+    {
+        ini_set('memory_limit', '512M');
+
+        if ($this->percentual_real == 100) {
+
+            $data_inicio_proj = $this->data_inicio_real;
+
+            $data_fim_proj = $this->data_fim_real;
+
+            $recurso_id = $this->recurso_real_id;
+
+        } else {
+
+            if (!is_null($this->recurso_real_id)) {
+
+                $recurso_id = $this->recurso_real_id;
+
+                $recurso = Recurso::find($recurso_id);
+
+                if (!is_null($this->data_inicio_real)) {
+
+                    $data_inicio_proj = $this->data_inicio_real;
+
+                } else {
+
+                    $data_inicio_proj = $recurso->calcularPrimeiraData($this, $roadmap);
+                }
+
+                $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, $data_inicio_proj);
+
+                if ($data_fim_proj > $recurso->data_fim) {
+
+                    $melhor_recurso = $this->calcularMelhorRecurso($roadmap);
+
+                    if (isset($melhor_recurso['recurso'])) {
+
+                        $recurso = $melhor_recurso['recurso'];
+
+                        $recurso_id = $recurso->id;
+
+                        $data_inicio_proj = $melhor_recurso['data'];
+
+                    } else {
+
+                        return 1;
+
+                    }
+
+                    $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, $data_inicio_proj);
+
+                }
+
+            } else {
+
+                $melhor_recurso = $this->calcularMelhorRecurso($roadmap);
+
+                $recurso = $melhor_recurso['recurso'];
+
+                $recurso_id = $recurso->id;
+
+                $data_inicio_proj = $melhor_recurso['data'];
+                Log::info('alocacao', ['atividade' => $this]);
+
+                $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, $data_inicio_proj);
+
+            }
+
+        }
+
+        $alocacao = new Alocacao (['roadmap_id' => $roadmap->id, 'atividade_id' => $this->id,
+            'data_inicio_proj' => $data_inicio_proj, 'data_fim_proj' => $data_fim_proj, 'recurso_id' => $recurso_id]);
+
+        $this->recurso_real_id = $recurso_id;
+
+        try {
+            $resultado = DB::transaction(function () use ($alocacao) {
+
+                $this->save();
+
+                Alocacao::updateOrCreate(['roadmap_id' => $alocacao->roadmap_id, 'atividade_id' => $alocacao->atividade_id],
+                    ['data_inicio_proj' => $alocacao->data_inicio_proj, 'data_fim_proj' => $alocacao->data_fim_proj, 'recurso_id' => $alocacao->recurso_id]);
+
+            });
+
+            return is_null($resultado) ? 0 : $resultado;
+
+        } catch (Exception $e) {
+
+            return 1;
+        }
+    }
+
 
     /**
      * @param \App\Roadmap $roadmap
@@ -57,7 +152,7 @@ class Atividade extends Model
     public function calcularMelhorRecurso(Roadmap $roadmap)
     {
 
-        $recursos = $this->competencia->recursos;
+        $recursos = Recurso::recursosCompetentes($this)->where('data_fim', '>', $roadmap->data_base);
 
         $primeiro_recurso = null;
 
@@ -85,18 +180,19 @@ class Atividade extends Model
             }
 
         }
+
         return array('recurso' => $primeiro_recurso, 'data' => $primeira_data);
     }
 
     /**
-     * @param $percentual
-     * @param int $modo : 0 - dias corridos, 1 - exclui fins de semana, 2 - exclui fins de semana e feriados
      * @param Roadmap $roadmap
      * @param Recurso $recurso
+     * @param null $data_inicio
+     * @param int $modo : 0 - dias corridos, 1 - exclui fins de semana, 2 - exclui fins de semana e feriados
      * @param Collection $feriados
      * @return mixed
      */
-    public function calcularDataFimPorPercentual($percentual, Roadmap $roadmap, Recurso $recurso, $modo = 2, Collection $feriados = null)
+    public function calcularDataFimPorPercentual(Roadmap $roadmap, Recurso $recurso, $data_inicio = null, $modo = 2, Collection $feriados = null)
     {
 
         if (is_null($feriados)) {
@@ -109,20 +205,38 @@ class Atividade extends Model
         }
 
         $prioridade = DB::table('projeto_roadmap')->select('prioridade')->where(
-            [['projeto_id', '=', $this->projeto->id], ['roadmap_id', '=', $roadmap->id]]
-        )->first()->prioridade;
+            'projeto_id', '=', $this->projeto->id)->where('roadmap_id', '=', $roadmap->id)
+            ->first()->prioridade;
 
         $datas_indisponiveis = $recurso->datasIndisponiveis($roadmap, $prioridade);
 
-        $dias_utilizados = FuncoesData::calcularDias($this->data_inicio_real, $roadmap->data_base, $modo, 0, $datas_indisponiveis, $feriados);
 
-        $dias_totais_necessarios = ceil($dias_utilizados / ($percentual / 100));
+        if (is_null($this->data_inicio_real)) {
+
+            $dias_utilizados = 0;
+
+        } else {
+
+            $dias_utilizados = FuncoesData::calcularDias($this->data_inicio_real, $roadmap->data_base, $modo, 0, $datas_indisponiveis, $feriados);
+
+        }
+
+        if ($this->percentual_real == 0 || is_null($this->percentual_real)) {
+
+            $dias_totais_necessarios = $this->prazo;
+
+        } else {
+
+            $dias_totais_necessarios = ceil($dias_utilizados / ($this->percentual_real / 100));
+
+        }
 
         $dias_remanescentes = $dias_totais_necessarios - $dias_utilizados;
 
-        $proximo_dia_util = FuncoesData::moverDiaUtil($roadmap->data_base, 1, $feriados);
+        $data_reinicio = max(FuncoesData::moverDiaUtil($roadmap->data_base, 1, $feriados), $data_inicio);
 
-        $data_fim = FuncoesData::calcularDataFim($proximo_dia_util, $dias_remanescentes, $datas_indisponiveis, $feriados);
+        $data_fim = FuncoesData::calcularDataFim($data_reinicio, $dias_remanescentes, $datas_indisponiveis, $feriados);
+
 
         return $data_fim;
     }

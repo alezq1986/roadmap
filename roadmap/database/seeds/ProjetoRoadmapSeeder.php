@@ -14,21 +14,8 @@ class ProjetoRoadmapSeeder extends Seeder
      */
     public function run()
     {
-        $roadmap = Roadmap::first();
 
-        $projetos = Projeto::all();
+        DB::update(DB::raw('truncate table projeto_roadmap restart identity cascade'));
 
-        $prioridade = 1;
-
-        foreach ($projetos as $projeto) {
-
-            $pr = DB::table('projeto_roadmap')->insert([
-                'projeto_id' => $projeto->id,
-                'roadmap_id' => $roadmap->id,
-                'prioridade' => $prioridade
-            ]);
-
-            $prioridade++;
-        }
     }
 }

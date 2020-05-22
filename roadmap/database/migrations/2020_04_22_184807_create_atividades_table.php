@@ -19,6 +19,7 @@ class CreateAtividadesTable extends Migration
             $table->foreignId('projeto_id')->constrained();
             $table->string('descricao', 100);
             $table->foreignId('competencia_id')->constrained();
+            $table->foreignId('recurso_real_id')->constrained('recursos');
             $table->integer('prazo');
             $table->date('data_inicio_real')->nullable();
             $table->date('data_fim_real')->nullable();

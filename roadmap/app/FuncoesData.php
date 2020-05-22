@@ -7,6 +7,7 @@ use App\Municipio;
 use App\Parametro;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class FuncoesData extends Model
 {
@@ -79,8 +80,10 @@ class FuncoesData extends Model
             } else {
                 $data_fim = $data_indisponivel['data_fim'];
             }
+
             return ['data_inicio' => $data_inicio, 'data_fim' => $data_fim];
         });
+
 
         $livre = 1;
 
@@ -88,6 +91,7 @@ class FuncoesData extends Model
             $livre = 0;
 
             return $livre;
+
         }
 
 
@@ -95,6 +99,7 @@ class FuncoesData extends Model
             $livre = 0;
 
             return $livre;
+
         }
 
         foreach ($datas_indisponiveis as $data_indisponivel) {
@@ -321,7 +326,7 @@ class FuncoesData extends Model
             return ['data_inicio' => $data_inicio, 'data_fim' => $data_fim];
         });
 
-        while (self::ehDiaLivre($data_inicio, $feriados, $datas_indisponiveis) == 0) {
+        while (self::ehDiaLivre($data_inicio, $datas_indisponiveis, $feriados) == 0) {
             $data_inicio = $data_inicio + 86400;
         }
 
@@ -332,9 +337,10 @@ class FuncoesData extends Model
         while ($prazo != 0 && $falta_mover != 0) {
             $data_fim = $data_fim + 86400;
 
-            if (self::ehDiaLivre($data_fim, $feriados, $datas_indisponiveis) == 1) {
+            if (self::ehDiaLivre($data_fim, $datas_indisponiveis, $feriados) == 1) {
                 $falta_mover--;
             }
+
 
         }
 
