@@ -38,6 +38,10 @@ class Recurso extends Model
         return $this->hasMany('App\Alocacao');
     }
 
+    /**
+     * @param Atividade $atividade
+     * @return int
+     */
     public static function recursosCompetentes(Atividade $atividade)
     {
         $equipe = $atividade->projeto->equipe_id;
@@ -51,8 +55,15 @@ class Recurso extends Model
             ->where('equipe_recurso.equipe_id', '=', $equipe)
             ->get();
 
+        if ($resultados->count()) {
 
-        return Recurso::hydrate($resultados->toArray());
+            return Recurso::hydrate($resultados->toArray());
+
+        } else {
+
+            return 1;
+        }
+
     }
 
     public function alocacoesRoadmap(Roadmap $roadmap)
@@ -62,59 +73,84 @@ class Recurso extends Model
 
     /**
      * @param Request $request
+     * @return int|mixed
      */
     public static function criarRecurso(Request $request)
     {
+        try {
 
-        DB::transaction(function () use ($request) {
+            $resultado = DB::transaction(function () use ($request) {
 
-            $recurso = Recurso::create([
-                'nome' => $request->input('nome'),
-                'data_inicio' => $request->input('data_inicio'),
-                'data_fim' => $request->input('data_fim'),
-            ]);
+                $recurso = Recurso::create([
+                    'nome' => $request->input('nome'),
+                    'data_inicio' => $request->input('data_inicio'),
+                    'data_fim' => $request->input('data_fim'),
+                ]);
 
 
-            if ($request->session()->has('filhos')) {
+                if ($request->session()->has('filhos')) {
 
-                FuncoesFilhos::criarFilhos($request, $recurso);
-            }
+                    FuncoesFilhos::criarFilhos($request, $recurso);
+                }
 
-            if ($request->session()->has('filhos_pivot')) {
+                if ($request->session()->has('filhos_pivot')) {
 
-                FuncoesFilhos::criarFilhosPivot($request, $recurso);
-            }
+                    FuncoesFilhos::criarFilhosPivot($request, $recurso);
+                }
 
-        });
+                return $recurso;
+
+            });
+
+            return $resultado;
+
+        } catch (Exception $e) {
+
+            return 1;
+
+        }
     }
 
     /**
      * @param Request $request
      * @param Recurso $recurso
+     * @return int|mixed
      */
     public static function atualizarRecurso(Request $request, Recurso $recurso)
     {
-        DB::transaction(function () use ($request, $recurso) {
+        try {
 
-            $recurso->nome = $request->input('nome');
-            $recurso->data_inicio = $request->input('data_inicio');
-            $recurso->data_fim = $request->input('data_fim');
+            $resultado = DB::transaction(function () use ($request, $recurso) {
 
-            $recurso->save();
+                $recurso->nome = $request->input('nome');
+                $recurso->data_inicio = $request->input('data_inicio');
+                $recurso->data_fim = $request->input('data_fim');
+
+                $recurso->save();
 
 
-            if ($request->session()->has('filhos')) {
+                if ($request->session()->has('filhos')) {
 
-                FuncoesFilhos::criarFilhos($request, $recurso);
+                    FuncoesFilhos::criarFilhos($request, $recurso);
 
-            }
+                }
 
-            if ($request->session()->has('filhos_pivot')) {
+                if ($request->session()->has('filhos_pivot')) {
 
-                FuncoesFilhos::criarFilhosPivot($request, $recurso);
-            }
+                    FuncoesFilhos::criarFilhosPivot($request, $recurso);
+                }
 
-        });
+                return $recurso;
+
+            });
+
+            return $resultado;
+
+        } catch (Exception $e) {
+
+            return 1;
+
+        }
     }
 
     /**
@@ -130,56 +166,68 @@ class Recurso extends Model
 
         $alocacoes = $this->alocacoesRoadmap($roadmap);
 
-        if (!is_null($prioridade)) {
+        if ($alocacoes->count()) {
 
-            $alocacoes = $alocacoes->filter(function ($alocacao) use ($roadmap, $prioridade) {
+            if (!is_null($prioridade)) {
 
-                $prioridade_projeto = (DB::table('projeto_roadmap')->where('projeto_id', '=', $alocacao->atividade->projeto->id)->where('roadmap_id', '=', $roadmap->id)->first())->prioridade;
+                $alocacoes = $alocacoes->filter(function ($alocacao) use ($roadmap, $prioridade) {
 
-                return $prioridade_projeto < $prioridade;
+                    $prioridade_projeto = (DB::table('projeto_roadmap')->where('projeto_id', '=', $alocacao->atividade->projeto->id)->where('roadmap_id', '=', $roadmap->id)->first())->prioridade;
 
-            });
+                    return $prioridade_projeto < $prioridade;
+
+                });
+            }
+
+            foreach ($alocacoes as $alocacao) {
+                $datas_indisponiveis->push(['data_inicio' => $alocacao->data_inicio_proj, 'data_fim' => $alocacao->data_fim_proj]);
+            }
+
         }
 
-        foreach ($bloqueios as $bloqueio) {
-            $datas_indisponiveis->push(['data_inicio' => $bloqueio->data_inicio, 'data_fim' => $bloqueio->data_fim]);
-        }
+        if ($bloqueios->count()) {
 
-        foreach ($alocacoes as $alocacao) {
-            $datas_indisponiveis->push(['data_inicio' => $alocacao->data_inicio_proj, 'data_fim' => $alocacao->data_fim_proj]);
-        }
+            foreach ($bloqueios as $bloqueio) {
 
-        $datas_indisponiveis = $datas_indisponiveis->sortBy('data_inicio')->values();
-
-        $datas_indisponiveis_consolidadas = collect();
-
-        $key = 0;
-
-        foreach ($datas_indisponiveis as $data_indisponivel) {
-
-            if ($datas_indisponiveis_consolidadas->count() == 0) {
-
-                $datas_indisponiveis_consolidadas->push($data_indisponivel);
-
-            } else {
-
-                if ($data_indisponivel['data_inicio'] < $datas_indisponiveis_consolidadas->get($key)['data_fim']) {
-
-                    $intervalo = ['data_inicio' => $datas_indisponiveis_consolidadas->get($key)['data_inicio'], 'data_fim' => max($datas_indisponiveis_consolidadas->get($key)['data_fim'], $data_indisponivel['data_fim'])];
-
-
-                } else {
-
-                    $intervalo = ['data_inicio' => $data_indisponivel['data_inicio'], 'data_fim' => $data_indisponivel['data_fim']];
-
-                    $key++;
-
-                }
-
-                $datas_indisponiveis_consolidadas->put($key, $intervalo);
+                $datas_indisponiveis->push(['data_inicio' => $bloqueio->data_inicio, 'data_fim' => $bloqueio->data_fim]);
 
             }
 
+        }
+
+        $datas_indisponiveis_consolidadas = collect();
+
+        if ($datas_indisponiveis->count()) {
+
+            $datas_indisponiveis = $datas_indisponiveis->sortBy('data_inicio')->values();
+
+            $key = 0;
+
+            foreach ($datas_indisponiveis as $data_indisponivel) {
+
+                if ($datas_indisponiveis_consolidadas->count() == 0) {
+
+                    $datas_indisponiveis_consolidadas->push($data_indisponivel);
+
+                } else {
+
+                    if ($data_indisponivel['data_inicio'] < $datas_indisponiveis_consolidadas->get($key)['data_fim']) {
+
+                        $intervalo = ['data_inicio' => $datas_indisponiveis_consolidadas->get($key)['data_inicio'], 'data_fim' => max($datas_indisponiveis_consolidadas->get($key)['data_fim'], $data_indisponivel['data_fim'])];
+
+                    } else {
+
+                        $intervalo = ['data_inicio' => $data_indisponivel['data_inicio'], 'data_fim' => $data_indisponivel['data_fim']];
+
+                        $key++;
+
+                    }
+
+                    $datas_indisponiveis_consolidadas->put($key, $intervalo);
+
+                }
+
+            }
 
         }
 
@@ -196,11 +244,13 @@ class Recurso extends Model
     public function calcularPrimeiraData(Atividade $atividade, Roadmap $roadmap, Collection $feriados = null)
     {
         if (is_null($feriados)) {
+
             $municipio_padrao = Parametro::where('codigo', '=', 1)->first();
 
             $municipio = Municipio::find($municipio_padrao->valor);
 
             $feriados = Feriado::feriadosPorLocal($municipio);
+
         }
 
         $prazo = $atividade->prazo;
@@ -211,34 +261,46 @@ class Recurso extends Model
 
         $dependencias = $atividade->depende_de;
 
-        $ultima_data_dependencias = $roadmap->data_base;
+        if (!is_null($dependencias) && $dependencias->count()) {
 
-        foreach ($dependencias as $dependencia) {
+            $ultima_data_dependencias = 0;
 
-            $alocacao = $dependencia->alocacoes->where('roadmap_id', '=', $roadmap->id)->first();
+            foreach ($dependencias as $dependencia) {
 
-            if (!is_null($alocacao)) {
+                $alocacao = $dependencia->alocacoes->where('roadmap_id', '=', $roadmap->id)->first();
 
-                $data_fim_proj = $alocacao->data_fim_proj;
-            } else {
+                if (!is_null($alocacao)) {
 
-                $data_fim_proj = null;
+                    $data_fim_proj = $alocacao->data_fim_proj;
+
+                } else {
+
+                    $data_fim_proj = null;
+                }
+
+                $ultima_data_dependencias = max($ultima_data_dependencias, $data_fim_proj);
+
             }
+        } else {
 
-            $ultima_data_dependencias = max($ultima_data_dependencias, $data_fim_proj);
+            $ultima_data_dependencias = $roadmap->data_base;
 
         }
 
         $primeira_data_apos_dependencias = FuncoesData::moverDiaUtil($ultima_data_dependencias, 1, $feriados);
 
-        $primeira_data_apos_indisponiveis = FuncoesData::moverDiaUtil($roadmap->data_base, 1);
-
-        if ($datas_indisponiveis) {
+        if (!is_null($datas_indisponiveis) && $datas_indisponiveis->count()) {
 
             $ultima_data_indisponiveis = max($datas_indisponiveis->max('data_fim'), $roadmap->data_base);
 
-            $primeira_data_apos_indisponiveis = FuncoesData::moverDiaUtil($ultima_data_indisponiveis, 1, $feriados);
+
+        } else {
+
+            $ultima_data_indisponiveis = $roadmap->data_base;
+
         }
+
+        $primeira_data_apos_indisponiveis = FuncoesData::moverDiaUtil($ultima_data_indisponiveis, 1, $feriados);
 
         $primeira_data_apos_dependencias_indisponiveis = max($primeira_data_apos_dependencias, $primeira_data_apos_indisponiveis);
 
@@ -250,11 +312,12 @@ class Recurso extends Model
 
         } else {
 
-            $primeira_data_recurso = FuncoesData::moverDiaUtil($roadmap->data_base, 1);
+            $primeira_data_recurso = null;
 
         }
 
         for ($i = 0; $i < (sizeof($datas_indisponiveis) - 1); $i++) {
+
             $data_inicio = max(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i)['data_fim'], 1, $feriados), $datas_limite_recurso['data_inicio'], $primeira_data_apos_dependencias);
 
             $data_fim = min(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i + 1)['data_inicio'], -1, $feriados), $datas_limite_recurso['data_fim']);

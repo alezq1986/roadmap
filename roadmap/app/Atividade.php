@@ -55,6 +55,9 @@ class Atividade extends Model
     {
         ini_set('memory_limit', '512M');
 
+        $lista_negra = collect();
+
+        //se a atividade está concluída, apenas repito os dados na alocação
         if ($this->percentual_real == 100) {
 
             $data_inicio_proj = $this->data_inicio_real;
@@ -65,28 +68,59 @@ class Atividade extends Model
 
         } else {
 
+            //se não está, mas já tenho recurso alocado...
             if (!is_null($this->recurso_real_id)) {
 
                 $recurso_id = $this->recurso_real_id;
 
                 $recurso = Recurso::find($recurso_id);
 
+                //... e ele já iniciou a atividade, eu repito a data de início na alocação...
                 if (!is_null($this->data_inicio_real)) {
 
                     $data_inicio_proj = $this->data_inicio_real;
 
+                    //...senão eu calculo a data de início
                 } else {
 
                     $data_inicio_proj = $recurso->calcularPrimeiraData($this, $roadmap);
+
+                    //se não há data de início possível, eu passo o recurso para a lista negra e aloco a atividade de novo...
+                    if (is_null($data_inicio_proj)) {
+
+                        $lista_negra->push($recurso);
+
+                        $melhor_recurso = $this->calcularMelhorRecurso($roadmap, $lista_negra);
+
+                        //se eu conseguir alocar, crio os dados da alocação...
+                        if (!is_null($melhor_recurso['recurso'])) {
+
+                            $recurso = $melhor_recurso['recurso'];
+
+                            $recurso_id = $recurso->id;
+
+                            $data_inicio_proj = $melhor_recurso['data'];
+
+                            //... mas se eu não conseguir, retorno null
+                        } else {
+
+                            return null;
+
+                        }
+
+                    }
                 }
 
+                //com os dados da alocação, calculo a data final
                 $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, $data_inicio_proj);
 
+                //se ela passou a data fim do recurso...
                 if ($data_fim_proj > $recurso->data_fim) {
 
                     $melhor_recurso = $this->calcularMelhorRecurso($roadmap);
 
-                    if (isset($melhor_recurso['recurso'])) {
+                    //aloco de novo
+                    if (!is_null($melhor_recurso['recurso'])) {
 
                         $recurso = $melhor_recurso['recurso'];
 
@@ -96,7 +130,7 @@ class Atividade extends Model
 
                     } else {
 
-                        return 1;
+                        return null;
 
                     }
 
@@ -104,29 +138,42 @@ class Atividade extends Model
 
                 }
 
+                //se não tem recurso alocado, eu aloco do 0
             } else {
 
                 $melhor_recurso = $this->calcularMelhorRecurso($roadmap);
 
-                $recurso = $melhor_recurso['recurso'];
+                if (!is_null($melhor_recurso['recurso'])) {
 
-                $recurso_id = $recurso->id;
+                    $recurso = $melhor_recurso['recurso'];
 
-                $data_inicio_proj = $melhor_recurso['data'];
+                    $recurso_id = $recurso->id;
 
+                    $data_inicio_proj = $melhor_recurso['data'];
+
+                } else {
+
+                    return null;
+
+                }
 
                 $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, $data_inicio_proj);
 
             }
 
         }
+
         Log::info('alocacao', ['atividade' => $this]);
+
+        //crio a alocação
         $alocacao = new Alocacao (['roadmap_id' => $roadmap->id, 'atividade_id' => $this->id,
             'data_inicio_proj' => $data_inicio_proj, 'data_fim_proj' => $data_fim_proj, 'recurso_id' => $recurso_id]);
 
+        //atualizo o recurso alocado na atividade
         $this->recurso_real_id = $recurso_id;
 
         try {
+
             $resultado = DB::transaction(function () use ($alocacao) {
 
                 $this->save();
@@ -136,23 +183,38 @@ class Atividade extends Model
 
             });
 
-            return is_null($resultado) ? 0 : $resultado;
+            return is_null($resultado) ? null : $resultado;
 
         } catch (Exception $e) {
 
-            return 1;
+            return null;
         }
     }
 
 
     /**
      * @param \App\Roadmap $roadmap
+     * @param Collection|null $lista_negra
      * @return array
      */
-    public function calcularMelhorRecurso(Roadmap $roadmap)
+    public function calcularMelhorRecurso(Roadmap $roadmap, Collection $lista_negra = null)
     {
 
-        $recursos = Recurso::recursosCompetentes($this)->where('data_fim', '>', $roadmap->data_base);
+        $todos_recursos = Recurso::recursosCompetentes($this)->where('data_fim', '>', $roadmap->data_base);
+
+        if (!is_null($lista_negra)) {
+
+            $recursos = $todos_recursos->reject(function ($r, $key) use ($lista_negra) {
+
+                return $lista_negra->contains($r);
+
+            });
+
+        } else {
+
+            $recursos = $todos_recursos;
+
+        }
 
         $primeiro_recurso = null;
 
@@ -162,21 +224,25 @@ class Atividade extends Model
 
             $primeira_data_recurso = $recurso->calcularPrimeiraData($this, $roadmap);
 
-            if (!isset($primeira_data)) {
+            if (!is_null($primeira_data_recurso)) {
 
-                $primeira_data = $primeira_data_recurso;
-
-                $primeiro_recurso = $recurso;
-
-            } else {
-
-                if ($primeira_data_recurso < $primeira_data) {
+                if (!isset($primeira_data)) {
 
                     $primeira_data = $primeira_data_recurso;
 
                     $primeiro_recurso = $recurso;
 
+                } else {
+
+                    if ($primeira_data_recurso < $primeira_data) {
+
+                        $primeira_data = $primeira_data_recurso;
+
+                        $primeiro_recurso = $recurso;
+
+                    }
                 }
+
             }
 
         }

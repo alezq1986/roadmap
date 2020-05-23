@@ -20,8 +20,8 @@
                             {{ __('Atualizar') }}
                         </button>
                         <form class="d-inline" method="POST"
-                              action="{{ route('equipes.destroy', $competencia) }}"
-                              onsubmit="return confirm('Tem certeza que deseja remover {{$competencia->descricao}} ?')">
+                              action="{{ route('equipes.destroy', $equipe) }}"
+                              onsubmit="return confirm('Tem certeza que deseja remover {{$equipe->descricao}} ?')">
                             @csrf
                             @method("DELETE")
                             <button type="submit" class="btn btn-danger main-buttons">
@@ -46,7 +46,7 @@
                             <div class="card-header">{{ __('Editar equipe') }}</div>
                             <div class="card-body">
                                 <form method="POST" id="form-principal"
-                                      action="{{ route('equipes.update', $competencia) }}">
+                                      action="{{ route('equipes.update', $equipe) }}">
                                     @csrf
                                     <div class="form-group row">
                                         <label for="id"
@@ -55,19 +55,19 @@
 
                                             <input id="id" type="number"
                                                    class="form-control" name="id"
-                                                   value="{{ isset($competencia->id)?$competencia->id:old('id') }}"
+                                                   value="{{ isset($equipe->id)?$equipe->id:old('id') }}"
                                                    disabled>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label for="descricao"
-                                               class="col-md-4 col-form-label text-md-right">{{ __('Descricao') }}</label>
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Descrição') }}</label>
 
                                         <div class="col-md-6">
                                             <input id="descricao" type="text"
                                                    class="form-control @error('descricao') is-invalid @enderror"
                                                    name="descricao"
-                                                   value="{{ isset($competencia->descricao)?$competencia->descricao:old('descricao') }}"
+                                                   value="{{ isset($equipe->descricao)?$equipe->descricao:old('descricao') }}"
                                                    required
                                                    autocomplete="descricao" autofocus>
 

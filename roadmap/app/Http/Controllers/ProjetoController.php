@@ -2,20 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Equipe;
 use App\Projeto;
 use Illuminate\Http\Request;
 
 class ProjetoController extends Controller
 {
+
+    protected $rules = ['descricao' => 'required|string|max:100'];
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $data = $request->all();
+
+        $where = array();
+
+        if (!empty($data)) {
+
+            if ($request->has('id') && $request->get('id') != null) {
+                array_push($where, ['id', '=', $request->get('id')]);
+            }
+
+            if ($request->has('descricao') && $request->get('descricao') != null) {
+                array_push($where, ['descricao', 'like', "%{$request->get('descricao')}%"]);
+            }
+
+            $projetos = Projeto::where($where)->paginate(10);
+
+        } else {
+
+            $projetos = Projeto::orderBy('id', 'ASC')->paginate(10);
+        }
+
+        return view('projetos.index', ['projetos' => $projetos, 'data' => $data]);
     }
 
     /**
@@ -25,7 +48,7 @@ class ProjetoController extends Controller
      */
     public function create()
     {
-        //
+        return view('projetos.create');
     }
 
     /**
@@ -36,16 +59,21 @@ class ProjetoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate($this->rules);
+
+        Projeto::criarprojeto($request);
+
+        return redirect('projetos/');
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param \App\Projeto $projeto
-     * @return \Illuminate\Http\Response
+     * @param \App\projeto $projeto
+     * @return void
      */
-    public function show(Projeto $projeto)
+    public function show(projeto $projeto)
     {
         //
     }
@@ -58,7 +86,7 @@ class ProjetoController extends Controller
      */
     public function edit(Projeto $projeto)
     {
-        //
+        return view('projetos.edit', ['projeto' => $projeto]);
     }
 
     /**
@@ -66,22 +94,31 @@ class ProjetoController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Projeto $projeto
-     * @return \Illuminate\Http\Response
+     * @return void
      */
     public function update(Request $request, Projeto $projeto)
     {
-        //
+
+        $request->validate($this->rules);
+
+        $projeto->atualizarprojeto($request, $projeto);
+
+        return redirect('projetos/');
+
+
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param \App\Projeto $projeto
-     * @return \Illuminate\Http\Response
+     * @return void
      */
     public function destroy(Projeto $projeto)
     {
-        //
+        $projeto->destroy($projeto->id);
+
+        return redirect('projetos/');
     }
 
 }

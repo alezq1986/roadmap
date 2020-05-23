@@ -41,13 +41,13 @@
 
                                     <div class="form-group row">
                                         <label for="descricao"
-                                               class="col-md-4 col-form-label text-md-right">{{ __('Descricao') }}</label>
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Descrição') }}</label>
 
                                         <div class="col-md-6">
                                             <input id="descricao" type="text"
                                                    class="form-control @error('descricao') is-invalid @enderror"
                                                    name="descricao"
-                                                   value="{{ isset($competencia->descricao)?$competencia->descricao:old('descricao') }}"
+                                                   value="{{ isset($equipe->descricao)?$equipe->descricao:old('descricao') }}"
                                                    required
                                                    autocomplete="descricao" autofocus>
 

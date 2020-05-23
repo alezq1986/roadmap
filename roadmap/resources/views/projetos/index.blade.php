@@ -16,7 +16,7 @@
                 <div class="card">
                     <div class="card-header">{{ __('Filtros') }}</div>
                     <div class="card-body">
-                        <form method="GET" action="{{ route('equipes.index') }}">
+                        <form method="GET" action="{{ route('projetos.index') }}">
                             @csrf
                             <div class="form-group row">
                                 <label for="id" class="col-md-1 col-form-label text-md-right">{{ __('Id') }}</label>
@@ -25,7 +25,7 @@
                                            value="{{ isset($_GET['id'])?$_GET['id']:'' }}" autofocus>
                                 </div>
                                 <label for="descricao"
-                                       class="col-md-2 col-form-label text-md-right">{{ __('Descricao') }}</label>
+                                       class="col-md-2 col-form-label text-md-right">{{ __('Descrição') }}</label>
                                 <div class="col-md-6">
                                     <input id="descricao" type="text" class="form-control" name="descricao"
                                            value="{{ isset($_GET['descricao'])?$_GET['descricao']:'' }}" autofocus>
@@ -46,11 +46,11 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">{{ __('equipe') }}</div>
+                    <div class="card-header">{{ __('Projeto') }}</div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 offset-md-6">
-                                <a class="btn btn-success float-right" href="{{ route('equipes.create') }}">
+                                <a class="btn btn-success float-right" href="{{ route('projetos.create') }}">
                                     <i class="fa fa-plus-square fa-sm"></i>
                                     {{ __('Novo') }}
                                 </a>
@@ -65,18 +65,18 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($equipes as $equipe)
+                            @foreach($projetos as $projeto)
                                 <tr>
-                                    <td>{{ $equipe->id }}</td>
-                                    <td>{{ $equipe->descricao }}</td>
+                                    <td>{{ $projeto->id }}</td>
+                                    <td>{{ $projeto->descricao }}</td>
                                     <td class="text-right">
                                         <a class="btn btn-primary action-buttons"
-                                           href="{{ route('equipes.edit', $equipe->id) }}">
+                                           href="{{ route('projetos.edit', $projeto->id) }}">
                                             <i class="fa fa-edit fa-sm"></i>
                                         </a>
                                         <form class="d-inline" method="POST"
-                                              action="{{ route('equipes.destroy', $equipe) }}"
-                                              onsubmit="return confirm('Tem certeza que deseja remover {{$equipe->descricao}} ?')">
+                                              action="{{ route('projetos.destroy', $projeto) }}"
+                                              onsubmit="return confirm('Tem certeza que deseja remover {{$projeto->descricao}} ?')">
                                             @csrf
                                             @method("DELETE")
                                             <button type="submit" class="btn btn-danger action-buttons">
@@ -88,7 +88,7 @@
                             @endforeach
                             </tbody>
                         </table>
-                        {{ $equipes->appends($data)->links() }}
+                        {{ $projetos->appends($data)->links() }}
                     </div>
                 </div>
             </div>
