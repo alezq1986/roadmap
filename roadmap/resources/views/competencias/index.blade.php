@@ -5,7 +5,7 @@
 @section('sidebar')
     @parent
 
-    <p>This is appended to the master sidebar.</p>
+
 @endsection
 @auth
 
@@ -61,7 +61,7 @@
                             <tr>
                                 <th>Id</th>
                                 <th>Descrição</th>
-                                <th>Ação</th>
+                                <th class="text-right">Ação</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -69,7 +69,7 @@
                                 <tr>
                                     <td>{{ $competencia->id }}</td>
                                     <td>{{ $competencia->descricao }}</td>
-                                    <td>
+                                    <td class="text-right">
                                         <a class="btn btn-primary action-buttons"
                                            href="{{ route('competencias.edit', $competencia->id) }}">
                                             <i class="fa fa-edit fa-sm"></i>

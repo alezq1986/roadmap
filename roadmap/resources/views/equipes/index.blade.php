@@ -11,34 +11,24 @@
 
 @section('content')
     <div class="container">
-        <div class="row justify-content-center mb-5">
+        <div class="row justify-content-center filter">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">{{ __('Filtros') }}</div>
                     <div class="card-body">
-                        <form method="GET" action="{{ route('roadmaps.index') }}">
+                        <form method="GET" action="{{ route('equipes.index') }}">
                             @csrf
                             <div class="form-group row">
-                                <label for="id" class="col-md-3 col-form-label text-md-right">{{ __('Id') }}</label>
+                                <label for="id" class="col-md-1 col-form-label text-md-right">{{ __('Id') }}</label>
                                 <div class="col-md-3">
                                     <input id="id" type="number" class="form-control" name="id"
                                            value="{{ isset($_GET['id'])?$_GET['id']:'' }}" autofocus>
                                 </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="data_base_de"
-                                       class="col-md-3 col-form-label text-md-right">{{ __('Data base (de)') }}</label>
-                                <div class="col-md-3">
-                                    <input id="data_base_de" type="date" class="form-control" name="data_base_de"
-                                           value="{{ isset($_GET['data_base_de'])?$_GET['data_base_de']:'' }}"
-                                           autofocus>
-                                </div>
-                                <label for="data_base_ate"
-                                       class="col-md-3 col-form-label text-md-right">{{ __('Data base (até)') }}</label>
-                                <div class="col-md-3">
-                                    <input id="data_base_ate" type="date" class="form-control" name="data_base_ate"
-                                           value="{{ isset($_GET['data_base_ate'])?$_GET['data_base_ate']:'' }}"
-                                           autofocus>
+                                <label for="descricao"
+                                       class="col-md-2 col-form-label text-md-right">{{ __('Descricao') }}</label>
+                                <div class="col-md-6">
+                                    <input id="descricao" type="text" class="form-control" name="descricao"
+                                           value="{{ isset($_GET['descricao'])?$_GET['descricao']:'' }}" autofocus>
                                 </div>
                             </div>
                             <div class="form-group row mb-0">
@@ -56,11 +46,11 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">{{ __('Roadmap') }}</div>
+                    <div class="card-header">{{ __('Competencia') }}</div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 offset-md-6">
-                                <a class="btn btn-success float-right" href="{{ route('roadmaps.create') }}">
+                                <a class="btn btn-success float-right" href="{{ route('equipes.create') }}">
                                     <i class="fa fa-plus-square fa-sm"></i>
                                     {{ __('Novo') }}
                                 </a>
@@ -70,27 +60,23 @@
                             <thead>
                             <tr>
                                 <th>Id</th>
-                                <th>Data Base</th>
+                                <th>Descrição</th>
                                 <th class="text-right">Ação</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($roadmaps as $roadmap)
+                            @foreach($equipes as $competencia)
                                 <tr>
-                                    <td>{{ $roadmap->id }}</td>
-                                    <td>{{ $roadmap->data_base }}</td>
+                                    <td>{{ $competencia->id }}</td>
+                                    <td>{{ $competencia->descricao }}</td>
                                     <td class="text-right">
                                         <a class="btn btn-primary action-buttons"
-                                           href="{{ route('roadmaps.edit', $roadmap) }}">
+                                           href="{{ route('equipes.edit', $competencia->id) }}">
                                             <i class="fa fa-edit fa-sm"></i>
                                         </a>
-                                        <a class="btn btn-secondary action-buttons"
-                                           href="{{ route('roadmap.configura', $roadmap) }}">
-                                            <i class="fa fa-cog fa-sm"></i>
-                                        </a>
                                         <form class="d-inline" method="POST"
-                                              action="{{ route('roadmaps.destroy', $roadmap) }}"
-                                              onsubmit="return confirm('Tem certeza que deseja remover o Roadmap de {{$roadmap->data_base}} ?')">
+                                              action="{{ route('equipes.destroy', $competencia) }}"
+                                              onsubmit="return confirm('Tem certeza que deseja remover {{$competencia->descricao}} ?')">
                                             @csrf
                                             @method("DELETE")
                                             <button type="submit" class="btn btn-danger action-buttons">
@@ -102,7 +88,7 @@
                             @endforeach
                             </tbody>
                         </table>
-                        {{ $roadmaps->appends($data)->links() }}
+                        {{ $equipes->appends($data)->links() }}
                     </div>
                 </div>
             </div>

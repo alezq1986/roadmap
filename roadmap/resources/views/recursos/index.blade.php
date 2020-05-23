@@ -5,7 +5,7 @@
 @section('sidebar')
     @parent
 
-    <p>This is appended to the master sidebar.</p>
+
 @endsection
 @auth
 
@@ -93,7 +93,7 @@
                                 <th>Nome</th>
                                 <th>Data Início</th>
                                 <th>Data Fim</th>
-                                <th>Ação</th>
+                                <th class="text-right">Ação</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -103,7 +103,7 @@
                                     <td>{{ $recurso->nome }}</td>
                                     <td>{{ $recurso->data_inicio }}</td>
                                     <td>{{ $recurso->data_fim }}</td>
-                                    <td>
+                                    <td class="text-right">
                                         <a class="btn btn-primary action-buttons"
                                            href="{{ route('recursos.edit', $recurso) }}">
                                             <i class="fa fa-edit fa-sm"></i>

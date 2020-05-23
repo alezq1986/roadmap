@@ -15,8 +15,8 @@ class CreateEquipeRecursoTable extends Migration
     {
         Schema::create('equipe_recurso', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('equipe_id')->constrained();
-            $table->foreignId('recurso_id')->constrained();
+            $table->foreignId('equipe_id')->constrained()->onDelete('cascade');;
+            $table->foreignId('recurso_id')->constrained()->onDelete('cascade');;
             $table->unique(['equipe_id', 'recurso_id']);
         });
     }

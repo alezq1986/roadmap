@@ -5,7 +5,7 @@
 @section('sidebar')
     @parent
 
-    <p>This is appended to the master sidebar.</p>
+
 @endsection
 @auth
 
@@ -57,7 +57,6 @@
                                       action="{{ route('recursos.update', $recurso) }}">
                                     @method('PUT')
                                     @csrf
-
                                     <div class="form-group row">
                                         <label for="id"
                                                class="col-md-4 col-form-label text-md-right">{{ __('Id') }}</label>
@@ -69,7 +68,6 @@
                                                    disabled>
                                         </div>
                                     </div>
-
                                     <div class="form-group row">
                                         <label for="nome"
                                                class="col-md-4 col-form-label text-md-right">{{ __('Nome') }}</label>

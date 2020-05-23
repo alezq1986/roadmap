@@ -5,7 +5,7 @@
 @section('sidebar')
     @parent
 
-    <p>This is appended to the master sidebar.</p>
+
 @endsection
 @auth
 
@@ -184,22 +184,62 @@
                 <div class="row" id="alocacao-projetos-conteudo">
 
                     <div class="col-md-12">
-                        <div class="alert alert-warning" role="alert" id="alert-alteracao">
-                            <h4 class="alert-heading">Atenção!</h4>
-                            <p>Foram identificadas modificações na seleção e/ou priorização de projetos em relação
-                                ao Roadmap
-                                anterior. Para prosseguir com a alocação, as modificações deverão ser salvas
-                                antes.</p>
-                            <hr>
-                            <button class="btn btn-secondary" id="configura-salvar">Salvar</button>
-                        </div>
-                        <div class="alert alert-success" role="alert" id="alert-alocacao">
-                            <h4 class="alert-heading">Pronto!</h4>
-                            <p>O Roadmap está pronto para ser alocado. Ao clicar no botão abaixo, a requisição será
-                                incluída em uma fila e você será notificado quando estiver pronta.</p>
-                            <hr>
-                            <button class="btn btn-secondary" id="configura-salvar">Alocar</button>
-                        </div>
+                        @if($roadmap->alocado == 0)
+                            <div class="alert alert-warning" role="alert" id="alert-alteracao">
+                                <h4 class="alert-heading">Atenção!</h4>
+                                <p>Foram identificadas modificações na seleção e/ou priorização de projetos em relação
+                                    ao Roadmap
+                                    anterior. Para prosseguir com a alocação, as modificações deverão ser salvas
+                                    antes.</p>
+                                <hr>
+                                <button class="btn btn-secondary" id="configura-salvar">Salvar</button>
+                            </div>
+                            <div class="alert alert-primary" role="alert" id="alert-alocacao">
+                                <h4 class="alert-heading">Pronto!</h4>
+                                <p>O Roadmap está pronto para ser alocado. Ao clicar no botão abaixo, a requisição será
+                                    incluída em uma fila e você será notificado quando estiver pronta.</p>
+                                <hr>
+                                <button class="btn btn-secondary" id="configura-alocar">Alocar</button>
+                            </div>
+                            <div class="alert alert-danger" role="alert" id="alert-emprocesso">
+                                <h4 class="alert-heading">Em processo!</h4>
+                                <p>Há um processo de alocação deste Roadmap em curso. Aguarde o término.</p>
+                                <hr>
+                            </div>
+                        @elseif($roadmap->alocado == 1)
+                            <div class="alert alert-danger" role="alert" id="alert-emprocesso">
+                                <h4 class="alert-heading">Em processo!</h4>
+                                <p>Há um processo de alocação deste Roadmap em curso. Aguarde o término.</p>
+                                <hr>
+                            </div>
+                        @else
+                            <div class="alert alert-success" role="alert" id="alert-pronto">
+                                <h4 class="alert-heading">Alocado!</h4>
+                                <p>Este Roadmap já está alocado e não foram identificadas modificações.</p>
+                                <hr>
+                            </div>
+                            <div class="alert alert-warning" role="alert" id="alert-alteracao">
+                                <h4 class="alert-heading">Atenção!</h4>
+                                <p>Foram identificadas modificações na seleção e/ou priorização de projetos em relação
+                                    ao Roadmap
+                                    anterior. Para prosseguir com a alocação, as modificações deverão ser salvas
+                                    antes.</p>
+                                <hr>
+                                <button class="btn btn-secondary" id="configura-salvar">Salvar</button>
+                            </div>
+                            <div class="alert alert-primary" role="alert" id="alert-alocacao">
+                                <h4 class="alert-heading">Pronto para alocar!</h4>
+                                <p>O Roadmap está pronto para ser alocado. Ao clicar no botão abaixo, a requisição será
+                                    incluída em uma fila e você será notificado quando estiver pronta.</p>
+                                <hr>
+                                <button class="btn btn-secondary" id="configura-alocar">Alocar</button>
+                            </div>
+                            <div class="alert alert-danger" role="alert" id="alert-emprocesso">
+                                <h4 class="alert-heading">Em processo!</h4>
+                                <p>Há um processo de alocação deste Roadmap em curso. Aguarde o término.</p>
+                                <hr>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -311,7 +351,14 @@
 
                     $("#alert-alocacao").hide();
 
+                    $("#alert-pronto").hide();
+
                 } else {
+
+                    if ($("#alert-pronto").length > 0 || $("#alert-emprocesso").length > 0) {
+
+                        $("#alert-alocacao").hide();
+                    }
 
                     $("#alert-alteracao").hide();
                 }
@@ -351,7 +398,7 @@
 
                 dados.projetos = projetos;
 
-                var data = ajaxRequest(dados, 'atualizar-projetos');
+                var data = ajaxRequest(dados, 'atualizarprojetos');
 
                 $.when(data).done(function () {
 
@@ -368,6 +415,25 @@
                 });
 
             });
+
+            $("#configura-alocar").on('click', function (event) {
+
+                let dados = new Object();
+
+                dados.roadmap = $('#roadmap-cabecalho').attr('roadmap-id');
+
+                var data = ajaxRequest(dados, 'alocarprojetos');
+
+                $.when(data).done(function () {
+
+                    $("#alert-alocacao").hide();
+
+                    $("#alert-emprocesso").show();
+
+                });
+
+            });
+
         });
 
     </script>

@@ -5,7 +5,7 @@
 @section('sidebar')
     @parent
 
-    <p>This is appended to the master sidebar.</p>
+
 @endsection
 @auth
 
@@ -16,7 +16,7 @@
                 {{-- Botões --}}
                 <div class="row mb-2 pb-2 border-bottom">
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-primary main-buttons" form="form-principal">
+                        <button type="submit" id="btn123" class="btn btn-primary main-buttons" form="form-principal">
                             {{ __('Cadastrar') }}
                         </button>
                     </div>

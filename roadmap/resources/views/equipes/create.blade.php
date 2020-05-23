@@ -34,9 +34,9 @@
                     <div class="tab-pane fade show active" id="pills-principal" role="tabpanel"
                          aria-labelledby="pills-principal-tab">
                         <div class="card">
-                            <div class="card-header">{{ __('Cadastrar competência') }}</div>
+                            <div class="card-header">{{ __('Cadastrar equipe') }}</div>
                             <div class="card-body">
-                                <form method="POST" id="form-principal" action="{{ route('competencias.store') }}">
+                                <form method="POST" id="form-principal" action="{{ route('equipes.store') }}">
                                     @csrf
 
                                     <div class="form-group row">

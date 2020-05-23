@@ -15,8 +15,8 @@ class CreateCompetenciaRecursoTable extends Migration
     {
         Schema::create('competencia_recurso', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('competencia_id')->constrained();
-            $table->foreignId('recurso_id')->constrained();
+            $table->foreignId('competencia_id')->constrained()->onDelete('cascade');;
+            $table->foreignId('recurso_id')->constrained()->onDelete('cascade');;
             $table->char('permite_aloc_automatica');
             $table->unique(['recurso_id', 'competencia_id']);
         });

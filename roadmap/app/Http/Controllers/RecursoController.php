@@ -12,10 +12,15 @@ use App\Estado;
 use App\Municipio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class RecursoController extends Controller
 {
+    protected $rules = ['nome' => 'required|string|max:100',
+        'data_inicio' => 'required|date',
+        'data_fim' => 'required|date'];
+
     /**
      * Display a listing of the resource.
      *
@@ -82,18 +87,12 @@ class RecursoController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = $this->recursoValidator($request);
+        $request->validate($this->rules);
 
-        if ($validator->fails()) {
-            return redirect('recursos/create')
-                ->withErrors($validator)
-                ->withInput();
-        } else {
+        Recurso::criarRecurso($request);
 
-            Recurso::criarRecurso($request);
+        return redirect('recursos/');
 
-            return redirect('recursos/');
-        }
     }
 
     /**
@@ -132,18 +131,12 @@ class RecursoController extends Controller
      */
     public function update(Request $request, Recurso $recurso)
     {
-        $validator = $this->recursoValidator($request);
+        $request->validate($this->rules);
 
-        if ($validator->fails()) {
-            return redirect('recursos/' . $recurso->id . '/edit')
-                ->withErrors($validator)
-                ->withInput();
-        } else {
+        Recurso::atualizarRecurso($request, $recurso);
 
-            $recurso->atualizarRecurso($request, $recurso);
+        return redirect('recursos/');
 
-            return redirect('recursos/');
-        }
     }
 
     /**
@@ -158,15 +151,6 @@ class RecursoController extends Controller
         $recurso->destroy($recurso->id);
 
         return redirect('recursos/');
-    }
-
-    protected function recursoValidator(Request $request)
-    {
-        return Validator::make($request->all(), [
-            'nome' => ['required', 'string', 'max:100'],
-            'data_inicio' => ['required', 'date'],
-            'data_fim' => ['required', 'date'],
-        ]);
     }
 
 }

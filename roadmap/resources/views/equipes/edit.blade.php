@@ -17,8 +17,17 @@
                 <div class="row mb-2 pb-2 border-bottom">
                     <div class="col-md-12">
                         <button type="submit" class="btn btn-primary main-buttons" form="form-principal">
-                            {{ __('Cadastrar') }}
+                            {{ __('Atualizar') }}
                         </button>
+                        <form class="d-inline" method="POST"
+                              action="{{ route('equipes.destroy', $competencia) }}"
+                              onsubmit="return confirm('Tem certeza que deseja remover {{$competencia->descricao}} ?')">
+                            @csrf
+                            @method("DELETE")
+                            <button type="submit" class="btn btn-danger main-buttons">
+                                {{ __('Excluir') }}
+                            </button>
+                        </form>
                     </div>
                 </div>
                 {{-- Navegação --}}
@@ -34,11 +43,22 @@
                     <div class="tab-pane fade show active" id="pills-principal" role="tabpanel"
                          aria-labelledby="pills-principal-tab">
                         <div class="card">
-                            <div class="card-header">{{ __('Cadastrar competência') }}</div>
+                            <div class="card-header">{{ __('Editar equipe') }}</div>
                             <div class="card-body">
-                                <form method="POST" id="form-principal" action="{{ route('competencias.store') }}">
+                                <form method="POST" id="form-principal"
+                                      action="{{ route('equipes.update', $competencia) }}">
                                     @csrf
+                                    <div class="form-group row">
+                                        <label for="id"
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Id') }}</label>
+                                        <div class="col-md-6">
 
+                                            <input id="id" type="number"
+                                                   class="form-control" name="id"
+                                                   value="{{ isset($competencia->id)?$competencia->id:old('id') }}"
+                                                   disabled>
+                                        </div>
+                                    </div>
                                     <div class="form-group row">
                                         <label for="descricao"
                                                class="col-md-4 col-form-label text-md-right">{{ __('Descricao') }}</label>

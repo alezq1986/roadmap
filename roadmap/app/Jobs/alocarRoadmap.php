@@ -32,24 +32,17 @@ class alocarRoadmap implements ShouldQueue
      */
     public function handle()
     {
-
-        $atividades = $this->roadmap->atividades();
-
-        foreach ($atividades as $atividade) {
-
-            $continuar = (parse_ini_file(storage_path('alocar.ini')))['continuar'];
-
-            if ($continuar == 1) {
-
-                $atividade->alocarAtividade($this);
-            } else {
-
-                break;
-            }
-        }
-
         $this->roadmap->alocado = 1;
 
         $this->roadmap->save();
+
+        $alocacao = $this->roadmap->alocar();
+
+        if (!$alocacao) {
+            $this->roadmap->alocado = 2;
+
+            $this->roadmap->save();
+        }
+
     }
 }

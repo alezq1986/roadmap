@@ -17,11 +17,11 @@
     margin-left: 10px;
 }
 
-.new-row {
+.new-row-pivot {
     background-color: #98dfb6;
 }
 
-.deleted-row {
+.deleted-row-pivot {
     background-color: #e9605c;
 }
 

@@ -53,9 +53,11 @@ class Roadmap extends Model
                 $atividade->alocarAtividade($this);
             } else {
 
-                break;
+                return 1;
             }
         }
+
+        return 0;
 
     }
 
@@ -69,6 +71,17 @@ class Roadmap extends Model
                 'data_base' => $request->input('data_base'),
             ]);
 
+            if ($request->session()->has('filhos')) {
+
+                FuncoesFilhos::criarFilhos($request, $roadmap);
+
+            }
+
+            if ($request->session()->has('filhos_pivot')) {
+
+                FuncoesFilhos::criarFilhosPivot($request, $roadmap);
+            }
+
         });
     }
 
@@ -79,6 +92,17 @@ class Roadmap extends Model
             $roadmap->data_base = $request->input('data_base');
 
             $roadmap->save();
+
+            if ($request->session()->has('filhos')) {
+
+                FuncoesFilhos::criarFilhos($request, $roadmap);
+
+            }
+
+            if ($request->session()->has('filhos_pivot')) {
+
+                FuncoesFilhos::criarFilhosPivot($request, $roadmap);
+            }
 
         });
     }

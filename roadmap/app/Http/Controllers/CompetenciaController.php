@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 
 class CompetenciaController extends Controller
 {
+    protected $rules = ['descricao' => 'required|string|max:100'];
+
     /**
      * Display a listing of the resource.
      *
@@ -57,18 +59,12 @@ class CompetenciaController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = $this->competenciaValidator($request);
+        $request->validate($this->rules);
 
-        if ($validator->fails()) {
-            return redirect('competencias/create')
-                ->withErrors($validator)
-                ->withInput();
-        } else {
+        Competencia::criarCompetencia($request);
 
-            Competencia::criarCompetencia($request);
+        return redirect('competencias/');
 
-            return redirect('competencias/');
-        }
     }
 
     /**
@@ -103,19 +99,13 @@ class CompetenciaController extends Controller
     public function update(Request $request, Competencia $competencia)
     {
 
-        $validator = $this->competenciaValidator($request);
+        $request->validate($this->rules);
 
-        if ($validator->fails()) {
-            return redirect('competencias/' . $competencia->id . '/edit')
-                ->withErrors($validator)
-                ->withInput();
-        } else {
+        $competencia->atualizarCompetencia($request, $competencia);
 
-            $competencia->atualizarCompetencia($request, $competencia);
+        return redirect('competencias/');
 
-            return redirect('competencias/');
 
-        }
     }
 
     /**
@@ -131,10 +121,5 @@ class CompetenciaController extends Controller
         return redirect('competencias/');
     }
 
-    protected function competenciaValidator(array $data)
-    {
-        return Validator::make($data, [
-            'desricao' => ['required', 'string', 'max:100'],
-        ]);
-    }
+
 }

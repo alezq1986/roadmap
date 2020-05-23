@@ -74,14 +74,17 @@ class Recurso extends Model
                 'data_fim' => $request->input('data_fim'),
             ]);
 
-            while ($request->session()->get('aguardar')) {
-
-            }
 
             if ($request->session()->has('filhos')) {
 
                 FuncoesFilhos::criarFilhos($request, $recurso);
             }
+
+            if ($request->session()->has('filhos_pivot')) {
+
+                FuncoesFilhos::criarFilhosPivot($request, $recurso);
+            }
+
         });
     }
 
@@ -99,15 +102,18 @@ class Recurso extends Model
 
             $recurso->save();
 
-            while ($request->session()->get('aguardar')) {
-
-            }
 
             if ($request->session()->has('filhos')) {
 
                 FuncoesFilhos::criarFilhos($request, $recurso);
 
             }
+
+            if ($request->session()->has('filhos_pivot')) {
+
+                FuncoesFilhos::criarFilhosPivot($request, $recurso);
+            }
+
         });
     }
 
@@ -214,6 +220,9 @@ class Recurso extends Model
             if (!is_null($alocacao)) {
 
                 $data_fim_proj = $alocacao->data_fim_proj;
+            } else {
+
+                $data_fim_proj = null;
             }
 
             $ultima_data_dependencias = max($ultima_data_dependencias, $data_fim_proj);

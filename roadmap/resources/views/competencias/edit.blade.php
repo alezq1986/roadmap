@@ -5,7 +5,7 @@
 @section('sidebar')
     @parent
 
-    <p>This is appended to the master sidebar.</p>
+
 @endsection
 @auth
 
@@ -48,7 +48,17 @@
                                 <form method="POST" id="form-principal"
                                       action="{{ route('competencias.update', $competencia) }}">
                                     @csrf
+                                    <div class="form-group row">
+                                        <label for="id"
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Id') }}</label>
+                                        <div class="col-md-6">
 
+                                            <input id="id" type="number"
+                                                   class="form-control" name="id"
+                                                   value="{{ isset($competencia->id)?$competencia->id:old('id') }}"
+                                                   disabled>
+                                        </div>
+                                    </div>
                                     <div class="form-group row">
                                         <label for="descricao"
                                                class="col-md-4 col-form-label text-md-right">{{ __('Descricao') }}</label>

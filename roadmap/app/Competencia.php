@@ -31,14 +31,16 @@ class Competencia extends Model
                 'descricao' => $request->input('descricao'),
             ]);
 
-            while ($request->session()->get('aguardar')) {
-
-            }
-
             if ($request->session()->has('filhos')) {
 
                 FuncoesFilhos::criarFilhos($request, $competencia);
             }
+
+            if ($request->session()->has('filhos_pivot')) {
+
+                FuncoesFilhos::criarFilhosPivot($request, $competencia);
+            }
+
         });
     }
 
@@ -50,15 +52,17 @@ class Competencia extends Model
 
             $competencia->save();
 
-            while ($request->session()->get('aguardar')) {
-
-            }
-
             if ($request->session()->has('filhos')) {
 
                 FuncoesFilhos::criarFilhos($request, $competencia);
 
             }
+
+            if ($request->session()->has('filhos_pivot')) {
+
+                FuncoesFilhos::criarFilhosPivot($request, $competencia);
+            }
+
         });
     }
 

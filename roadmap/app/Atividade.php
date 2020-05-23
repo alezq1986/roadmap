@@ -113,14 +113,14 @@ class Atividade extends Model
                 $recurso_id = $recurso->id;
 
                 $data_inicio_proj = $melhor_recurso['data'];
-                Log::info('alocacao', ['atividade' => $this]);
+
 
                 $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, $data_inicio_proj);
 
             }
 
         }
-
+        Log::info('alocacao', ['atividade' => $this]);
         $alocacao = new Alocacao (['roadmap_id' => $roadmap->id, 'atividade_id' => $this->id,
             'data_inicio_proj' => $data_inicio_proj, 'data_fim_proj' => $data_fim_proj, 'recurso_id' => $recurso_id]);
 

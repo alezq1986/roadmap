@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Validator;
 
 class RoadmapController extends Controller
 {
+    protected $rules = ['descricao' => 'required|string|max:100',
+        'data_base' => 'required|date'];
+
     /**
      * Display a listing of the resource.
      *
@@ -66,18 +69,12 @@ class RoadmapController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = $this->roadmapValidator($request);
+        $request->validate($this->rules);
 
-        if ($validator->fails()) {
-            return redirect('roadmaps/create')
-                ->withErrors($validator)
-                ->withInput();
-        } else {
+        Roadmap::criarRoadmap($request);
 
-            Roadmap::criarRoadmap($request);
+        return redirect('roadmaps/');
 
-            return redirect('roadmaps/');
-        }
     }
 
     /**
@@ -111,18 +108,12 @@ class RoadmapController extends Controller
      */
     public function update(Request $request, Roadmap $roadmap)
     {
-        $validator = $this->roadmapValidator($request);
+        $request->validate($this->rules);
 
-        if ($validator->fails()) {
-            return redirect('roadmaps/' . $roadmap->id . '/edit')
-                ->withErrors($validator)
-                ->withInput();
-        } else {
+        $roadmap->atualizarRoadmap($request, $roadmap);
 
-            $roadmap->atualizarRoadmap($request, $roadmap);
+        return redirect('roadmaps/');
 
-            return redirect('roadmaps/');
-        }
     }
 
     /**
@@ -136,13 +127,6 @@ class RoadmapController extends Controller
         $roadmap->destroy($roadmap->id);
 
         return redirect('roadmaps/');
-    }
-
-    protected function roadmapValidator(Request $request)
-    {
-        return Validator::make($request->all(), [
-            'data_base' => ['required', 'date'],
-        ]);
     }
 
     public function configura($id)

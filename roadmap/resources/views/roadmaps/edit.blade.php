@@ -5,7 +5,7 @@
 @section('sidebar')
     @parent
 
-    <p>This is appended to the master sidebar.</p>
+
 @endsection
 @auth
 
@@ -16,18 +16,9 @@
                 {{-- Botões --}}
                 <div class="row mb-2 pb-2 border-bottom">
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-primary main-buttons" form="form-roadmap">
+                        <button type="submit" class="btn btn-primary main-buttons" form="form-principal">
                             {{ __('Atualizar') }}
                         </button>
-                        <form class="d-inline" method="POST"
-                              action="{{ route('roadmaps.destroy', $roadmap) }}"
-                              onsubmit="return confirm('Tem certeza que deseja remover o Roadmap de {{$roadmap->data_base}} ?')">
-                            @csrf
-                            @method("DELETE")
-                            <button type="submit" class="btn btn-danger main-buttons">
-                                {{ __('Excluir') }}
-                            </button>
-                        </form>
                     </div>
                 </div>
                 {{-- Navegação --}}
@@ -35,14 +26,6 @@
                     <li class="nav-item">
                         <a class="nav-link active" id="pills-principal-tab" data-toggle="pill" href="#pills-principal"
                            role="tab" aria-controls="pills-principal" aria-selected="true">Principal</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-priorizacao-tab" data-toggle="pill" href="#pills-priorizacao"
-                           role="tab" aria-controls="pills-priorizacao" aria-selected="false">Priorização</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-alocacao-tab" data-toggle="pill" href="#pills-alocacao"
-                           role="tab" aria-controls="pills-alocacao" aria-selected="false">Alocação</a>
                     </li>
                 </ul>
                 {{-- Conteúdo da navegação --}}
@@ -53,10 +36,9 @@
                         <div class="card">
                             <div class="card-header">{{ __('Editar roadmap') }}</div>
                             <div class="card-body">
-                                <form method="POST" id="form-roadmap" action="{{ route('roadmaps.update', $roadmap) }}">
-                                    @method('PUT')
+                                <form method="POST" id="form-principal"
+                                      action="{{ route('roadmaps.update', $roadmap) }}">
                                     @csrf
-
                                     <div class="form-group row">
                                         <label for="id"
                                                class="col-md-4 col-form-label text-md-right">{{ __('Id') }}</label>
@@ -68,11 +50,27 @@
                                                    disabled>
                                         </div>
                                     </div>
+                                    <div class="form-group row">
+                                        <label for="descricao"
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Descricao') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="descricao" type="text"
+                                                   class="form-control @error('descricao') is-invalid @enderror"
+                                                   name="descricao"
+                                                   value="{{ isset($roadmap->descricao)?$roadmap->descricao:old('descricao') }}"
+                                                   required
+                                                   autocomplete="descricao" autofocus>
 
+                                            @error('descricao')
+                                            <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                            @enderror
+                                        </div>
+                                    </div>
                                     <div class="form-group row">
                                         <label for="data_base"
                                                class="col-md-4 col-form-label text-md-right">{{ __('Data base') }}</label>
-
                                         <div class="col-md-6">
                                             <input id="data_base" type="date"
                                                    class="form-control @error('data_base') is-invalid @enderror"
@@ -87,21 +85,9 @@
                                             @enderror
                                         </div>
                                     </div>
-
-
                                 </form>
                             </div>
                         </div>
-                    </div>
-                    {{-- Aba Priorização --}}
-                    <div class="tab-pane fade" id="pills-priorizacao" role="tabpanel"
-                         aria-labelledby="pills-principal-tab">
-
-                    </div>
-                    {{-- Aba Alocação --}}
-                    <div class="tab-pane fade" id="pills-alocacao" role="tabpanel"
-                         aria-labelledby="pills-principal-tab">
-
                     </div>
                 </div>
             </div>
