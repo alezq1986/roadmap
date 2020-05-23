@@ -86,7 +86,9 @@ class ProjetoController extends Controller
      */
     public function edit(Projeto $projeto)
     {
-        return view('projetos.edit', ['projeto' => $projeto]);
+        $atividades = $projeto->atividades;
+
+        return view('projetos.edit', ['projeto' => $projeto, 'atividade' => $atividades]);
     }
 
     /**

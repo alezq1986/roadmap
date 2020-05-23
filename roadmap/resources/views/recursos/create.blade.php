@@ -126,10 +126,12 @@
                                                        autofocus>
                                                 <div class="input-group-append">
                                                     <button class="input-group-text lookup"
-                                                            modelo="Competencia">
+                                                            modelo="Competencia" coluna="descricao">
                                                         <i class="fa fa-search"></i>
                                                     </button>
-                                                    @include('layouts.modal')
+                                                    <div id="modal-Competencia">
+                                                        @include('layouts.modal')
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -181,10 +183,12 @@
                                                        autofocus>
                                                 <div class="input-group-append">
                                                     <button class="input-group-text lookup"
-                                                            modelo="Equipe">
+                                                            modelo="Equipe" coluna="descricao">
                                                         <i class="fa fa-search"></i>
                                                     </button>
-                                                    @include('layouts.modal')
+                                                    <div id="modal-Equipe">
+                                                        @include('layouts.modal')
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

@@ -72,7 +72,7 @@
                                                        autofocus>
                                                 <div class="input-group-append">
                                                     <button class="input-group-text lookup"
-                                                            modelo="Equipe">
+                                                            modelo="Equipe" coluna="descricao">
                                                         <i class="fa fa-search"></i>
                                                     </button>
                                                     @include('layouts.modal')

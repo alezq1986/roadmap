@@ -22,20 +22,22 @@ function ajaxRequest(dados, rota) {
 
 }
 
-function criarLookupModal(modelo, data) {
+function criarLookupModal(modelo, data, target) {
 
-    $("#results-list").remove();
+    var modal = $("#" + target);
 
-    $(".modal-body").append("<ul id='results-list'> </ul>");
+    modal.find("#results-list").remove();
+
+    modal.find(".modal-body").append("<ul id='results-list'> </ul>");
 
     var i;
     for (i = 0; i < data.length; i++) {
 
-        $("#results-list").append("<li id=" + data[i].id + ">" + data[i].descricao + "</li>");
+        modal.find("#results-list").append("<li id=" + data[i].id + ">" + data[i].descricao + "</li>");
 
     }
 
-    $('#lookupModal').modal('show');
+    modal.children("div").modal('show');
 
     $("li").click(function () {
 
@@ -166,16 +168,21 @@ $(document).ready(function () {
 
         event.preventDefault();
 
-        let modelo = $(".lookup").attr('modelo');
+        let modelo = $(this).attr('modelo');
 
+        let target = "modal-" + modelo;
 
-        let id = $("input[name=" + modelo.toLowerCase() + '_id]').val();
+        let coluna = $(this).attr('coluna');
+
+        let id = $(this).parent().siblings('input').val();
 
         let dados = new Array();
 
         let dado = new Object();
 
         dado.modelo = modelo;
+
+        dado.coluna = coluna;
 
         dado.id = id;
 
@@ -186,7 +193,7 @@ $(document).ready(function () {
 
         $.when(data).done(function (response) {
 
-            criarLookupModal(modelo, response.resultado);
+            criarLookupModal(modelo, response.resultado, target);
         });
 
     });

@@ -21,7 +21,17 @@ class AjaxController extends Controller
 
         } else {
 
-            $resultado = $classe::where('descricao', 'ilike', "%{$request->input('dados')[0]['id']}%")->get();
+            if ($classe == 'App\Recurso') {
+
+                $resultado = $classe::where('nome', 'ilike', "%{$request->input('dados')[0]['id']}%")->get();
+
+
+            } else {
+
+                $resultado = $classe::where('descricao', 'ilike', "%{$request->input('dados')[0]['id']}%")->get();
+                $a = 1;
+            }
+
 
         }
 
