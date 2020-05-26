@@ -11,98 +11,134 @@ class FuncoesFilhos extends Model
 
     /**
      * @param Request $request
-     * @param Model $modelo
+     * @param Model $modelo_principal
      * @throws \ReflectionException
      */
-    public static function criarFilhosPivot(Request $request, Model $modelo)
+    public static function criarFilhos(Request $request, Model $modelo_principal)
     {
-        $desc_modelo = strtolower((new \ReflectionClass($modelo))->getShortName());
+        if ($request->session()->has('filhos')) {
 
-        if (isset($request->session()->get('filhos_pivot')['filhos_incluir'])) {
+            $filhos = $request->session()->get('filhos');
 
-            foreach ($request->session()->get('filhos_pivot')['filhos_incluir'] as $filho) {
+            foreach ($filhos as $tabela => $conteudo) {
 
-                $desc_modelo_relacionado = strtolower($filho['modelo']);
+                if (strpos($tabela, '_') === false) {
 
-                if (strcmp($desc_modelo, $desc_modelo_relacionado) <= 0) {
+                    if (substr($tabela, -3) == 'ses') {
 
-                    $tabela = $desc_modelo . '_' . $desc_modelo_relacionado;
+                        $modelo = ucfirst(substr($tabela, 0, -2));
+
+                    } else {
+
+                        $modelo = ucfirst(substr($tabela, 0, -1));
+                    }
+
+                    $modelo = 'App\\' . $modelo;
+
+                    if (isset($conteudo['filhos_incluir'])) {
+
+                        foreach ($conteudo['filhos_incluir'] as $filho_incluir) {
+
+                            $dados = array_filter($filho_incluir, function ($coluna) {
+
+                                return $coluna != 'id';
+
+                            }, ARRAY_FILTER_USE_KEY);
+
+                            if (is_numeric($filho_incluir['id'])) {
+
+                                $atualizado = $modelo::find($filho_incluir['id']);
+
+                                foreach ($dados as $coluna => $valor) {
+
+                                    $atualizado->$coluna = $valor;
+
+                                }
+
+                                $atualizado->save();
+
+                            } else {
+
+                                $chave_estrangeira = strtolower((new \ReflectionClass($modelo_principal))->getShortName()) . "_id";
+
+                                $chave_estrangeira_valor = $modelo_principal->id;
+
+                                $dados[$chave_estrangeira] = $chave_estrangeira_valor;
+
+                                $modelo::create($dados);
+
+                            }
+
+                        }
+
+                    }
+
+                    if (isset($conteudo['filhos_deletar'])) {
+
+                        foreach ($conteudo['filhos_deletar'] as $filho_deletar) {
+
+                            $deletado = $modelo::find($filho_deletar['id']);
+
+                            $deletado->delete();
+
+                        }
+
+                    }
 
                 } else {
 
-                    $tabela = $desc_modelo_relacionado . '_' . $desc_modelo;
+                    if (isset($conteudo['filhos_incluir'])) {
+
+                        foreach ($conteudo['filhos_incluir'] as $filho_incluir) {
+
+                            $dados = array_filter($filho_incluir, function ($coluna) {
+
+                                return $coluna != 'id';
+
+                            }, ARRAY_FILTER_USE_KEY);
+
+                            $modelo_pivot = strtolower((new \ReflectionClass($modelo_principal))->getShortName());
+
+                            $dados[$modelo_pivot . '_id'] = $modelo_principal->id;
+
+                            DB::table($tabela)->insertOrIgnore([
+                                $dados
+                            ]);
+
+                        }
+                    }
+
+                    if (isset($conteudo['filhos_deletar'])) {
+
+                        foreach ($conteudo['filhos_deletar'] as $filho_deletar) {
+
+                            $dados = array_filter($filho_deletar, function ($coluna) {
+
+                                return $coluna != 'id';
+
+                            }, ARRAY_FILTER_USE_KEY);
+
+                            $delete = DB::table($tabela);
+
+                            foreach ($dados as $coluna => $valor) {
+
+                                $delete = $delete->where($coluna, '=', $valor);
+
+                            }
+
+                            $delete->delete();
+                        }
+
+                    }
+
                 }
 
-                DB::table($tabela)->insertOrIgnore([
-                    $desc_modelo . '_id' => $modelo->id,
-                    $desc_modelo_relacionado . '_id' => $filho['id']
-                ]);
 
             }
+
         }
 
-        if (isset($request->session()->get('filhos_pivot')['filhos_deletar'])) {
-
-            foreach ($request->session()->get('filhos_pivot')['filhos_deletar'] as $filho) {
-
-                $desc_modelo_relacionado = strtolower($filho['modelo']);
-
-                if (strcmp($desc_modelo, $desc_modelo_relacionado) <= 0) {
-
-                    $tabela = $desc_modelo . '_' . $desc_modelo_relacionado;
-
-                } else {
-
-                    $tabela = $desc_modelo_relacionado . '_' . $desc_modelo;
-                }
-
-                DB::table($tabela)->where(
-                    $desc_modelo . '_id', '=', $modelo->id
-                )->where(
-                    $desc_modelo_relacionado . '_id', '=', $filho['id']
-                )->delete();
-
-            }
-        }
-        $request->session()->forget('filhos_pivot');
-    }
-
-    public static function criarFilhos(Request $request, Model $modelo)
-    {
-
-        if (isset($request->session()->get('filhos')['filhos_incluir'])) {
-
-            foreach ($request->session()->get('filhos')['filhos_incluir'] as $filho) {
-
-                $classe_nome = 'App\\' . $modelo;
-
-                $classe = new $classe_nome;
-
-                $tabela = $classe_nome->table;
-
-                DB::table($tabela)->insertOrIgnore([
-                    $filho
-                ]);
-
-            }
-        }
-
-        if (isset($request->session()->get('filhos')['filhos_deletar'])) {
-
-            foreach ($request->session()->get('filhos')['filhos_deletar'] as $filho) {
-
-                $classe_nome = 'App\\' . $modelo;
-
-                $classe = new $classe_nome;
-
-                $tabela = $classe_nome->table;
-
-                DB::table($tabela)->where(
-                    'id', '=', $filho['id']
-                )->delete();
-
-            }
-        }
         $request->session()->forget('filhos');
     }
+
 }

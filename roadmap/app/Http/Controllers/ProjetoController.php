@@ -61,7 +61,7 @@ class ProjetoController extends Controller
     {
         $request->validate($this->rules);
 
-        Projeto::criarprojeto($request);
+        Projeto::criarProjeto($request);
 
         return redirect('projetos/');
 
@@ -88,7 +88,7 @@ class ProjetoController extends Controller
     {
         $atividades = $projeto->atividades;
 
-        return view('projetos.edit', ['projeto' => $projeto, 'atividade' => $atividades]);
+        return view('projetos.edit', ['projeto' => $projeto, 'atividades' => $atividades]);
     }
 
     /**
@@ -103,7 +103,7 @@ class ProjetoController extends Controller
 
         $request->validate($this->rules);
 
-        $projeto->atualizarprojeto($request, $projeto);
+        $projeto->atualizarProjeto($request, $projeto);
 
         return redirect('projetos/');
 

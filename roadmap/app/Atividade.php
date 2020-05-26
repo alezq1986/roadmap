@@ -51,6 +51,7 @@ class Atividade extends Model
         $prioridade = integerValue(DB::table('projeto_roadmap')->where('projeto_id', '=', $this->projeto->id)->first()->prioridade);
     }
 
+
     public function alocarAtividade(Roadmap $roadmap)
     {
         ini_set('memory_limit', '512M');

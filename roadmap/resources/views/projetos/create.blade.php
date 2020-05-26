@@ -12,7 +12,7 @@
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 {{-- Botões --}}
                 <div class="row mb-2 pb-2 border-bottom">
                     <div class="col-md-12">
@@ -40,7 +40,8 @@
                         <div class="card">
                             <div class="card-header">{{ __('Cadastrar projeto') }}</div>
                             <div class="card-body">
-                                <form method="POST" id="form-principal" action="{{ route('projetos.store') }}">
+                                <form method="POST" id="form-principal"
+                                      action="{{ route('projetos.store') }}">
                                     @csrf
 
                                     <div class="form-group row">
@@ -69,13 +70,16 @@
                                             <div class="input-group">
                                                 <input id="equipe_id" type="text"
                                                        class="form-control" name="equipe_id"
+                                                       value="{{ isset($projeto->equipe_id)?$projeto->equipe_id:old('equipe_id') }}"
                                                        autofocus>
                                                 <div class="input-group-append">
                                                     <button class="input-group-text lookup"
-                                                            modelo="Equipe" coluna="descricao">
+                                                            tipo="equipes">
                                                         <i class="fa fa-search"></i>
                                                     </button>
-                                                    @include('layouts.modal')
+                                                    <div id="modal-Equipe">
+                                                        @include('layouts.modal')
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -140,6 +144,163 @@
                     {{-- Aba Atividades --}}
                     <div class="tab-pane fade" id="pills-atividades" role="tabpanel"
                          aria-labelledby="pills-atividades-tab">
+
+                        <div class="card mb-5">
+                            <div class="card-header">{{ __('Atividades') }}</div>
+                            <div class="card-body">
+                                <form class="form-filho" method="POST" action="" tipo="atividades">
+                                    @csrf
+
+                                    <div class="form-group row">
+                                        <label for="atividades.id"
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Id') }}</label>
+                                        <div class="col-md-2">
+                                            <input id="atividades.id" type="number"
+                                                   class="form-control" name="atividades.id"
+                                                   coluna="id"
+                                                   disabled>
+                                        </div>
+                                        <label for="atividades.projeto_id"
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Projeto') }}</label>
+                                        <div class="col-md-2">
+                                            <input id="atividades.projeto_id" type="number"
+                                                   class="form-control" name="atividades.projeto_id"
+                                                   value="{{isset($projeto->id)?$projeto->id:null}}"
+                                                   coluna="projeto_id"
+                                                   disabled>
+                                        </div>
+                                        <label for="atividade_codigo"
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Código interno') }}</label>
+                                        <div class="col-md-2">
+                                            <input id="atividades.atividade_codigo" type="number"
+                                                   class="form-control" name="atividades.atividade_codigo"
+                                                   coluna="atividade_codigo"
+                                                   autofocus>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="atividades.descricao"
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Descrição') }}</label>
+                                        <div class="col-md-10">
+                                            <input id="atividades.descricao" type="text"
+                                                   class="form-control" name="atividades.descricao"
+                                                   coluna="descricao"
+                                                   autofocus>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="atividades.competencia_id"
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Competência') }}</label>
+                                        <div class="col-md-4">
+                                            <div class="input-group">
+                                                <input id="atividades.competencia_id" type="text"
+                                                       class="form-control" name="atividades.competencia_id"
+                                                       autofocus
+                                                       coluna="competencia_id">
+                                                <div class="input-group-append">
+                                                    <button class="input-group-text lookup"
+                                                            tipo="competencias">
+                                                        <i class="fa fa-search"></i>
+                                                    </button>
+                                                    <div id="modal-Competencia">
+                                                        @include('layouts.modal')
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <label for="atividades.prazo"
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Prazo') }}</label>
+                                        <div class="col-md-4">
+                                            <input id="atividades.prazo" type="text"
+                                                   class="form-control" name="atividades.prazo"
+                                                   coluna="prazo"
+                                                   autofocus>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="atividades.data_inicio_real"
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Data início') }}</label>
+                                        <div class="col-md-4">
+                                            <input id="atividades.data_inicio_real" type="date"
+                                                   class="form-control" name="atividades.data_inicio_real"
+                                                   coluna="data_inicio_real"
+                                                   autofocus>
+                                        </div>
+                                        <label for="atividades.data_fim_real"
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Data fim') }}</label>
+                                        <div class="col-md-4">
+                                            <input id="atividades.data_fim_real" type="date"
+                                                   class="form-control" name="atividades.data_fim_real"
+                                                   coluna="data_fim_real"
+                                                   autofocus>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="atividades.recurso_real_id"
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Recurso') }}</label>
+                                        <div class="col-md-4">
+                                            <div class="input-group">
+                                                <input id="atividades.recurso_real_id" type="text"
+                                                       class="form-control" name="atividades.recurso_real_id"
+                                                       coluna="recurso_real_id"
+                                                       autofocus>
+                                                <div class="input-group-append">
+                                                    <button class="input-group-text lookup"
+                                                            tipo="recurso-competencia">
+                                                        <i class="fa fa-search"></i>
+                                                    </button>
+                                                    <div id="modal-Recurso">
+                                                        @include('layouts.modal')
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <label for="atividades.percentual_real"
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Percentual') }}</label>
+                                        <div class="col-md-4">
+                                            <input id="atividades.percentual_real" type="text"
+                                                   class="form-control" name="atividades.percentual_real"
+                                                   coluna="percentual_real"
+                                                   autofocus>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row mb-0">
+                                        <div class="col-md-6 offset-md-4">
+                                            <button class="btn btn-primary incluir-filho"
+                                                    tipo="atividades">
+                                                {{ __('Incluir') }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">{{ __('Atividades') }}</div>
+                            <div class="card-body">
+                                <table class="table table-striped mt-2 tabela-filha" tipo="atividades">
+                                    <thead>
+                                    <tr>
+                                        <th coluna="id" class="d-none">Id</th>
+                                        <th coluna="projeto_id" class="d-none">Projeto</th>
+                                        <th coluna="atividade_codigo">Código interno</th>
+                                        <th coluna="descricao">Descrição</th>
+                                        <th coluna="competencia_id">Competência</th>
+                                        <th coluna="prazo">Prazo</th>
+                                        <th coluna="data_inicio_real" class="d-none">Data início</th>
+                                        <th coluna="data_fim_real" class="d-none">Data fim</th>
+                                        <th coluna="recurso_real_id">Recurso</th>
+                                        <th coluna="percentual_real" class="d-none">Percentual</th>
+                                        <th coluna="">Ação</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

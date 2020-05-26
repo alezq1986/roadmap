@@ -22,18 +22,41 @@ function ajaxRequest(dados, rota) {
 
 }
 
-function criarLookupModal(modelo, data, target) {
+function criarLookupModal(tipo, data, target) {
 
-    var modal = $("#" + target);
+    let modal = $("#" + target);
+
+    switch (tipo) {
+
+        case 'competencias':
+
+            var coluna = 'descricao';
+
+            break;
+
+        case 'equipes':
+
+            var coluna = 'descricao';
+
+            break
+
+        case 'recurso-competencia':
+
+            var coluna = 'nome';
+
+            break;
+
+        default:
+    }
 
     modal.find("#results-list").remove();
 
     modal.find(".modal-body").append("<ul id='results-list'> </ul>");
 
-    var i;
+    let i;
     for (i = 0; i < data.length; i++) {
 
-        modal.find("#results-list").append("<li id=" + data[i].id + ">" + data[i].descricao + "</li>");
+        modal.find("#results-list").append("<li id=" + data[i].id + ">" + data[i][coluna] + "</li>");
 
     }
 
@@ -43,124 +66,193 @@ function criarLookupModal(modelo, data, target) {
 
         let id_escolhida = $(this).attr('id');
 
-        $('#' + modelo.toLowerCase() + '_id').val(id_escolhida);
+        $(this).parents(".input-group").children("input").val(id_escolhida);
 
-        $('#lookupModal').modal('hide');
+        $('.modal').modal('hide');
 
     });
 
 }
 
-function inserirTabelaFilha(modelo, id) {
+function inserirTabelaFilha(tipo) {
 
-    if ($("table[modelo=" + modelo + "]").find("tr#" + id).length > 0) {
-        alert('Esse registro já existe na tabela.');
-    } else {
+    let objeto = new Object();
 
-        let dados = new Array();
+    let inputs = $("form[tipo=" + tipo + "]").find('input');
 
-        let dado = new Object();
+    let selects = $("form[tipo=" + tipo + "]").find('select');
 
-        dado.modelo = modelo;
+    inputs.each(function () {
 
-        dado.id = id;
+        objeto[$(this).attr("coluna")] = $(this).val();
 
-        dados.push(dado);
+    });
 
-        var data = ajaxRequest(dados, 'consultar');
+    selects.each(function () {
 
-        $.when(data).done(function (response) {
+        objeto[$(this).attr("coluna")] = $(this).val();
 
-            var objeto = response.resultado[0];
+    });
+    let headers = $("table[tipo=" + tipo + "]").find("th");
 
-            var tabela = null;
+    let colunas = new Array();
 
-            var entries = Object.entries(objeto);
+    let classes = new Array();
 
-            for (var i = 0; i < entries.length; i++) {
+    headers.each(function () {
 
-                let entry = entries[i];
+        colunas.push($(this).attr('coluna'));
 
-                if (entry[0] == 'id' || entry[0] == 'nome' || entry[0] == 'descricao') {
+        if (typeof $(this).attr('class') !== 'undefined') {
 
-                    tabela = tabela + "<td class='new-row-pivot' coluna=" + entry[0] + " coluna-valor=" + entry[1] + ">" + entry[1] + "</td>";
-                }
+            classes.push($(this).attr('class'));
 
-            }
+        } else {
 
-            $("table[modelo=" + modelo + "]>tbody").append(
-                "<tr id=" + objeto.id + ">" +
-                tabela +
-                "<td class='new-row-pivot'> <a type='button' class='btn btn-danger action-buttons remover-filho'><i class='fa fa-trash fa-sm'></i></a></td></tr>"
-            );
+            classes.push("");
+        }
 
-            passarFilhosPivotSessao();
 
-        });
+    });
+
+    let celulas = null;
+
+    let entries = Object.entries(objeto);
+
+    let j = 0;
+
+    for (let i = 0; i < entries.length; i++) {
+
+        let entry = entries[i];
+
+        if (jQuery.inArray(entry[0], colunas) > -1) {
+
+            celulas = celulas + "<td class='new-row " + classes[j] + "' coluna=" + entry[0] + " coluna-valor=" + entry[1] + ">" + entry[1] + "</td>";
+
+            j++;
+        }
 
     }
 
+    $("table[tipo=" + tipo + "]>tbody").append(
+        "<tr id=>" +
+
+        celulas +
+
+        "<td class='new-row'> <a type='button' class='btn btn-danger action-buttons remover-filho'><i class='fa fa-trash fa-sm'></i></a></td></tr>"
+    );
+
 }
 
-function removerTabelaFilha(modelo, id) {
+function removerTabelaFilha(tipo, id) {
 
-    $("table[modelo=" + modelo + "]").find("tr#" + id).children().addClass('deleted-row-pivot');
+    $("table[tipo=" + tipo + "]").find("tr#" + id).children().addClass('deleted-row');
 
-    passarFilhosPivotSessao();
 }
 
-function passarFilhosPivotSessao() {
+function passarFilhosSessao(tipo) {
 
-    let filhos_pivot = new Object();
+    let dados = new Object();
 
     let filhos_incluir = new Array();
 
     let filhos_deletar = new Array();
 
-    $(".new-row-pivot[coluna='id']").each(function () {
+    $("table[tipo=" + tipo + "]").find(".new-row").parents("tr").each(function () {
 
-        let c = new Object();
+        let o = new Object();
 
-        c.modelo = $(this).parents("table").attr('modelo');
+        $(this).children().each(function () {
 
-        c.id = parseInt($(this).text());
+            o[$(this).attr('coluna')] = $(this).attr('coluna-valor');
 
-        filhos_incluir.push(c);
 
-        filhos_pivot.filhos_incluir = filhos_incluir;
+        })
 
-    });
-
-    $(".deleted-row-pivot[coluna='id']").each(function () {
-
-        let d = new Object();
-
-        d.modelo = $(this).parents("table").attr('modelo');
-
-        d.id = parseInt($(this).text());
-
-        filhos_deletar.push(d);
-
-        filhos_pivot.filhos_deletar = filhos_deletar;
+        filhos_incluir.push(o);
 
     });
 
+    dados.filhos_incluir = filhos_incluir;
 
-    ajaxRequest(filhos_pivot, 'editar');
+
+    $("table[tipo=" + tipo + "]").find(".deleted-row").parents("tr").each(function () {
+
+        let o = new Object();
+
+        $(this).children().each(function () {
+
+            o[$(this).attr('coluna')] = $(this).attr('coluna-valor');
+
+
+        })
+
+        filhos_deletar.push(o);
+
+    });
+
+    dados.filhos_deletar = filhos_deletar;
+
+    dados.tipo = tipo;
+
+    ajaxRequest(dados, 'incluir');
 
 }
 
+////////////////////////////////////////////////
 $(document).ready(function () {
-
-    $(".include-child").on('click', function (event) {
+    $("button[form=form-principal]").on('click', function (event) {
 
         event.preventDefault();
 
-        let modelo = $(this).attr('modelo');
+        let $requests = new Array();
 
-        let id = $("input[name=" + modelo.toLowerCase() + '_id]').val();
+        $(".form-filho").each(function () {
 
-        inserirTabelaFilha(modelo, id);
+            let tipo = $(this).attr('tipo');
+
+            $request = passarFilhosSessao(tipo);
+
+            $requests.push($request);
+
+        });
+
+        $.when($requests).done(function (response) {
+
+            $("form#form-principal").submit();
+
+        });
+
+    });
+
+    $(".incluir-filho").on('click', function (event) {
+
+        event.preventDefault();
+
+        let tipo = $(this).attr('tipo');
+
+        let pos = tipo.indexOf('_');
+
+        if (pos != -1) {
+
+            let chave = tipo.substring(pos + 1) + "_id";
+
+            let valor = $("input[tipo=" + tipo + "][coluna=" + chave + "]").val();
+
+            if ($("table[tipo=" + tipo + "]").find("td[coluna=" + chave + "][coluna-valor=" + valor + "]").length > 0) {
+
+                alert('Esse registro já existe na tabela');
+
+            } else {
+
+                inserirTabelaFilha(tipo);
+            }
+
+        } else {
+
+            inserirTabelaFilha(tipo);
+        }
+
 
     });
 
@@ -168,50 +260,66 @@ $(document).ready(function () {
 
         event.preventDefault();
 
-        let modelo = $(this).attr('modelo');
+        let target = $(this).siblings("div").attr('id');
 
-        let target = "modal-" + modelo;
+        let dados = new Object();
 
-        let coluna = $(this).attr('coluna');
+        let tipo = $(this).attr('tipo');
 
-        let id = $(this).parent().siblings('input').val();
+        if ($(this).parent().siblings('input').length) {
 
-        let dados = new Array();
+            var valor = $(this).parent().siblings('input').val();
 
-        let dado = new Object();
+        } else if ($(this).parent().siblings('select').length) {
 
-        dado.modelo = modelo;
+            var valor = $(this).parent().siblings('select').val();
 
-        dado.coluna = coluna;
+        } else {
 
-        dado.id = id;
+            return;
 
-        dados.push(dado);
+        }
+
+        switch (tipo) {
+
+            case 'recurso-competencia':
+
+                var valor_relacionado = $(".lookup[tipo=competencias]").parent().siblings('input').val()
+
+                dados.valor_relacionado = valor_relacionado;
+
+                break;
+
+            default:
+        }
+
+        dados.tipo = tipo;
+
+        dados.valor = valor;
 
         var data = ajaxRequest(dados, 'consultar');
 
-
         $.when(data).done(function (response) {
 
-            criarLookupModal(modelo, response.resultado, target);
+            criarLookupModal(tipo, response.resultado, target);
         });
 
     });
 
     $("table").on('click', '.remover-filho', function () {
 
-        if ($(this).closest('td').hasClass('new-row-pivot')) {
+        let tipo = $(this).closest('table').attr('tipo');
+
+        if ($(this).closest('td').hasClass('new-row')) {
 
             $(this).closest('tr').remove();
 
         } else {
-            let modelo = $(this).closest('table').attr('modelo');
 
             let id = $(this).closest('tr').attr('id');
 
-            removerTabelaFilha(modelo, id);
+            removerTabelaFilha(tipo, id);
         }
-
 
     });
 

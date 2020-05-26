@@ -13,24 +13,60 @@ class AjaxController extends Controller
 
     public function consultar(Request $request)
     {
-        $classe = 'App\\' . $request->input('dados')[0]['modelo'];
 
-        if (is_numeric($request->input('dados')[0]['id'])) {
+        $valor = $request->input('dados')['valor'];
 
-            $resultado = $classe::where('id', '=', $request->input('dados')[0]['id'])->get();
+        switch ($request->input('dados')['tipo']) {
 
-        } else {
+            case 'competencias':
 
-            if ($classe == 'App\Recurso') {
+                $resultado_previo = DB::table('competencias')->select('id', 'descricao')
+                    ->where('id', '=', is_numeric($valor) ? $valor : null);
 
-                $resultado = $classe::where('nome', 'ilike', "%{$request->input('dados')[0]['id']}%")->get();
+                $resultado = DB::table('competencias')->select('id', 'descricao')
+                    ->where('descricao', 'ilike', "%{$valor}%")->union($resultado_previo)->get();
 
+                break;
 
-            } else {
+            case 'equipes':
 
-                $resultado = $classe::where('descricao', 'ilike', "%{$request->input('dados')[0]['id']}%")->get();
-                $a = 1;
-            }
+                $resultado_previo = DB::table('equipes')->select('id', 'descricao')
+                    ->where('id', '=', is_numeric($valor) ? $valor : null);
+
+                $resultado = DB::table('equipes')->select('id', 'descricao')
+                    ->where('descricao', 'ilike', "%{$valor}%")->union($resultado_previo)->get();
+
+                break;
+
+            case 'recurso-competencia':
+
+                $valor_relacionado = $request->input('dados')['valor_relacionado'];
+
+                $resultado_previo = DB::table('recursos')->select('recursos.id', 'recursos.nome')
+                    ->leftJoin('competencia_recurso', 'recursos.id', '=', 'competencia_recurso.recurso_id')
+                    ->where('recursos.id', '=', is_numeric($valor) ? $valor : null)
+                    ->where('competencia_recurso.competencia_id', '=', $valor_relacionado)
+                    ->where('recursos.data_fim', '>', date('Y-m-d', time()));
+
+                $resultado = DB::table('recursos')->select('recursos.id', 'recursos.nome')
+                    ->leftJoin('competencia_recurso', 'recursos.id', '=', 'competencia_recurso.recurso_id')
+                    ->where('recursos.nome', 'ilike', "%{$valor}%")
+                    ->where('recursos.data_fim', '>', date('Y-m-d', time()))
+                    ->union($resultado_previo);
+
+                if (!is_null($valor_relacionado)) {
+
+                    $resultado = $resultado->where('competencia_recurso.competencia_id', '=', $valor_relacionado)->get();
+
+                } else {
+
+                    $resultado = $resultado->get();
+
+                }
+
+                break;
+
+            default:
 
 
         }
@@ -47,6 +83,39 @@ class AjaxController extends Controller
         $request->session()->forget('filhos_pivot');
 
         $request->session()->put('filhos_pivot', $request->input('dados'));
+
+        return response()->json([
+
+            'resultado' => 0
+
+        ]);
+    }
+
+    public function incluir(Request $request)
+    {
+        $dados_ajax = $request->input('dados');
+
+        $dados_novos_sessao = array();
+
+        if ($request->session()->has('filhos')) {
+
+            $dados_novos_sessao = $request->session()->get('filhos');
+
+        }
+
+        if (isset($dados_ajax['filhos_incluir'])) {
+
+            $dados_novos_sessao[$dados_ajax['tipo']]['filhos_incluir'] = $dados_ajax['filhos_incluir'];
+
+        }
+
+        if (isset($dados_ajax['filhos_deletar'])) {
+
+            $dados_novos_sessao[$dados_ajax['tipo']]['filhos_deletar'] = $dados_ajax['filhos_deletar'];
+
+        }
+
+        $request->session()->put('filhos', $dados_novos_sessao);
 
         return response()->json([
 

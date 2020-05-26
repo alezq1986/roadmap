@@ -25,8 +25,20 @@
     background-color: #e9605c;
 }
 
+.new-row {
+    background-color: #98dfb6;
+}
+
+.deleted-row {
+    background-color: #e9605c;
+}
+
 #results-list {
     list-style-type: none;
+    max-height: 300px;
+    margin-bottom: 10px;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
 }
 
 #results-list > li {
@@ -49,3 +61,6 @@
     padding-top: 8em;
 }
 
+.selected-row-modal {
+    background-color: #98dfb6;
+}

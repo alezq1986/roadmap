@@ -12,7 +12,7 @@
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 {{-- Botões --}}
                 <div class="row mb-2 pb-2 border-bottom">
                     <div class="col-md-12">
@@ -47,6 +47,7 @@
                             <div class="card-body">
                                 <form method="POST" id="form-principal"
                                       action="{{ route('equipes.update', $equipe) }}">
+                                    @method('PUT')
                                     @csrf
                                     <div class="form-group row">
                                         <label for="id"

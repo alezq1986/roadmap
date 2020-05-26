@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+
 
 class Recurso extends Model
 {
@@ -93,11 +93,6 @@ class Recurso extends Model
                     FuncoesFilhos::criarFilhos($request, $recurso);
                 }
 
-                if ($request->session()->has('filhos_pivot')) {
-
-                    FuncoesFilhos::criarFilhosPivot($request, $recurso);
-                }
-
                 return $recurso;
 
             });
@@ -135,10 +130,6 @@ class Recurso extends Model
 
                 }
 
-                if ($request->session()->has('filhos_pivot')) {
-
-                    FuncoesFilhos::criarFilhosPivot($request, $recurso);
-                }
 
                 return $recurso;
 
