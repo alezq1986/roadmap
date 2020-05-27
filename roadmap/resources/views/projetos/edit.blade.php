@@ -92,13 +92,10 @@
                                                        value="{{ isset($projeto->equipe_id)?$projeto->equipe_id:old('equipe_id') }}"
                                                        autofocus>
                                                 <div class="input-group-append">
-                                                    <button class="input-group-text lookup"
-                                                            tipo="equipes">
+                                                    <button class="input-group-text"
+                                                            modal-tipo="equipes">
                                                         <i class="fa fa-search"></i>
                                                     </button>
-                                                    <div id="modal-Equipe">
-                                                        @include('layouts.modal')
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -217,13 +214,10 @@
                                                        autofocus
                                                        coluna="competencia_id">
                                                 <div class="input-group-append">
-                                                    <button class="input-group-text lookup"
-                                                            tipo="competencias">
+                                                    <button class="input-group-text"
+                                                            modal-tipo="competencias">
                                                         <i class="fa fa-search"></i>
                                                     </button>
-                                                    <div id="modal-Competencia">
-                                                        @include('layouts.modal')
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -264,13 +258,10 @@
                                                        coluna="recurso_real_id"
                                                        autofocus>
                                                 <div class="input-group-append">
-                                                    <button class="input-group-text lookup"
-                                                            tipo="recurso-competencia">
+                                                    <button class="input-group-text"
+                                                            modal-tipo="recursos_competencias">
                                                         <i class="fa fa-search"></i>
                                                     </button>
-                                                    <div id="modal-Recurso">
-                                                        @include('layouts.modal')
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

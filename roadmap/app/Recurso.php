@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 
 class Recurso extends Model
@@ -113,6 +114,7 @@ class Recurso extends Model
      */
     public static function atualizarRecurso(Request $request, Recurso $recurso)
     {
+
         try {
 
             $resultado = DB::transaction(function () use ($request, $recurso) {

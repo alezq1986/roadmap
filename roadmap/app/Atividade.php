@@ -17,7 +17,7 @@ class Atividade extends Model
         ['atividade_codigo', 'projeto_id',
             'descricao', 'competencia_id',
             'prazo', 'data_inicio_real',
-            'data_fim_real', 'recurso_id',
+            'data_fim_real', 'recurso_real_id',
             'percentual_real'
         ];
 

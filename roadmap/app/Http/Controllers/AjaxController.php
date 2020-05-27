@@ -14,87 +14,98 @@ class AjaxController extends Controller
     public function consultar(Request $request)
     {
 
-        $valor = $request->input('dados')['valor'];
+        $dados = $request->input('dados');
 
-        switch ($request->input('dados')['tipo']) {
+        switch ($dados['tipo_principal']['tipo']) {
 
             case 'competencias':
 
-                $resultado_previo = DB::table('competencias')->select('id', 'descricao')
-                    ->where('id', '=', is_numeric($valor) ? $valor : null);
-
-                $resultado = DB::table('competencias')->select('id', 'descricao')
-                    ->where('descricao', 'ilike', "%{$valor}%")->union($resultado_previo)->get();
-
-                break;
-
             case 'equipes':
 
-                $resultado_previo = DB::table('equipes')->select('id', 'descricao')
-                    ->where('id', '=', is_numeric($valor) ? $valor : null);
+                $coluna = 'descricao';
 
-                $resultado = DB::table('equipes')->select('id', 'descricao')
-                    ->where('descricao', 'ilike', "%{$valor}%")->union($resultado_previo)->get();
+                $filtros_adicionais = [];
 
                 break;
 
-            case 'recurso-competencia':
+            case 'recursos':
 
-                $valor_relacionado = $request->input('dados')['valor_relacionado'];
+                $coluna = 'nome';
 
-                $resultado_previo = DB::table('recursos')->select('recursos.id', 'recursos.nome')
-                    ->leftJoin('competencia_recurso', 'recursos.id', '=', 'competencia_recurso.recurso_id')
-                    ->where('recursos.id', '=', is_numeric($valor) ? $valor : null)
-                    ->where('competencia_recurso.competencia_id', '=', $valor_relacionado)
-                    ->where('recursos.data_fim', '>', date('Y-m-d', time()));
-
-                $resultado = DB::table('recursos')->select('recursos.id', 'recursos.nome')
-                    ->leftJoin('competencia_recurso', 'recursos.id', '=', 'competencia_recurso.recurso_id')
-                    ->where('recursos.nome', 'ilike', "%{$valor}%")
-                    ->where('recursos.data_fim', '>', date('Y-m-d', time()))
-                    ->union($resultado_previo);
-
-                if (!is_null($valor_relacionado)) {
-
-                    $resultado = $resultado->where('competencia_recurso.competencia_id', '=', $valor_relacionado)->get();
-
-                } else {
-
-                    $resultado = $resultado->get();
-
-                }
+                $filtros_adicionais = [['data_fim', '>=', date('Y-m-d', time())]];
 
                 break;
 
             default:
 
+                $coluna = 'descricao';
+
+                $filtros_adicionais = [];
 
         }
+
+
+        $qp_id = DB::table($dados['tipo_principal']['tipo'])->select($dados['tipo_principal']['tipo'] . '.id', $dados['tipo_principal']['tipo'] . '.' . $coluna . ' as coluna')
+            ->where($dados['tipo_principal']['tipo'] . '.id', '=', is_numeric($dados['tipo_principal']['valor']) ? $dados['tipo_principal']['valor'] : null);
+
+        $qp_desc = DB::table($dados['tipo_principal']['tipo'])->select($dados['tipo_principal']['tipo'] . '.id', $dados['tipo_principal']['tipo'] . '.' . $coluna . ' as coluna')
+            ->where($dados['tipo_principal']['tipo'] . '.' . $coluna, 'ilike', "%{$dados['tipo_principal']['valor']}%");
+
+        if (isset($dados['tipos_relacionados']) && sizeof($dados['tipos_relacionados'])) {
+
+            foreach ($dados['tipos_relacionados'] as $tr) {
+
+                if (strcmp($dados['tipo_principal']['tipo'], $tr['tipo']) <= 0) {
+
+                    $tabela_r = substr($dados['tipo_principal']['tipo'], 0, -1) . "_" . substr($tr['tipo'], 0, -1);
+
+                } else {
+
+                    $tabela_r = substr($tr['tipo'], 0, -1) . "_" . substr($dados['tipo_principal']['tipo'], 0, -1);
+
+                }
+
+                $qp_id = $qp_id->leftJoin($tabela_r, $dados['tipo_principal']['tipo'] . '.id', '=', $tabela_r . '.' . substr($dados['tipo_principal']['tipo'], 0, -1) . '_id');
+
+                $qp_desc = $qp_desc->leftJoin($tabela_r, $dados['tipo_principal']['tipo'] . '.id', '=', $tabela_r . '.' . substr($dados['tipo_principal']['tipo'], 0, -1) . '_id');
+
+                if (!is_null($tr['valor'])) {
+
+                    $qp_id = $qp_id->where($tabela_r . '.' . substr($tr['tipo'], 0, -1) . '_id', '=', $tr['valor']);
+
+                    $qp_desc = $qp_desc->where($tabela_r . '.' . substr($tr['tipo'], 0, -1) . '_id', '=', $tr['valor']);
+
+                }
+            }
+        }
+
+        if (isset($filtros_adicionais) && sizeof($filtros_adicionais)) {
+
+            foreach ($filtros_adicionais as $f) {
+
+                $qp_id = $qp_id->where($f[0], $f[1], $f[2]);
+
+                $qp_desc = $qp_desc->where($f[0], $f[1], $f[2]);
+
+            }
+
+        }
+
+        $resultado = $qp_desc->union($qp_id)->get();
 
         return response()->json([
 
             'resultado' => $resultado
 
         ]);
-    }
 
-    public function editar(Request $request)
-    {
-        $request->session()->forget('filhos_pivot');
-
-        $request->session()->put('filhos_pivot', $request->input('dados'));
-
-        return response()->json([
-
-            'resultado' => 0
-
-        ]);
+        $request->session()->forget('dados');
     }
 
     public function incluir(Request $request)
     {
         $dados_ajax = $request->input('dados');
-
+        Log::info('AjaxController', ["dados_ajax" => $dados_ajax]);
         $dados_novos_sessao = array();
 
         if ($request->session()->has('filhos')) {
@@ -116,12 +127,13 @@ class AjaxController extends Controller
         }
 
         $request->session()->put('filhos', $dados_novos_sessao);
-
+        Log::info('AjaxController', ["filhos" => $request->session()->get('filhos')]);
         return response()->json([
 
             'resultado' => 0
 
         ]);
+
     }
 
     public function atualizarProjetos(Request $request)
@@ -150,6 +162,8 @@ class AjaxController extends Controller
             return 1;
         }
 
+        $request->session()->forget('dados');
+
         return response()->json([
 
             'resultado' => $resultado
@@ -164,6 +178,9 @@ class AjaxController extends Controller
 
 
         $alocar = dispatch(new alocarRoadmap($roadmap));
+
+        $request->session()->forget('dados');
+
     }
 
 }

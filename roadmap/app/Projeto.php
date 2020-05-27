@@ -6,6 +6,7 @@ use App\Atividade;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Projeto extends Model
 {
@@ -69,7 +70,6 @@ class Projeto extends Model
                 $projeto->status_aprovacao = $request->input('status_aprovacao');
 
                 $projeto->save();
-
 
                 if ($request->session()->has('filhos')) {
 
