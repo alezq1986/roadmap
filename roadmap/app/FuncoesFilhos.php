@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Routing\Redirector;
 
 class FuncoesFilhos extends Model
 {
@@ -13,6 +13,7 @@ class FuncoesFilhos extends Model
     /**
      * @param Request $request
      * @param Model $modelo_principal
+     * @return \Illuminate\Http\RedirectResponse
      * @throws \ReflectionException
      */
     public static function criarFilhos(Request $request, Model $modelo_principal)
@@ -51,15 +52,6 @@ class FuncoesFilhos extends Model
                             if (is_numeric($filho_incluir['id'])) {
 
                                 $atualizado = $modelo::find($filho_incluir['id']);
-
-//                                $parametros = $filho_incluir;
-//
-//                                unset($parametros['id']);
-//
-//                                $req = $request;
-//                                $req->merge($parametros);
-//
-//                                redirect()->action("AtividadeController@update", [$request, $atualizado]);
 
                                 foreach ($dados as $coluna => $valor) {
 

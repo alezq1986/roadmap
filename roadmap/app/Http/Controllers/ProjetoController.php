@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Projeto;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+
 
 class ProjetoController extends Controller
 {
@@ -101,7 +101,7 @@ class ProjetoController extends Controller
      */
     public function update(Request $request, Projeto $projeto)
     {
-        Log::info('ProjetoController', ["filhos" => $request->session()->get('filhos')]);
+
         $request->validate($this->rules);
 
         $projeto->atualizarProjeto($request, $projeto);

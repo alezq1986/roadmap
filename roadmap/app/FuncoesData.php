@@ -293,6 +293,13 @@ class FuncoesData extends Model
      */
     public static function calcularDataFim($data_inicio, $prazo, Collection $datas_indisponiveis, Collection $feriados = null)
     {
+
+        if ($prazo < 0) {
+
+            return;
+
+        }
+
         if (is_null($feriados)) {
             $municipio_padrao = Parametro::where('codigo', '=', 1)->first();
 

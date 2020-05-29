@@ -171,7 +171,7 @@ class FormFilho {
 
 class ModalPesquisa {
 
-    constructor(tipo) {
+    constructor(tipo, idx) {
 
         this.tipo = tipo;
 
@@ -179,7 +179,7 @@ class ModalPesquisa {
 
         tipo_principal.tipo = tipo.split("_")[0];
 
-        tipo_principal.valor = $("button[modal-tipo=" + tipo + "]").parent().siblings('input').val();
+        tipo_principal.valor = $("button[modal-tipo=" + tipo + "]").eq(idx).parent().siblings('input').val();
 
         this.tipo_principal = tipo_principal;
 
@@ -199,7 +199,7 @@ class ModalPesquisa {
 
                 o.tipo = trt[i];
 
-                o.valor = $("input[coluna=" + trt[i].slice(0, -1) + "_id], select[coluna=" + trt[i].slice(0, -1) + "_id]").val();
+                o.valor = $("input[coluna=" + trt[i].slice(0, -1) + "_id], select[coluna=" + trt[i].slice(0, -1) + "_id]").eq(idx).val();
 
                 tr.push(o);
 
@@ -232,7 +232,7 @@ class ModalPesquisa {
 
             if ($(".modal[tipo=" + tipo + "]").length === 0) {
 
-                $("button[modal-tipo=" + tipo + "]").after(
+                $("button[modal-tipo=" + tipo + "]").first().after(
                     "<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true' tipo=" + tipo + ">" +
                     "<div class='modal-dialog' role='document'>" +
                     "<div class='modal-content'>" +
@@ -361,7 +361,11 @@ $(document).ready(function () {
 
         event.preventDefault();
 
-        let m = new ModalPesquisa($(this).attr('modal-tipo'));
+        let tipo = $(this).attr('modal-tipo');
+
+        let idx = $("button[modal-tipo=" + tipo + "]").index($(this));
+
+        let m = new ModalPesquisa(tipo, idx);
 
 
         m.criarModal();
