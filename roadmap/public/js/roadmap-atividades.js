@@ -42,7 +42,7 @@ $(document).ready(function () {
 
                 dados.roadmap_id = null;
 
-                let r = ajaxRequest(dados, '/ajax/calculardatas');
+                let r = ajaxRequest(dados, '/atividades/calcular-datas');
 
                 $(this).addClass('is-invalid');
 
@@ -88,7 +88,7 @@ $(document).ready(function () {
 
             dados.roadmap_id = null;
 
-            let r = ajaxRequest(dados, '/ajax/calcularpercentual');
+            let r = ajaxRequest(dados, '/atividades/calcular-percentual');
 
             $.when(r).done(function (response) {
 

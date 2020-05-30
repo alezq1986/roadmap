@@ -61,12 +61,18 @@ class Atividade extends Model
 
             return null;
         }
+        $contador_testes = 0;
 
         foreach ($atividades as $atividade) {
 
+            if ($atividade->competencia_id == 5) {
+
+                $contador_testes++;
+            }
+
             $ap = array();
 
-            switch ($atividade->competencia->id) {
+            switch ($atividade->competencia_id) {
 
                 case 1:
 
@@ -91,12 +97,15 @@ class Atividade extends Model
                     break;
 
                 case 5:
-                    if ($atividade->descricao != 'Teste Master') {
-                        $ap = [1, 2, 3];
-                    } else {
-                        $ap = [5];
-                    }
+                    if ($contador_testes > 1) {
 
+                        $ap = [5];
+
+                    } else {
+
+                        $ap = [1, 2, 3];
+
+                    }
 
                     break;
 
@@ -119,15 +128,15 @@ class Atividade extends Model
                     break;
             }
 
-            if ($atividade->descricao != 'Teste Master') {
+            if ($contador_testes > 1 && $atividade->competencia_id == 5) {
 
                 $atividades_predecessoras = Atividade::where('projeto_id', '=', $atividade->projeto->id)->whereIn
-                ('competencia_id', $ap)->get();
+                ('competencia_id', $ap)->orderBy('atividade_codigo', 'ASC')->skip($contador_testes - 2)->limit(1)->get();
 
             } else {
 
                 $atividades_predecessoras = Atividade::where('projeto_id', '=', $atividade->projeto->id)->whereIn
-                ('competencia_id', $ap)->where('descricao', '=', 'Teste Ramo')->get();
+                ('competencia_id', $ap)->get();
 
             }
 

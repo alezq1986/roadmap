@@ -14,7 +14,7 @@ class Projeto extends Model
 
     public function atividades()
     {
-        return $this->hasMany('App\Atividade');
+        return $this->hasMany('App\Atividade')->orderBy('atividade_codigo', 'ASC');
     }
 
     public function equipe()

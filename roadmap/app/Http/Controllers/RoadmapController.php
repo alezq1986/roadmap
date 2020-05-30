@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Equipe;
+use App\Jobs\alocarRoadmap;
 use App\Projeto;
 use App\Atividade;
 use App\Roadmap;
@@ -129,7 +130,7 @@ class RoadmapController extends Controller
         return redirect('roadmaps/');
     }
 
-    public function configura($id)
+    public function configurarRoadmap($id)
     {
         $roadmap = Roadmap::find($id);
 
@@ -156,6 +157,18 @@ class RoadmapController extends Controller
 
 
         return view('roadmaps.configura', ['projetos' => $projetos, 'roadmap' => $roadmap, 'atividades' => $atividades]);
+    }
+
+
+    public function alocarRoadmap(Request $request)
+    {
+
+        $roadmap = Roadmap::find(intval($request->input('dados')['roadmap']));
+
+        $alocar = dispatch(new alocarRoadmap($roadmap));
+
+        $request->session()->forget('dados');
+
     }
 
 }

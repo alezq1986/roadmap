@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Atividade;
+use App\Recurso;
+use App\Roadmap;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -109,8 +111,66 @@ class AtividadeController extends Controller
     function atualizarAtividades(Request $request)
     {
 
-
         Atividade::atualizarAtividades($request);
+
+    }
+
+    function calcularDatas(Request $request)
+    {
+
+        $dados = $request->input('dados');
+
+        $data_base = date('Y-m-d', time());
+
+        $roadmap = Roadmap::find(DB::raw("(select max(roadmap_id) from alocacoes)"));
+
+        $atividade = Atividade::find($dados['atividade_id']);
+
+        $atividade->data_inicio_real = $dados['data_inicio'];
+
+        $atividade->percentual_real = $dados['percentual'];
+
+        $recurso = Recurso::find($dados['recurso_id']);
+
+        $resultado['data'] = date('d/m/Y', strtotime($atividade->calcularDataFimPorPercentual($roadmap, $recurso, $data_base)));
+
+        $resultado['id'] = $dados['atividade_id'];
+
+        return response()->json([
+
+            'resultado' => $resultado
+
+        ]);
+
+
+    }
+
+    function calcularPercentual(Request $request)
+    {
+
+        $dados = $request->input('dados');
+
+        $roadmap = Roadmap::find(DB::raw("(select max(roadmap_id) from alocacoes)"));
+
+        $data_base = date('Y-m-d', time());
+
+        $atividade = Atividade::find($dados['atividade_id']);
+
+        $data_inicio = $dados['data_inicio'];
+
+        $data_fim = $dados['data_fim'];
+
+        $recurso = Recurso::find($dados['recurso_id']);
+
+        $resultado['percentual'] = $atividade->calcularPercentualPorDataFim($roadmap, $recurso, $data_fim, $data_base, $data_inicio);
+
+        $resultado['id'] = $dados['atividade_id'];
+
+        return response()->json([
+
+            'resultado' => $resultado
+
+        ]);
 
     }
 

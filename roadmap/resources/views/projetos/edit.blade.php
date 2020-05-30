@@ -109,7 +109,7 @@
                                                     value="{{ isset($projeto->status)?$projeto->status:old('status') }}"
                                                     disabled>
                                                 <option value="0"
-                                                        @if(isset($projeto->status) && $projeto->status == 0) selected @endif>
+                                                        @if(is_null($projeto->status)  && $projeto->status == 0) selected @endif>
                                                     Não iniciado
                                                 </option>
                                                 <option value="1"
@@ -349,4 +349,5 @@
         </div>
     </div>
 @endsection
+
 @endauth

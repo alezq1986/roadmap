@@ -85,7 +85,7 @@
                                             <i class="fa fa-edit fa-sm"></i>
                                         </a>
                                         <a class="btn btn-secondary action-buttons"
-                                           href="{{ route('roadmap.configura', $roadmap) }}">
+                                           href="{{ route('roadmap.configurar', $roadmap) }}">
                                             <i class="fa fa-cog fa-sm"></i>
                                         </a>
                                         <form class="d-inline" method="POST"

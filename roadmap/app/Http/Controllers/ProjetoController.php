@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Projeto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 
 class ProjetoController extends Controller
@@ -122,6 +123,41 @@ class ProjetoController extends Controller
         $projeto->destroy($projeto->id);
 
         return redirect('projetos/');
+    }
+
+
+    public function incluirProjetosRoadmap(Request $request)
+    {
+        $dados = $request->input('dados');
+
+        try {
+
+            $resultado = DB::transaction(function () use ($dados) {
+
+                DB::table('projeto_roadmap')->where('roadmap_id', '=', $dados['roadmap'])->delete();
+
+                $max_id = DB::table('projeto_roadmap')->max('id');
+
+                $max_id = is_null($max_id) ? 1 : $max_id;
+
+                DB::update(DB::raw('ALTER SEQUENCE projeto_roadmap_id_seq RESTART WITH ' . $max_id));
+
+                DB::table('projeto_roadmap')->insert($dados['projetos']);
+
+            });
+
+        } catch (Exception $e) {
+
+            return 1;
+        }
+
+        $request->session()->forget('dados');
+
+        return response()->json([
+
+            'resultado' => $resultado
+
+        ]);
     }
 
 }

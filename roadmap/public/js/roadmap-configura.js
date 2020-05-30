@@ -246,7 +246,7 @@ $(document).ready(function ($) {
 
         a.atividades = atividades;
 
-        let r2 = ajaxRequest(JSON.stringify(a), '/atividades/atualizaratividades');
+        let r2 = ajaxRequest(JSON.stringify(a), '/atividades/atualizar-massa');
 
 
         $.when(r2).done(function () {
@@ -271,7 +271,7 @@ $(document).ready(function ($) {
 
         dados.roadmap = $('#roadmap-cabecalho').attr('roadmap-id');
 
-        var data = ajaxRequest(dados, '/ajax/alocarprojetos');
+        var data = ajaxRequest(dados, '/roadmaps/alocar');
 
         $.when(data).done(function () {
 

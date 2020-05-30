@@ -339,7 +339,7 @@
     <script type="text/javascript" src="{{ asset('js/roadmap-configura.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/roadmap-atividades.js') }}"></script>
 
-@stop
+@endsection
 
 @endauth
 

@@ -5,6 +5,7 @@ namespace App;
 use App\Feriado;
 use App\Municipio;
 use App\Parametro;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -94,7 +95,6 @@ class FuncoesData extends Model
 
         }
 
-
         if ($feriados->contains('data', $data)) {
             $livre = 0;
 
@@ -162,8 +162,9 @@ class FuncoesData extends Model
      * @param Collection $feriados
      * @return float|int
      */
-    public static function calcularDias($data_inicio, $data_fim, $modo = 0, $extremos = 0, Collection $datas_indisponiveis, Collection $feriados = null)
+    public static function calcularDias($data_inicio, $data_fim, $modo = 0, $extremos = 0, Collection $datas_indisponiveis = null, Collection $feriados = null)
     {
+
         if (is_null($feriados)) {
             $municipio_padrao = Parametro::where('codigo', '=', 1)->first();
 
@@ -186,21 +187,23 @@ class FuncoesData extends Model
             }
         });
 
-        $datas_indisponiveis = $datas_indisponiveis->map(function ($data_indisponivel, $key) {
-            if (!is_integer($data_indisponivel['data_inicio'])) {
-                $data_inicio = strtotime($data_indisponivel['data_inicio']);
-            } else {
-                $data_inicio = $data_indisponivel['data_inicio'];
-            }
+        if (!is_null($datas_indisponiveis)) {
 
-            if (!is_integer($data_indisponivel['data_fim'])) {
-                $data_fim = strtotime($data_indisponivel['data_fim']);
-            } else {
-                $data_fim = $data_indisponivel['data_fim'];
-            }
-            return ['data_inicio' => $data_inicio, 'data_fim' => $data_fim];
-        });
+            $datas_indisponiveis = $datas_indisponiveis->map(function ($data_indisponivel, $key) {
+                if (!is_integer($data_indisponivel['data_inicio'])) {
+                    $data_inicio = strtotime($data_indisponivel['data_inicio']);
+                } else {
+                    $data_inicio = $data_indisponivel['data_inicio'];
+                }
 
+                if (!is_integer($data_indisponivel['data_fim'])) {
+                    $data_fim = strtotime($data_indisponivel['data_fim']);
+                } else {
+                    $data_fim = $data_indisponivel['data_fim'];
+                }
+                return ['data_inicio' => $data_inicio, 'data_fim' => $data_fim];
+            });
+        }
         switch ($extremos) {
             case 0:
 

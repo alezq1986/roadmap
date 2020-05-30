@@ -1,3 +1,162 @@
+class Validador {
+
+    constructor(regras) {
+
+        this.regras = regras;
+    }
+
+    _validarTipo(tipo, valor) {
+
+        switch (tipo) {
+
+            case 'string':
+
+                if (typeof (valor) == 'string') {
+
+                    return true;
+
+                } else {
+
+                    return false;
+
+                }
+
+            case 'number':
+
+                if (isNaN(valor) || valor.length == 0) {
+
+                    return false;
+
+                } else {
+
+                    return true;
+
+                }
+
+            case 'date':
+
+                let date = Date.parse(valor);
+
+                if (typeof (date) == 'number') {
+
+                    return true;
+
+                } else {
+
+                    return false;
+
+                }
+
+            default:
+
+                return false;
+
+        }
+
+    }
+
+    validar(dados) {
+
+        let erros = new Array();
+
+        let entries_dados = Object.entries(dados);
+
+        for (let i = 0; i < entries_dados.length; i++) {
+
+            let campo = entries_dados[i][0];
+
+            let valor = entries_dados[i][1];
+
+            if (campo in this.regras) {
+
+                let regra = this.regras[campo];
+
+                regra = regra.split('|');
+
+                regra = Array.isArray(regra) ? regra : [regra];
+
+                for (let j = 0; j < regra.length; j++) {
+
+                    let erro = new Object();
+
+                    if (regra[j] == 'required' && (valor == null || valor.length == 0)) {
+
+                        erro.campo = campo;
+
+                        erro.mensagem = 'O campo ' + campo + ' é mandatório.';
+
+                        erros.push(erro);
+
+                        break;
+
+                    } else if ((regra[j] == 'string' || regra[j] == 'number' || regra[j] == 'date') && this._validarTipo(regra[j], valor) === false) {
+
+                        erro.campo = campo;
+
+                        erro.mensagem = 'O campo ' + campo + ' deve ter o formato ' + regra[j] + '.';
+
+                        erros.push(erro);
+
+                        break;
+
+                    } else if (regra[j].includes('max:') && regra[j].replace('max:', '') < valor.length) {
+
+                        erro.campo = campo;
+
+                        erro.mensagem = 'O campo ' + campo + ' deve ter até ' + regra[j].replace('max:', '') + ' caracteres.';
+
+                        erros.push(erro);
+
+                        break;
+
+                    } else if (regra[j].includes('min:') && regra[j].replace('min:', '') > valor.length) {
+
+                        erro.campo = campo;
+
+                        erro.mensagem = 'O campo ' + campo + ' deve ter pelo menos ' + regra[j].replace('min:', '') + ' caracteres.';
+
+                        erros.push(erro);
+
+                        break;
+                    }
+
+                }
+
+            }
+
+        }
+
+        if (erros.length > 0) {
+
+            return erros;
+
+        } else {
+
+            return true;
+
+        }
+
+    }
+
+    marcarErros(erros) {
+
+        $("span.invalid-feedback").remove();
+
+        for (let i = 0; i < erros.length; i++) {
+
+            $("input[coluna=" + erros[i]['campo'] + "], select[coluna=" + erros[i]['campo'] + "]").parent().append(
+                "<span class='d-block invalid-feedback' role='alert'>" +
+                "<strong>" + erros[i]['mensagem'] + "</strong>" +
+                "</span>"
+            );
+
+        }
+
+    }
+
+}
+
+
 class FormFilho {
 
     constructor(tipo) {
@@ -11,6 +170,8 @@ class FormFilho {
         this.tabela = $("table[tipo=" + tipo + "]");
 
         this.tabela_coluna = null;
+
+        this.alimentarDados();
 
     }
 
@@ -293,6 +454,7 @@ class ModalPesquisa {
 function ajaxRequest(dados, rota) {
 
     let _token = $('meta[name="csrf-token"]').attr('content');
+
     var objDiferido = $.Deferred();
 
     $.ajax({
@@ -315,6 +477,22 @@ function ajaxRequest(dados, rota) {
 }
 
 $(document).ready(function () {
+
+    let regras = new Object();
+
+    let r = new Object();
+
+    r.descricao = 'required|string|max:100|min:3';
+
+    r.competencia_id = 'required|number';
+
+    r.recurso_real_id = 'required|number';
+
+    r.data_inicio_real = 'date';
+
+    r.data_fim_real = 'date';
+
+    regras['atividades'] = r;
 
     let filhos = FormFilho.pegarFilhos();
 
@@ -348,7 +526,20 @@ $(document).ready(function () {
 
         event.preventDefault();
 
-        filhos[$(this).attr('tipo')].inserirTabelaFilha();
+        filhos[$(this).attr('tipo')].alimentarDados();
+
+        let v = new Validador(regras[$(this).attr('tipo')]);
+
+        let validacao = v.validar(filhos[$(this).attr('tipo')].formulario_dados);
+
+        v.marcarErros(validacao);
+
+        if (validacao === true) {
+
+            filhos[$(this).attr('tipo')].inserirTabelaFilha();
+
+        }
+
     });
 
     $("table").on('click', '.remover-filho', function () {
