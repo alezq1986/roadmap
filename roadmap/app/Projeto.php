@@ -43,6 +43,8 @@ class Projeto extends Model
                 if ($request->session()->has('filhos')) {
 
                     FuncoesFilhos::criarFilhos($request, $projeto);
+
+                    Atividade::criarDependencias($projeto);
                 }
 
                 return $projeto;
@@ -74,6 +76,8 @@ class Projeto extends Model
                 if ($request->session()->has('filhos')) {
 
                     FuncoesFilhos::criarFilhos($request, $projeto);
+
+                    Atividade::criarDependencias($projeto);
 
                 }
 

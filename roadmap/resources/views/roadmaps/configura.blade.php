@@ -33,10 +33,18 @@
                 </button>
             </div>
             <div class="bs-stepper-line"></div>
+            <div class="step" data-target="#atualizacao-atividades">
+                <button type="button" class="step-trigger" role="tab" aria-controls="atualizacao-atividades"
+                        id="atualizacao-atividades-trigger">
+                    <span class="bs-stepper-circle">3</span>
+                    <span class="bs-stepper-label">Atualização</span>
+                </button>
+            </div>
+            <div class="bs-stepper-line"></div>
             <div class="step" data-target="#alocacao-projetos">
                 <button type="button" class="step-trigger" role="tab" aria-controls="alocacao-projetos"
                         id="alocacao-projetos-trigger">
-                    <span class="bs-stepper-circle">2</span>
+                    <span class="bs-stepper-circle">4</span>
                     <span class="bs-stepper-label">Alocação</span>
                 </button>
             </div>
@@ -174,6 +182,111 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Atualização -->
+            <div id="atualizacao-atividades" class="bs-stepper-pane" role="tabpanel"
+                 aria-labelledby="atualizacao-atividades-trigger">
+
+                <div class="row pb-2 sticky-top">
+                    <div class="col-md-12">
+                        <button class="btn btn-primary previous" id="button-previous-2">Anterior</button>
+                        <button class="btn  btn-primary next" id="button-next-3">Próximo</button>
+                    </div>
+                </div>
+                <div class="row" id="atualizacao-atividades-conteudo">
+                    <div class="col-md-12">
+                        <form method="POST" id="form-atividades">
+                            @csrf
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <div class="alert alert-primary" role="alert">
+                                        <input id="limpar_recursos" type="checkbox"
+                                               class="form-check-input ml-1" name="limpar_recursos" value="1">
+                                        <label class="form-check-label ml-4" for="limpar_recursos">
+                                            Desalocar recursos de atividades não iniciadas
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            @foreach($atividades as $atividade)
+                                <div class="form-group row atividade d-none" atividade="{{$atividade->id}}"
+                                     projeto="{{$atividade->projeto_id}}">
+                                    <div class="col-md-2">
+                                        <span>{{$atividade->projeto}}</span>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span>{{$atividade->descricao}}</span>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input id="{{$atividade->id}}-atividades-competencia_id" type="number"
+                                               class="form-control d-none"
+                                               name="{{$atividade->id}}-atividades-competencia_id"
+                                               valor-atual="{{$atividade->competencia_id}}"
+                                               value="{{$atividade->competencia_id}}"
+                                               coluna="competencia_id"
+                                               atividade="{{$atividade->id}}"
+                                               autofocus>
+                                        <input id="{{$atividade->id}}-projetos-equipe_id" type="number"
+                                               class="form-control d-none" name="{{$atividade->id}}-projetos-equipe_id"
+                                               valor-atual="{{$atividade->equipe_id}}"
+                                               value="{{$atividade->equipe_id}}"
+                                               atividade="{{$atividade->id}}"
+                                               coluna="equipe_id"
+                                               autofocus>
+                                        <input id="{{$atividade->id}}-alocacoes-data_inicio_proj" type="date"
+                                               class="form-control" name="{{$atividade->id}}-alocacoes-data_inicio_proj"
+                                               valor-atual="{{$atividade->data_inicio_proj}}"
+                                               value="{{$atividade->data_inicio_proj}}"
+                                               atividade="{{$atividade->id}}"
+                                               coluna="data_inicio_proj"
+                                               autofocus
+                                               @if($atividade->data_inicio_proj == $atividade->data_inicio_real) disabled @endif>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input id="{{$atividade->id}}-alocacoes-data_fim_proj" type="date"
+                                               class="form-control" name="{{$atividade->id}}-alocacoes-data_fim_proj"
+                                               valor-atual="{{$atividade->data_fim_proj}}"
+                                               value="{{$atividade->data_fim_proj}}"
+                                               atividade="{{$atividade->id}}"
+                                               coluna="data_fim_proj"
+                                               autofocus>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input id="{{$atividade->id}}-atividades-percentual_real" type="number"
+                                               class="form-control" name="{{$atividade->id}}-atividades-percentual_real"
+                                               valor-atual="{{$atividade->percentual_real}}"
+                                               value="{{$atividade->percentual_real}}"
+                                               atividade="{{$atividade->id}}"
+                                               coluna="percentual_real"
+                                               autofocus>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="input-group">
+                                            <input id="{{$atividade->id}}-recursos-recurso_real_id" type="text"
+                                                   class="form-control"
+                                                   name="{{$atividade->id}}-recursos-recurso_real_id"
+                                                   valor-atual="{{$atividade->recurso_real_id}}"
+                                                   value="{{$atividade->recurso_real_id}}"
+                                                   atividade="{{$atividade->id}}"
+                                                   coluna="recurso_real_id"
+                                                   autofocus>
+                                            <div class="input-group-append">
+                                                <button class="input-group-text"
+                                                        modal-tipo="recursos_competencias_equipes">
+                                                    <i class="fa fa-search"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <span class="small">{{$atividade->nome}}</span>
+                                    </div>
+                                </div>
+
+                            @endforeach
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Alocação -->
             <div id="alocacao-projetos" class="bs-stepper-pane" role="tabpanel"
                  aria-labelledby="alocacao-projetos-trigger">
@@ -224,6 +337,7 @@
 @section('scripts-especificos')
     <script type="text/javascript" src="{{ asset('js/multiselect.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/roadmap-configura.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/roadmap-atividades.js') }}"></script>
 
 @stop
 

@@ -6,6 +6,7 @@ $(document).ready(function ($) {
 
     $(".next").on('click', function (event) {
         stepper_roadmap.next();
+
     });
 
     $(".previous").on('click', function (event) {
@@ -40,7 +41,7 @@ $(document).ready(function ($) {
         }
     });
 
-    $("#button-next-1").on('click', function (event) {
+    $("#button-next-1").on('click', function () {
 
         var selecionados = $("#multiselect-projetos_to").children("option");
 
@@ -61,6 +62,42 @@ $(document).ready(function ($) {
             $("#projetos-prioriza").append(copia);
 
         }
+
+    });
+
+    $("#button-next-2").on('click', function () {
+
+        var selecionados = $("#multiselect-projetos_to").children("option");
+
+        for (var i = 0; i < selecionados.length; i++) {
+
+            let id = selecionados.eq(i).val();
+
+            $("div.atividade[projeto=" + id + "]").removeClass('d-none');
+
+        }
+
+    });
+
+    $("#button-previous-2").on('click', function () {
+
+        $("div.atividade").each(function () {
+
+            if ($(this).hasClass('d-none')) {
+
+
+            } else {
+
+                $(this).addClass('d-none')
+            }
+
+        });
+
+    });
+
+    $("#form-atividades input").on('blur', function () {
+
+        alteracao = 1;
 
     });
 
@@ -89,9 +126,7 @@ $(document).ready(function ($) {
 
     });
 
-    $("#button-next-2").on('click', function (event) {
-
-        let alerts = $("#alocacao-projetos-conteudo div");
+    $("#button-next-3").on('click', function (event) {
 
         switch (parseInt($("#roadmap-cabecalho").attr("roadmap-alocado"))) {
 
@@ -140,7 +175,7 @@ $(document).ready(function ($) {
 
     });
 
-    $("#button-previous-3").on('click', function (event) {
+    $("#button-previous-3").on('click', function () {
 
         $("#alert-emprocesso").show();
 
@@ -152,7 +187,7 @@ $(document).ready(function ($) {
 
     });
 
-    $("#configura-salvar").on('click', function (event) {
+    $("#configura-salvar").on('click', function () {
 
         let dados = new Object();
 
@@ -177,13 +212,48 @@ $(document).ready(function ($) {
 
         dados.projetos = projetos;
 
-        var data = ajaxRequest(dados, 'atualizarprojetos');
+        //let r1 = ajaxRequest(dados, '/ajax/atualizarprojetos');
 
-        $.when(data).done(function () {
+        let a = new Object();
+
+        let parametros = new Object();
+
+        let atividades = new Object();
+
+        parametros.limpar_recursos = ($("input#limpar_recursos:checked") === 'undefined') ? 0 : 1;
+
+        parametros.roadmap_id = $("#roadmap-cabecalho").attr("roadmap-id");
+
+        $("input[atividade]").each(function () {
+
+            if ($(this).attr('atividade') in atividades) {
+
+                atividades[$(this).attr('atividade')][$(this).attr('coluna')] = $(this).val();
+
+            } else {
+
+                let o = new Object();
+
+                o[$(this).attr('coluna')] = $(this).val();
+
+                atividades[$(this).attr('atividade')] = o;
+
+            }
+
+        });
+
+        a.parametros = parametros;
+
+        a.atividades = atividades;
+
+        let r2 = ajaxRequest(JSON.stringify(a), '/atividades/atualizaratividades');
+
+
+        $.when(r2).done(function () {
 
             alteracao = 0;
 
-            if (data.then()) {
+            if (r1.then() && r2.then()) {
 
                 $("#alert-alteracao").hide();
 
@@ -201,7 +271,7 @@ $(document).ready(function ($) {
 
         dados.roadmap = $('#roadmap-cabecalho').attr('roadmap-id');
 
-        var data = ajaxRequest(dados, 'alocarprojetos');
+        var data = ajaxRequest(dados, '/ajax/alocarprojetos');
 
         $.when(data).done(function () {
 

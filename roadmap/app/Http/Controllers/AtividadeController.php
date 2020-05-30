@@ -89,34 +89,28 @@ class AtividadeController extends Controller
 
     public function massEdit()
     {
-        $atividades = DB::table('atividades')->select('atividades.id as id', 'atividades.competencia_id as competencia_id', 'atividades.descricao as descricao', 'atividades.data_inicio_real', 'alocacoes.data_inicio_proj', 'alocacoes.data_fim_proj',
+        $atividades = DB::table('atividades')->select('atividades.projeto_id as projeto_id', 'atividades.id as id', 'atividades.competencia_id as competencia_id', 'atividades.descricao as descricao', 'atividades.data_inicio_real', 'alocacoes.data_inicio_proj', 'alocacoes.data_fim_proj',
             'atividades.percentual_real', 'projetos.descricao as projeto', 'recursos.nome as nome', 'atividades.recurso_real_id as recurso_real_id', 'projetos.equipe_id')
             ->leftJoin('projetos', 'atividades.projeto_id', '=', 'projetos.id')
             ->leftJoin('recursos', 'atividades.recurso_real_id', '=', 'recursos.id')
             ->leftJoin('alocacoes', 'atividades.id', '=', 'alocacoes.atividade_id')
             ->where('atividades.percentual_real', '<', 100)
-            ->where('projetos.status_aprovacao', '>', 0)
-            ->where('projetos.status', '<', 3)
+            ->whereNotIn('projetos.status_aprovacao', [0])
+            ->whereNotIn('projetos.status', [3])
             ->where('alocacoes.roadmap_id', '=', DB::raw("(select max(roadmap_id) from alocacoes)"))
             ->orderBy('projetos.id', 'ASC')
             ->orderBy('atividades.atividade_codigo', 'ASC')
             ->get();
 
-        $projetos = DB::table('projetos')
-            ->where('projetos.status_aprovacao', '>', 0)
-            ->where('projetos.status', '<', 3)
-            ->orderBy('projetos.id', 'ASC')
-            ->get();
-
-
-        return view('atividades.mass-edit', ['atividades' => $atividades, 'projetos' => $projetos]);
+        return view('atividades.mass-edit', ['atividades' => $atividades]);
     }
 
-    function massUpdate(Request $request)
+
+    function atualizarAtividades(Request $request)
     {
 
 
-        Atividade::atualizarAtividadeMassa($request);
+        Atividade::atualizarAtividades($request);
 
     }
 

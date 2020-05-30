@@ -233,7 +233,7 @@ class AjaxController extends Controller
 
         $recurso = Recurso::find($dados['recurso_id']);
 
-        $resultado['percentual'] = $atividade->calcularPercentualPorDataFim($roadmap, $recurso, $data_fim, $data_inicio, $data_base);
+        $resultado['percentual'] = $atividade->calcularPercentualPorDataFim($roadmap, $recurso, $data_fim, $data_base, $data_inicio);
 
         $resultado['id'] = $dados['atividade_id'];
 

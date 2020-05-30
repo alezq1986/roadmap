@@ -133,20 +133,29 @@ class RoadmapController extends Controller
     {
         $roadmap = Roadmap::find($id);
 
-        $projetos_alocados = DB::table('projeto_roadmap')->where('roadmap_id', '=', $roadmap->id);
-
         $projetos = DB::table('projetos')
-            ->select('projetos.id', 'projetos.descricao as projeto_descricao', 'projetos.status', 'projetos.status_aprovacao', 'projetos_alocados.roadmap_id', 'projetos_alocados.prioridade', 'equipes.descricao as equipe_descricao')
-            ->leftjoinSub($projetos_alocados, 'projetos_alocados', function ($leftJoinSub) {
-                $leftJoinSub->on('projetos.id', '=', 'projetos_alocados.projeto_id');
-            })
+            ->select('projetos.id', 'projetos.descricao as projeto_descricao', 'projetos.status', 'projetos.status_aprovacao', 'projeto_roadmap.roadmap_id', 'projeto_roadmap.prioridade', 'equipes.descricao as equipe_descricao')
+            ->leftjoin('projeto_roadmap', 'projetos.id', '=', 'projeto_roadmap.projeto_id')
             ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
             ->whereNotIn('projetos.status', [3])
-            ->orderBy('projetos_alocados.prioridade', 'ASC')
+            ->whereNotIn('projetos.status_aprovacao', [0])
+            ->orderByRaw('projeto_roadmap.prioridade ASC NULLS last')
+            ->get();
+
+        $atividades = DB::table('atividades')->select('atividades.projeto_id as projeto_id', 'atividades.id as id', 'atividades.competencia_id as competencia_id', 'atividades.descricao as descricao', 'atividades.data_inicio_real', 'alocacoes.data_inicio_proj', 'alocacoes.data_fim_proj',
+            'atividades.percentual_real', 'projetos.descricao as projeto', 'recursos.nome as nome', 'atividades.recurso_real_id as recurso_real_id', 'projetos.equipe_id')
+            ->leftJoin('projetos', 'atividades.projeto_id', '=', 'projetos.id')
+            ->leftJoin('recursos', 'atividades.recurso_real_id', '=', 'recursos.id')
+            ->leftJoin('alocacoes', 'atividades.id', '=', 'alocacoes.atividade_id')
+            ->where('atividades.percentual_real', '<', 100)
+            ->whereNotIn('projetos.status_aprovacao', [0])
+            ->whereNotIn('projetos.status', [3])
+            ->orderBy('projetos.id', 'ASC')
+            ->orderBy('atividades.atividade_codigo', 'ASC')
             ->get();
 
 
-        return view('roadmaps.configura', ['projetos' => $projetos, 'roadmap' => $roadmap]);
+        return view('roadmaps.configura', ['projetos' => $projetos, 'roadmap' => $roadmap, 'atividades' => $atividades]);
     }
 
 }

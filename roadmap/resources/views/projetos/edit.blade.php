@@ -271,6 +271,7 @@
                                             <input id="atividades.percentual_real" type="text"
                                                    class="form-control" name="atividades.percentual_real"
                                                    coluna="percentual_real"
+                                                   value="0"
                                                    autofocus>
                                         </div>
                                     </div>

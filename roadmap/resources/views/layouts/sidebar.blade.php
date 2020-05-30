@@ -19,9 +19,6 @@
                 <li>
                     <a href="{{ route('roadmaps.index')}}">Roadmaps</a>
                 </li>
-                <li>
-                    <a href="{{ route('atividades.massedit')}}">Atividades</a>
-                </li>
             </ul>
         </div>
     </div>

@@ -91,7 +91,7 @@ class FormFilho {
 
                 if (tck.indexOf(fd[i][0]) > -1) {
 
-                    c = c + "<td class='new-row " + tc[i][1] + "' coluna=" + tc[i][0] + " coluna-valor=" + fd[i][1] + ">" + fd[i][1] + "</td>";
+                    c = c + "<td class='new-row " + tc[i][1] + "' coluna=" + tc[i][0] + " coluna-valor='" + fd[i][1] + "'>" + fd[i][1] + "</td>";
 
                 }
 
@@ -163,7 +163,7 @@ class FormFilho {
 
         dados.tipo = this.tipo;
 
-        return ajaxRequest(dados, 'incluir');
+        return ajaxRequest(dados, '/ajax/incluir');
 
     }
 
@@ -224,7 +224,7 @@ class ModalPesquisa {
 
     criarModal() {
 
-        var r = ajaxRequest(this.dados, 'consultar');
+        var r = ajaxRequest(this.dados, '/ajax/consultar');
 
         let tipo = this.tipo;
 
@@ -296,7 +296,7 @@ function ajaxRequest(dados, rota) {
     var objDiferido = $.Deferred();
 
     $.ajax({
-        url: "/ajax/" + rota,
+        url: rota,
         type: "POST",
         dataType: 'JSON',
         data: {

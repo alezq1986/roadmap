@@ -38,12 +38,21 @@
                     <div class="tab-pane fade show active" id="pills-principal" role="tabpanel"
                          aria-labelledby="pills-principal-tab">
                         <div class="card">
-                            <div class="card-header">{{ __('Cadastrar projeto') }}</div>
+                            <div class="card-header">{{ __('Editar projeto') }}</div>
                             <div class="card-body">
                                 <form method="POST" id="form-principal"
                                       action="{{ route('projetos.store') }}">
                                     @csrf
-
+                                    <div class="form-group row d-none">
+                                        <label for="id"
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Id') }}</label>
+                                        <div class="col-md-6">
+                                            <input id="id" type="number"
+                                                   class="form-control" name="id"
+                                                   value="{{ isset($projeto->id)?$projeto->id:old('id') }}"
+                                                   disabled>
+                                        </div>
+                                    </div>
                                     <div class="form-group row">
                                         <label for="descricao"
                                                class="col-md-4 col-form-label text-md-right">{{ __('Descrição') }}</label>
@@ -73,13 +82,10 @@
                                                        value="{{ isset($projeto->equipe_id)?$projeto->equipe_id:old('equipe_id') }}"
                                                        autofocus>
                                                 <div class="input-group-append">
-                                                    <button class="input-group-text lookup"
-                                                            tipo="equipes">
+                                                    <button class="input-group-text"
+                                                            modal-tipo="equipes">
                                                         <i class="fa fa-search"></i>
                                                     </button>
-                                                    <div id="modal-Equipe">
-                                                        @include('layouts.modal')
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -93,7 +99,7 @@
                                                     value="{{ isset($projeto->status)?$projeto->status:old('status') }}"
                                                     disabled>
                                                 <option value="0"
-                                                        @if(isset($projeto->status) && $projeto->status == 0) selected @endif>
+                                                        @if(!isset($projeto->status) || $projeto->status == 0) selected @endif>
                                                     Não iniciado
                                                 </option>
                                                 <option value="1"
@@ -198,13 +204,10 @@
                                                        autofocus
                                                        coluna="competencia_id">
                                                 <div class="input-group-append">
-                                                    <button class="input-group-text lookup"
-                                                            tipo="competencias">
+                                                    <button class="input-group-text"
+                                                            modal-tipo="competencias">
                                                         <i class="fa fa-search"></i>
                                                     </button>
-                                                    <div id="modal-Competencia">
-                                                        @include('layouts.modal')
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -245,13 +248,10 @@
                                                        coluna="recurso_real_id"
                                                        autofocus>
                                                 <div class="input-group-append">
-                                                    <button class="input-group-text lookup"
-                                                            tipo="recurso-competencia">
+                                                    <button class="input-group-text"
+                                                            modal-tipo="recursos_competencias">
                                                         <i class="fa fa-search"></i>
                                                     </button>
-                                                    <div id="modal-Recurso">
-                                                        @include('layouts.modal')
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -261,6 +261,7 @@
                                             <input id="atividades.percentual_real" type="text"
                                                    class="form-control" name="atividades.percentual_real"
                                                    coluna="percentual_real"
+                                                   value="0"
                                                    autofocus>
                                         </div>
                                     </div>

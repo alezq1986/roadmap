@@ -52,49 +52,130 @@ class Atividade extends Model
         $prioridade = integerValue(DB::table('projeto_roadmap')->where('projeto_id', '=', $this->projeto->id)->first()->prioridade);
     }
 
-    public static function atualizarAtividadeMassa(Request $request)
+    public static function criarDependencias(Projeto $projeto)
     {
 
-        $dados = $request->all();
+        $atividades = $projeto->atividades;
 
-        unset($dados['_method']);
+        if ($atividades->count() == 0) {
 
-        unset($dados['_token']);
+            return null;
+        }
 
-        $limpar_recursos = $dados['limpar_recursos'];
+        foreach ($atividades as $atividade) {
 
-        unset($dados['limpar_recursos']);
+            $ap = array();
 
-        $dados_tratados = array();
+            switch ($atividade->competencia->id) {
 
-        foreach ($dados as $k => $v) {
+                case 1:
 
-            $info = explode('-', $k);
+                    $ap = [4];
 
-            if ($info[2] == 'equipe_id' || $info[2] == 'competencia_id') {
+                    break;
 
+                case 2:
+
+                    $ap = [4];
+
+                    break;
+
+                case 3:
+
+                    $ap = [4];
+
+                    break;
+
+                case 4:
+
+                    break;
+
+                case 5:
+                    if ($atividade->descricao != 'Teste Master') {
+                        $ap = [1, 2, 3];
+                    } else {
+                        $ap = [5];
+                    }
+
+
+                    break;
+
+                case 6:
+
+                    $ap = [1];
+
+                    break;
+
+                case 7:
+
+                    $ap = [2];
+
+                    break;
+
+                case 8:
+
+                    $ap = [3];
+
+                    break;
+            }
+
+            if ($atividade->descricao != 'Teste Master') {
+
+                $atividades_predecessoras = Atividade::where('projeto_id', '=', $atividade->projeto->id)->whereIn
+                ('competencia_id', $ap)->get();
 
             } else {
 
-                $dados_tratados[$info[0]][$info[2]] = $v;
+                $atividades_predecessoras = Atividade::where('projeto_id', '=', $atividade->projeto->id)->whereIn
+                ('competencia_id', $ap)->where('descricao', '=', 'Teste Ramo')->get();
 
             }
 
+            if ($atividades_predecessoras->isNotEmpty()) {
+
+                foreach ($atividades_predecessoras as $atividade_predecessora) {
+
+                    $ap = DB::table('atividade_dependencia')->insert([
+                        'atividade_id' => $atividade->id,
+                        'dependencia_id' => $atividade_predecessora->id
+                    ]);
+
+                }
+            }
 
         }
+    }
 
-        foreach ($dados_tratados as $k => $v) {
+    public static function atualizarAtividades(Request $request)
+    {
 
+        $dados = json_decode($request->get('dados'), true);
+
+        $limpar_recursos = $dados['parametros']['limpar_recursos'];
+
+        unset($dados['parametros']['limpar_recursos']);
+
+        foreach ($dados['atividades'] as $k => $v) {
+
+            unset($v['equipe_id']);
+
+            unset($v['competencia_id']);
+
+            $data_base = Roadmap::find($dados['parametros']['roadmap_id'])->data_base;
+
+            if ($v['data_inicio_proj'] <= $data_base) {
+
+                $v['data_inicio_real'] = $v['data_inicio_proj'];
+            }
 
             if ($v['percentual_real'] == 100) {
 
                 $v['data_fim_real'] = $v['data_fim_proj'];
 
-                unset($v['data_fim_proj']);
 
             } elseif ($v['percentual_real'] == 0) {
 
-                if ($limpar_recursos == 1) {
+                if ($limpar_recursos) {
 
                     $v['recurso_real_id'] = null;
 
@@ -105,6 +186,10 @@ class Atividade extends Model
                 }
 
             }
+
+            unset($v['data_inicio_proj']);
+
+            unset($v['data_fim_proj']);
 
             $a = Atividade::find($k);
 

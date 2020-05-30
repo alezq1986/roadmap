@@ -2,7 +2,7 @@ $(document).ready(function () {
 
     $("input[coluna=percentual_real]").on('blur', function () {
 
-        if ($(this).val() > 0 && Date.parse($("input#" + $(this).attr('id').split("-")[0] + "-alocacoes-data_inicio_proj").val()) > new Date()) {
+        if ($(this).val() > 0 && Date.parse($(this).parents(".form-group.row").find("input[coluna=data_inicio_proj]").val()) > new Date()) {
 
             alert('Uma atividade com início em data futura não pode ter percentual maior que 0. Ajuste a data de início.');
 
@@ -10,18 +10,23 @@ $(document).ready(function () {
 
         } else {
 
-
             if ($(this).val() == 100) {
 
                 let date = new Date();
 
-                date = date.toLocaleDateString();
+                date = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+                    .toISOString()
+                    .split("T")[0];
 
-                $("input#" + $(this).attr('id').split("-")[0] + "-alocacoes-data_fim_proj").siblings("span").remove();
+                $(this).parents(".form-group.row").find("input[coluna=data_fim_proj]").val(date);
 
-                $("input#" + $(this).attr('id').split("-")[0] + "-alocacoes-data_fim_proj").after(
-                    "<span class='small text-danger'>" + date + "</span>"
-                );
+                $(this).parents(".form-group.row").find("input[coluna=data_fim_proj]").addClass('is-invalid');
+
+                $(this).addClass('is-invalid');
+
+            } else if ($(this).val() == 0) {
+
+                $(this).addClass('is-invalid');
 
             } else {
 
@@ -33,17 +38,22 @@ $(document).ready(function () {
 
                 dados.recurso_id = $(this).parents(".form-group.row").find("input[coluna=recurso_real_id]").val();
 
-                dados.atividade_id = $(this).attr('id').split("-")[0];
+                dados.atividade_id = $(this).attr('atividade');
 
-                let r = ajaxRequest(dados, 'calculardatas');
+                dados.roadmap_id = null;
+
+                let r = ajaxRequest(dados, '/ajax/calculardatas');
+
+                $(this).addClass('is-invalid');
 
                 $.when(r).done(function (response) {
 
-                    $("input#" + response.resultado['id'] + "-alocacoes-data_fim_proj").siblings("span").remove();
+                    $("input[atividade=" + response.resultado['id'] + "][coluna=data_fim_proj]").siblings("span").remove();
 
-                    $("input#" + response.resultado['id'] + "-alocacoes-data_fim_proj").after(
+                    $("input[atividade=" + response.resultado['id'] + "][coluna=data_fim_proj]").after(
                         "<span class='small text-danger'>" + response.resultado['data'] + "</span>"
                     );
+                    $("input[atividade=" + response.resultado['id'] + "][coluna=data_fim_proj]").addClass('is-invalid');
 
                 });
 
@@ -59,9 +69,9 @@ $(document).ready(function () {
 
         if (Date.parse($(this).val()) <= date) {
 
-            $("input#" + $(this).attr('id').split("-")[0] + "-atividades-percentual_real").val(100);
+            $("input[atividade=" + $(this).attr('atividade') + "][coluna=percentual_real]").val(100);
 
-            $("input#" + $(this).attr('id').split("-")[0] + "-atividades-percentual_real").addClass('is-invalid');
+            $("input[atividade=" + $(this).attr('atividade') + "][coluna=percentual_real]").addClass('is-invalid');
 
 
         } else {
@@ -74,19 +84,23 @@ $(document).ready(function () {
 
             dados.recurso_id = $(this).parents(".form-group.row").find("input[coluna=recurso_real_id]").val();
 
-            dados.atividade_id = $(this).attr('id').split("-")[0];
+            dados.atividade_id = $(this).attr('atividade');
 
-            let r = ajaxRequest(dados, 'calcularpercentual');
+            dados.roadmap_id = null;
+
+            let r = ajaxRequest(dados, '/ajax/calcularpercentual');
 
             $.when(r).done(function (response) {
 
-                $("input#" + response.resultado['id'] + "-atividades-percentual_real").val(response.resultado['percentual']);
+                $("input[atividade=" + response.resultado['id'] + "][coluna=percentual_real]").val(response.resultado['percentual']);
 
-                $("input#" + response.resultado['id'] + "-atividades-percentual_real").addClass('is-invalid');
+                $("input[atividade=" + response.resultado['id'] + "][coluna=percentual_real]").addClass('is-invalid');
 
             });
 
         }
+
+        $(this).addClass('is-invalid');
 
     })
 
