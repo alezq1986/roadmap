@@ -55,7 +55,7 @@ class Validador {
 
     }
 
-    validar(dados) {
+    validar(dados, acao) {
 
         let erros = new Array();
 
@@ -118,6 +118,14 @@ class Validador {
                         erros.push(erro);
 
                         break;
+                    } else if (acao == 'incluir' && regra[j] == 'unique' && $("td[coluna=" + campo + "]").attr('coluna-valor') == valor) {
+
+                        erro.campo = campo;
+
+                        erro.mensagem = 'O campo ' + campo + ' deve ter valor único.';
+
+                        erros.push(erro);
+
                     }
 
                 }
@@ -264,6 +272,8 @@ class FormFilho {
 
         }
 
+        this.formulario.find("input,select").val("");
+
     }
 
     removerTabelaFilha(linha) {
@@ -277,6 +287,44 @@ class FormFilho {
             this.tabela.find("tr#" + linha.closest('tr').attr('id')).children().addClass('deleted-row');
 
         }
+    }
+
+    editarTabelaFilha(id) {
+
+        this.tabela.find("td[coluna=id][coluna-valor=" + id + "]").parent("tr").children("td").each(function () {
+
+            $("input[coluna=" + $(this).attr('coluna') + "], select[coluna=" + $(this).attr('coluna') + "]").val($(this).attr("coluna-valor"));
+
+        });
+
+        $(".incluir-filho").addClass('d-none');
+
+        $(".atualizar-filho").removeClass('d-none');
+
+    }
+
+    atualizarTabelaFilha() {
+
+        let cel_id = this.tabela.find("td[coluna=id][coluna-valor=" + $("input[coluna=id]").val() + "]");
+
+        cel_id.addClass("new-row");
+
+        cel_id.siblings("td").each(function () {
+
+            let is = $("input[coluna=" + $(this).attr("coluna") + "], select[coluna=" + $(this).attr("coluna") + "]");
+
+            $(this).attr("coluna-valor", is.val());
+
+            $(this).html(is.val());
+
+            $(this).addClass("new-row");
+
+        });
+
+        $(".incluir-filho").removeClass('d-none');
+
+        $(".atualizar-filho").addClass('d-none');
+
     }
 
     passarFilhosSessao() {
@@ -486,6 +534,8 @@ $(document).ready(function () {
 
     r.competencia_id = 'required|number';
 
+    r.atividade_codigo = 'required|unique|number';
+
     r.recurso_real_id = 'required|number';
 
     r.data_inicio_real = 'date';
@@ -530,13 +580,41 @@ $(document).ready(function () {
 
         let v = new Validador(regras[$(this).attr('tipo')]);
 
-        let validacao = v.validar(filhos[$(this).attr('tipo')].formulario_dados);
+        let validacao = v.validar(filhos[$(this).attr('tipo')].formulario_dados, 'incluir');
 
         v.marcarErros(validacao);
 
         if (validacao === true) {
 
             filhos[$(this).attr('tipo')].inserirTabelaFilha();
+
+        }
+
+    });
+
+    $(".editar-filho").on('click', function (event) {
+
+        event.preventDefault();
+
+        filhos[$(this).parents("table").attr('tipo')].editarTabelaFilha($(this).parents("tr").children("td[coluna=id]").attr("coluna-valor"));
+
+    });
+
+    $(".atualizar-filho").on('click', function (event) {
+
+        event.preventDefault();
+
+        filhos[$(this).attr('tipo')].alimentarDados();
+
+        let v = new Validador(regras[$(this).attr('tipo')]);
+
+        let validacao = v.validar(filhos[$(this).attr('tipo')].formulario_dados, 'atualizar');
+
+        v.marcarErros(validacao);
+
+        if (validacao === true) {
+
+            filhos[$(this).attr('tipo')].atualizarTabelaFilha();
 
         }
 
@@ -560,6 +638,28 @@ $(document).ready(function () {
 
 
         m.criarModal();
+
+    });
+
+    $("button[sequencial-tipo]").on('click', function (event) {
+
+        event.preventDefault();
+
+        let tipo = $(this).parents("form").attr('tipo');
+
+        let registros = $("table[tipo=" + tipo + "]").find("td[coluna=" + $(this).attr("sequencial-tipo") + "]");
+
+        valor = 0;
+
+        registros.each(function () {
+
+            valor = Math.max($(this).attr('coluna-valor'), valor);
+
+        });
+
+        valor++;
+
+        $("input[coluna=" + $(this).attr("sequencial-tipo") + "]").val(valor);
 
     });
 

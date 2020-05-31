@@ -33,7 +33,7 @@ class ProjetoController extends Controller
                 array_push($where, ['descricao', 'like', "%{$request->get('descricao')}%"]);
             }
 
-            $projetos = Projeto::where($where)->paginate(10);
+            $projetos = Projeto::where($where)->orderBy('id', 'ASC')->paginate(10);
 
         } else {
 

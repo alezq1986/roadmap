@@ -15,8 +15,8 @@ class CreateAtividadeDependenciaTable extends Migration
     {
         Schema::create('atividade_dependencia', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('atividade_id')->constrained();
-            $table->foreignId('dependencia_id')->constrained('atividades');
+            $table->foreignId('atividade_id')->constrained()->onDelete('cascade');
+            $table->foreignId('dependencia_id')->constrained('atividades')->onDelete('cascade');
         });
     }
 

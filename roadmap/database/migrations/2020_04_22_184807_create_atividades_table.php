@@ -16,7 +16,7 @@ class CreateAtividadesTable extends Migration
         Schema::create('atividades', function (Blueprint $table) {
             $table->id();
             $table->integer('atividade_codigo');
-            $table->foreignId('projeto_id')->constrained();
+            $table->foreignId('projeto_id')->constrained()->onDelete('cascade');
             $table->string('descricao', 100);
             $table->foreignId('competencia_id')->constrained();
             $table->foreignId('recurso_real_id')->constrained('recursos');

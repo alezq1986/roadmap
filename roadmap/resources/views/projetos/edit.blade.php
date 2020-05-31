@@ -188,10 +188,18 @@
                                         <label for="atividade_codigo"
                                                class="col-md-2 col-form-label text-md-right">{{ __('Código interno') }}</label>
                                         <div class="col-md-2">
-                                            <input id="atividades.atividade_codigo" type="number"
-                                                   class="form-control" name="atividades.atividade_codigo"
-                                                   coluna="atividade_codigo"
-                                                   autofocus>
+                                            <div class="input-group">
+                                                <input id="atividades.atividade_codigo" type="number" min="1"
+                                                       class="form-control" name="atividades.atividade_codigo"
+                                                       coluna="atividade_codigo"
+                                                       autofocus>
+                                                <div class="input-group-append">
+                                                    <button class="input-group-text"
+                                                            sequencial-tipo="atividade_codigo">
+                                                        <i class="fa fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -280,6 +288,10 @@
                                             <button class="btn btn-primary incluir-filho"
                                                     tipo="atividades">
                                                 {{ __('Incluir') }}
+                                            </button>
+                                            <button class="btn btn-primary atualizar-filho d-none"
+                                                    tipo="atividades">
+                                                {{ __('Atualizar') }}
                                             </button>
                                         </div>
                                     </div>
