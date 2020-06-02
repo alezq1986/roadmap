@@ -172,9 +172,10 @@ class Atividade extends Model
 
             $data_base = Roadmap::find($dados['parametros']['roadmap_id'])->data_base;
 
-            if ($v['data_inicio_proj'] <= $data_base) {
+            if ($v['data_inicio_proj'] <= $data_base && !empty($v['data_inicio_proj'])) {
 
                 $v['data_inicio_real'] = $v['data_inicio_proj'];
+
             }
 
             if ($v['percentual_real'] == 100) {
@@ -182,7 +183,7 @@ class Atividade extends Model
                 $v['data_fim_real'] = $v['data_fim_proj'];
 
 
-            } elseif ($v['percentual_real'] == 0) {
+            } elseif ($v['percentual_real'] == 0 || empty($v['recurso_real_id'])) {
 
                 if ($limpar_recursos) {
 
@@ -206,6 +207,8 @@ class Atividade extends Model
 
             $a->save();
         }
+
+        return true;
 
     }
 

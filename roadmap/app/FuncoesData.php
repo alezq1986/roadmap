@@ -245,14 +245,8 @@ class FuncoesData extends Model
 
             $dias_fds = 2 * $semanas_cheias;
 
-            if (date("N", $data_inicio) == 1) {
-                $dia_da_semana_final = 7;
 
-            } else {
-
-                $dia_da_semana_final = date("N", $data_inicio) - 1;
-
-            }
+            $dia_da_semana_final = date('N', $data_inicio + $semanas_cheias * 86400 * 7);
 
             if ($dia_da_semana_final + $resto >= 6) {
                 $dias_fds++;

@@ -102,25 +102,24 @@ class AjaxController extends Controller
 
     public function incluir(Request $request)
     {
+
+        $request->session()->forget('filhos');
+
         $dados_ajax = $request->input('dados');
 
-        $dados_novos_sessao = array();
+        foreach ($dados_ajax as $d) {
 
-        if ($request->session()->has('filhos')) {
+            if (isset($d['filhos_incluir'])) {
 
-            $dados_novos_sessao = $request->session()->get('filhos');
+                $dados_novos_sessao[$d['tipo']]['filhos_incluir'] = $d['filhos_incluir'];
 
-        }
+            }
 
-        if (isset($dados_ajax['filhos_incluir'])) {
+            if (isset($d['filhos_deletar'])) {
 
-            $dados_novos_sessao[$dados_ajax['tipo']]['filhos_incluir'] = $dados_ajax['filhos_incluir'];
+                $dados_novos_sessao[$d['tipo']]['filhos_deletar'] = $d['filhos_deletar'];
 
-        }
-
-        if (isset($dados_ajax['filhos_deletar'])) {
-
-            $dados_novos_sessao[$dados_ajax['tipo']]['filhos_deletar'] = $dados_ajax['filhos_deletar'];
+            }
 
         }
 

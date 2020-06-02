@@ -240,7 +240,7 @@
                                                atividade="{{$atividade->id}}"
                                                coluna="data_inicio_proj"
                                                autofocus
-                                               @if($atividade->data_inicio_proj == $atividade->data_inicio_real) disabled @endif>
+                                               @if($atividade->percentual_real>0) disabled @endif>
                                     </div>
                                     <div class="col-md-2">
                                         <input id="{{$atividade->id}}-alocacoes-data_fim_proj" type="date"
@@ -337,7 +337,6 @@
 @section('scripts-especificos')
     <script type="text/javascript" src="{{ asset('js/multiselect.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/roadmap-configura.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('js/roadmap-atividades.js') }}"></script>
 
 @endsection
 

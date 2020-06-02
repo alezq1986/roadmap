@@ -86,7 +86,38 @@ class RoadmapController extends Controller
      */
     public function show(Roadmap $roadmap)
     {
-        //
+        $atividades = DB::table('alocacoes')->select(
+            'atividades.projeto_id', 'atividades.prazo', 'atividades.data_inicio_real', 'atividades.percentual_real',
+            'competencias.descricao as competencia',
+            'equipes.descricao as equipe',
+            'alocacoes.data_inicio_proj', 'alocacoes.data_fim_proj',
+            'recursos.nome as recurso',
+            'projeto_roadmap.prioridade',
+            'projetos.descricao as projeto', 'projetos.status', 'projetos.status_aprovacao')
+            ->leftJoin('atividades', 'alocacoes.atividade_id', '=', 'atividades.id')
+            ->leftJoin('projetos', 'atividades.projeto_id', '=', 'projetos.id')
+            ->leftJoin('competencias', 'atividades.competencia_id', '=', 'competencias.id')
+            ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
+            ->leftJoin('projeto_roadmap', function ($join) {
+                $join->on('atividades.projeto_id', '=', 'projeto_roadmap.projeto_id')
+                    ->on('alocacoes.roadmap_id', '=', 'projeto_roadmap.roadmap_id');
+            })
+            ->leftJoin('recursos', 'atividades.recurso_real_id', '=', 'recursos.id')
+            ->where('alocacoes.roadmap_id', '=', $roadmap->id)
+            ->orderBy('projeto_roadmap.prioridade', 'ASC')
+            ->orderBy('atividades.atividade_codigo', 'ASC')
+            ->get();
+
+        $projetos = DB::table('atividades')->select('atividades.projeto_id', DB::raw('COUNT(atividades.projeto_id) as qtd'))
+            ->leftJoin('alocacoes', 'atividades.id', '=', 'alocacoes.atividade_id')
+            ->leftJoin('roadmaps', 'alocacoes.roadmap_id', '=', 'roadmaps.id')
+            ->leftJoin('projetos', 'atividades.projeto_id', '=', 'projetos.id')
+            ->where('alocacoes.roadmap_id', '=', $roadmap->id)
+            ->groupBy('atividades.projeto_id')
+            ->get();
+
+
+        return view('roadmaps.show', ['roadmap' => $roadmap, 'projetos' => $projetos, 'atividades' => $atividades]);
     }
 
     /**
@@ -140,8 +171,48 @@ class RoadmapController extends Controller
             ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
             ->whereNotIn('projetos.status', [3])
             ->whereNotIn('projetos.status_aprovacao', [0])
+            ->where('projeto_roadmap.roadmap_id', '=', $id)
             ->orderByRaw('projeto_roadmap.prioridade ASC NULLS last')
             ->get();
+
+        if ($projetos->count() == 0) {
+
+            $max_id = DB::table('projeto_roadmap')->max('roadmap_id');
+
+
+            if (!is_null($max_id)) {
+
+                $projetos_nao_alocados = DB::table('projetos')
+                    ->select('projetos.id', 'projetos.descricao as projeto_descricao', 'projetos.status', 'projetos.status_aprovacao', 'projeto_roadmap.roadmap_id', 'projeto_roadmap.prioridade', 'equipes.descricao as equipe_descricao')
+                    ->leftjoin('projeto_roadmap', 'projetos.id', '=', 'projeto_roadmap.projeto_id')
+                    ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
+                    ->whereNotIn('projetos.status', [3])
+                    ->whereNotIn('projetos.status_aprovacao', [0])
+                    ->where('projeto_roadmap.roadmap_id', '=', null);
+
+                $projetos = DB::table('projetos')
+                    ->select('projetos.id', 'projetos.descricao as projeto_descricao', 'projetos.status', 'projetos.status_aprovacao', 'projeto_roadmap.roadmap_id', 'projeto_roadmap.prioridade', 'equipes.descricao as equipe_descricao')
+                    ->leftjoin('projeto_roadmap', 'projetos.id', '=', 'projeto_roadmap.projeto_id')
+                    ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
+                    ->whereNotIn('projetos.status', [3])
+                    ->whereNotIn('projetos.status_aprovacao', [0])
+                    ->where('projeto_roadmap.roadmap_id', '=', $max_id - 1)
+                    ->union($projetos_nao_alocados)
+                    ->orderByRaw('projeto_roadmap.prioridade ASC NULLS last')
+                    ->get();
+
+            } else {
+                $projetos = DB::table('projetos')
+                    ->select('projetos.id', 'projetos.descricao as projeto_descricao', 'projetos.status', 'projetos.status_aprovacao', 'projeto_roadmap.roadmap_id', 'projeto_roadmap.prioridade', 'equipes.descricao as equipe_descricao')
+                    ->leftjoin('projeto_roadmap', 'projetos.id', '=', 'projeto_roadmap.projeto_id')
+                    ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
+                    ->whereNotIn('projetos.status', [3])
+                    ->whereNotIn('projetos.status_aprovacao', [0])
+                    ->get();
+
+            }
+        }
+
 
         $atividades = DB::table('atividades')->select('atividades.projeto_id as projeto_id', 'atividades.id as id', 'atividades.competencia_id as competencia_id', 'atividades.descricao as descricao', 'atividades.data_inicio_real', 'alocacoes.data_inicio_proj', 'alocacoes.data_fim_proj',
             'atividades.percentual_real', 'projetos.descricao as projeto', 'recursos.nome as nome', 'atividades.recurso_real_id as recurso_real_id', 'projetos.equipe_id')

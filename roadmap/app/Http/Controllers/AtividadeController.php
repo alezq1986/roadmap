@@ -111,7 +111,19 @@ class AtividadeController extends Controller
     function atualizarAtividades(Request $request)
     {
 
-        Atividade::atualizarAtividades($request);
+        try {
+
+            $r = Atividade::atualizarAtividades($request);
+
+        } catch (\Exception $e) {
+
+
+            return false;
+
+        }
+
+        return $r;
+
 
     }
 

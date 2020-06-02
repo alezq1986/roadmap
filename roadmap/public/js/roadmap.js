@@ -55,7 +55,7 @@ class Validador {
 
     }
 
-    validar(dados, acao) {
+    validar(dados) {
 
         let erros = new Array();
 
@@ -118,7 +118,8 @@ class Validador {
                         erros.push(erro);
 
                         break;
-                    } else if (acao == 'incluir' && regra[j] == 'unique' && $("td[coluna=" + campo + "]").attr('coluna-valor') == valor) {
+
+                    } else if ($("input[coluna=id], select[coluna=id]").val().length == 0 && regra[j] == 'unique' && $("td[coluna=" + campo + "]").attr('coluna-valor') == valor) {
 
                         erro.campo = campo;
 
@@ -272,8 +273,6 @@ class FormFilho {
 
         }
 
-        this.formulario.find("input,select").val("");
-
     }
 
     removerTabelaFilha(linha) {
@@ -327,7 +326,7 @@ class FormFilho {
 
     }
 
-    passarFilhosSessao() {
+    criarObjetoFilhos() {
 
         let dados = new Object();
 
@@ -343,15 +342,14 @@ class FormFilho {
 
                 o[$(this).attr('coluna')] = $(this).attr('coluna-valor');
 
-
             })
 
             filhos_incluir.push(o);
 
+
         });
 
-        dados.filhos_incluir = filhos_incluir;
-
+        dados.filhos_incluir = filhos_incluir.reverse();
 
         this.tabela.find(".deleted-row").parents("tr").each(function () {
 
@@ -360,7 +358,6 @@ class FormFilho {
             $(this).children().each(function () {
 
                 o[$(this).attr('coluna')] = $(this).attr('coluna-valor');
-
 
             })
 
@@ -372,8 +369,7 @@ class FormFilho {
 
         dados.tipo = this.tipo;
 
-        return ajaxRequest(dados, '/ajax/incluir');
-
+        return dados;
     }
 
 }
@@ -383,6 +379,8 @@ class ModalPesquisa {
     constructor(tipo, idx) {
 
         this.tipo = tipo;
+
+        this.idx = idx;
 
         let tipo_principal = new Object();
 
@@ -437,11 +435,13 @@ class ModalPesquisa {
 
         let tipo = this.tipo;
 
+        let idx = this.idx;
+
         $.when(r).done(function (response) {
 
             if ($(".modal[tipo=" + tipo + "]").length === 0) {
 
-                $("button[modal-tipo=" + tipo + "]").first().after(
+                $("button[modal-tipo=" + tipo + "]").eq(idx).after(
                     "<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true' tipo=" + tipo + ">" +
                     "<div class='modal-dialog' role='document'>" +
                     "<div class='modal-content'>" +
@@ -536,13 +536,23 @@ $(document).ready(function () {
 
     r.atividade_codigo = 'required|unique|number';
 
-    r.recurso_real_id = 'required|number';
-
     r.data_inicio_real = 'date';
 
     r.data_fim_real = 'date';
 
     regras['atividades'] = r;
+
+    let r2 = new Object();
+
+    r2.competencia_id = 'unique';
+
+    regras['competencia_recurso'] = r2;
+
+    let r3 = new Object();
+
+    r3.equipe_id = 'unique';
+
+    regras['equipe_recurso'] = r3;
 
     let filhos = FormFilho.pegarFilhos();
 
@@ -550,20 +560,21 @@ $(document).ready(function () {
 
         event.preventDefault();
 
-        let e = Object.entries(filhos);
+        let f = Object.entries(filhos);
 
-        let req = new Array();
+        let f_c = new Array();
 
-        for (let i = 0; i < e.length; i++) {
+        for (let i = 0; i < f.length; i++) {
 
-            let r = e[i][1].passarFilhosSessao();
+            let o = f[i][1].criarObjetoFilhos();
 
-            req.push(r);
+            f_c.push(o);
 
         }
 
+        let req = ajaxRequest(f_c, '/ajax/incluir');
 
-        $.when.apply($, req).done(function () {
+        $.when(req).done(function () {
 
             $("form#form-principal").submit();
 
@@ -580,7 +591,7 @@ $(document).ready(function () {
 
         let v = new Validador(regras[$(this).attr('tipo')]);
 
-        let validacao = v.validar(filhos[$(this).attr('tipo')].formulario_dados, 'incluir');
+        let validacao = v.validar(filhos[$(this).attr('tipo')].formulario_dados);
 
         v.marcarErros(validacao);
 
@@ -608,7 +619,7 @@ $(document).ready(function () {
 
         let v = new Validador(regras[$(this).attr('tipo')]);
 
-        let validacao = v.validar(filhos[$(this).attr('tipo')].formulario_dados, 'atualizar');
+        let validacao = v.validar(filhos[$(this).attr('tipo')].formulario_dados);
 
         v.marcarErros(validacao);
 

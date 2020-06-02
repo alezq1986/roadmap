@@ -85,9 +85,15 @@
                                             <i class="fa fa-edit fa-sm"></i>
                                         </a>
                                         <a class="btn btn-secondary action-buttons"
-                                           href="{{ route('roadmap.configurar', $roadmap) }}">
+                                           href="{{ route('roadmaps.configurar', $roadmap) }}">
                                             <i class="fa fa-cog fa-sm"></i>
                                         </a>
+                                        @if($roadmap->alocado == 2)
+                                            <a class="btn btn-success action-buttons"
+                                               href="{{ route('roadmaps.show', $roadmap) }}">
+                                                <i class="fa fa-eye fa-sm"></i>
+                                            </a>
+                                        @endif
                                         <form class="d-inline" method="POST"
                                               action="{{ route('roadmaps.destroy', $roadmap) }}"
                                               onsubmit="return confirm('Tem certeza que deseja remover o Roadmap de {{$roadmap->data_base}} ?')">

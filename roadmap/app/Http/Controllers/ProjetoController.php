@@ -134,11 +134,12 @@ class ProjetoController extends Controller
 
             $resultado = DB::transaction(function () use ($dados) {
 
+
                 DB::table('projeto_roadmap')->where('roadmap_id', '=', $dados['roadmap'])->delete();
 
                 $max_id = DB::table('projeto_roadmap')->max('id');
 
-                $max_id = is_null($max_id) ? 1 : $max_id;
+                $max_id = is_null($max_id) ? 1 : $max_id + 1;
 
                 DB::update(DB::raw('ALTER SEQUENCE projeto_roadmap_id_seq RESTART WITH ' . $max_id));
 
