@@ -53,8 +53,20 @@ class Recurso extends Model
             ->leftJoin('equipe_recurso', 'recursos.id', '=', 'equipe_recurso.recurso_id')
             ->leftJoin('competencia_recurso', 'recursos.id', '=', 'competencia_recurso.recurso_id')
             ->where('competencia_recurso.competencia_id', '=', $competencia)
+            ->where('competencia_recurso.permite_aloc_automatica', '=', '1')
             ->where('equipe_recurso.equipe_id', '=', $equipe)
             ->get();
+
+        if ($resultados->count() == 0) {
+
+            $resultados = DB::table('recursos')->select('recursos.id', 'recursos.data_inicio', 'recursos.data_fim')
+                ->leftJoin('equipe_recurso', 'recursos.id', '=', 'equipe_recurso.recurso_id')
+                ->leftJoin('competencia_recurso', 'recursos.id', '=', 'competencia_recurso.recurso_id')
+                ->where('competencia_recurso.competencia_id', '=', $competencia)
+                ->where('equipe_recurso.equipe_id', '=', $equipe)
+                ->get();
+
+        }
 
         if ($resultados->count()) {
 
@@ -311,7 +323,7 @@ class Recurso extends Model
 
         for ($i = 0; $i < (sizeof($datas_indisponiveis) - 1); $i++) {
 
-            $data_inicio = max(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i)['data_fim'], 1, $feriados), $datas_limite_recurso['data_inicio'], $primeira_data_apos_dependencias);
+            $data_inicio = max(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i)['data_fim'], 1, $feriados), $datas_limite_recurso['data_inicio'], $primeira_data_apos_dependencias, FuncoesData::moverDiaUtil($roadmap['data_base'], 1, $feriados));
 
             $data_fim = min(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i + 1)['data_inicio'], -1, $feriados), $datas_limite_recurso['data_fim']);
 

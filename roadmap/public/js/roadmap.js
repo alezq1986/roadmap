@@ -237,41 +237,32 @@ class FormFilho {
 
         let v2 = $("input[tipo=" + this.tipo + "][coluna=" + k2 + "]").val();
 
-        let l = (this.tabela.find("td[coluna=" + k1 + "][coluna-valor=" + v1 + "]").length > 0 && this.tabela.find("td[coluna=" + k2 + "][coluna-valor=" + v2 + "]").length > 0)
 
-        if (pos != -1 && l) {
+        let fd = Object.entries(this.formulario_dados);
 
-            alert('Esse registro já existe na tabela');
+        let tc = Object.entries(this.tabela_coluna);
 
-        } else {
+        let tck = Object.entries(this.tabela_coluna).map(function (v) {
 
-            let fd = Object.entries(this.formulario_dados);
+            return v[0];
 
-            let tc = Object.entries(this.tabela_coluna);
+        });
 
-            let tck = Object.entries(this.tabela_coluna).map(function (v) {
+        let c = null;
 
-                return v[0];
+        for (let i = 0; i < fd.length; i++) {
 
-            });
+            if (tck.indexOf(fd[i][0]) > -1) {
 
-            let c = null;
-
-            for (let i = 0; i < fd.length; i++) {
-
-                if (tck.indexOf(fd[i][0]) > -1) {
-
-                    c = c + "<td class='new-row " + tc[i][1] + "' coluna=" + tc[i][0] + " coluna-valor='" + fd[i][1] + "'>" + fd[i][1] + "</td>";
-
-                }
+                c = c + "<td class='new-row " + tc[i][1] + "' coluna=" + tc[i][0] + " coluna-valor='" + fd[i][1] + "'>" + fd[i][1] + "</td>";
 
             }
 
-            this.tabela.find("tbody").append(
-                "<tr id=>" + c + "<td class='new-row'> <a type='button' class='btn btn-danger action-buttons remover-filho'><i class='fa fa-trash fa-sm'></i></a></td></tr>"
-            );
-
         }
+
+        this.tabela.find("tbody").append(
+            "<tr id=>" + c + "<td class='new-row'> <a type='button' class='btn btn-danger action-buttons remover-filho'><i class='fa fa-trash fa-sm'></i></a></td></tr>"
+        );
 
     }
 
@@ -489,6 +480,7 @@ class ModalPesquisa {
 
                 modal.modal('hide');
 
+
             });
 
 
@@ -640,6 +632,8 @@ $(document).ready(function () {
     $("button[modal-tipo]").on('click', function (event) {
 
         event.preventDefault();
+
+        $("div.modal").remove();
 
         let tipo = $(this).attr('modal-tipo');
 

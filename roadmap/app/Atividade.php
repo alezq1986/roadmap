@@ -172,7 +172,7 @@ class Atividade extends Model
 
             $data_base = Roadmap::find($dados['parametros']['roadmap_id'])->data_base;
 
-            if ($v['data_inicio_proj'] <= $data_base && !empty($v['data_inicio_proj'])) {
+            if ($v['data_inicio_proj'] <= $data_base && !empty($v['data_inicio_proj']) && $v['percentual_real'] > 0) {
 
                 $v['data_inicio_real'] = $v['data_inicio_proj'];
 
@@ -183,19 +183,14 @@ class Atividade extends Model
                 $v['data_fim_real'] = $v['data_fim_proj'];
 
 
-            } elseif ($v['percentual_real'] == 0 || empty($v['recurso_real_id'])) {
+            }
 
-                if ($limpar_recursos) {
+            if ($limpar_recursos || empty($v['recurso_real_id'])) {
 
-                    $v['recurso_real_id'] = null;
-
-                } else {
-
-                    unset($v['recurso_real_id']);
-
-                }
+                $v['recurso_real_id'] = null;
 
             }
+
 
             unset($v['data_inicio_proj']);
 
@@ -274,7 +269,7 @@ class Atividade extends Model
                 }
 
                 //com os dados da alocação, calculo a data final
-                $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, $data_inicio_proj);
+                $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, null, $data_inicio_proj);
 
                 //se ela passou a data fim do recurso...
                 if ($data_fim_proj > $recurso->data_fim) {
@@ -296,7 +291,7 @@ class Atividade extends Model
 
                     }
 
-                    $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, $data_inicio_proj);
+                    $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, null, $data_inicio_proj);
 
                 }
 
@@ -319,7 +314,7 @@ class Atividade extends Model
 
                 }
 
-                $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, $data_inicio_proj);
+                $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, null, $data_inicio_proj);
 
             }
 

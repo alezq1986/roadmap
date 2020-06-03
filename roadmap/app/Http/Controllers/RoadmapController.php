@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Alocacao;
 use App\Equipe;
 use App\Jobs\alocarRoadmap;
 use App\Projeto;
@@ -87,7 +88,7 @@ class RoadmapController extends Controller
     public function show(Roadmap $roadmap)
     {
         $atividades = DB::table('alocacoes')->select(
-            'atividades.projeto_id', 'atividades.prazo', 'atividades.data_inicio_real', 'atividades.percentual_real',
+            'atividades.projeto_id', 'atividades.descricao', 'atividades.prazo', 'atividades.data_inicio_real', 'atividades.percentual_real',
             'competencias.descricao as competencia',
             'equipes.descricao as equipe',
             'alocacoes.data_inicio_proj', 'alocacoes.data_fim_proj',
@@ -163,56 +164,49 @@ class RoadmapController extends Controller
 
     public function configurarRoadmap($id)
     {
+
         $roadmap = Roadmap::find($id);
 
-        $projetos = DB::table('projetos')
-            ->select('projetos.id', 'projetos.descricao as projeto_descricao', 'projetos.status', 'projetos.status_aprovacao', 'projeto_roadmap.roadmap_id', 'projeto_roadmap.prioridade', 'equipes.descricao as equipe_descricao')
-            ->leftjoin('projeto_roadmap', 'projetos.id', '=', 'projeto_roadmap.projeto_id')
-            ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
-            ->whereNotIn('projetos.status', [3])
-            ->whereNotIn('projetos.status_aprovacao', [0])
-            ->where('projeto_roadmap.roadmap_id', '=', $id)
-            ->orderByRaw('projeto_roadmap.prioridade ASC NULLS last')
-            ->get();
+        $a = DB::table('projeto_roadmap')->where('roadmap_id', '=', $id)->first();
 
-        if ($projetos->count() == 0) {
+        if (is_null($a)) {
 
             $max_id = DB::table('projeto_roadmap')->max('roadmap_id');
 
+            $projetos = DB::select(DB::raw("select * from
+((select projetos.id, projetos.descricao as projeto_descricao, projetos.status, projetos.status_aprovacao, projeto_roadmap.roadmap_id, projeto_roadmap.prioridade, equipes.descricao as equipe_descricao from projetos
+left join projeto_roadmap on projetos.id = projeto_roadmap.projeto_id
+left join equipes on projetos.equipe_id = equipes.id
+where projetos.status not in ('3')
+and projetos.status_aprovacao not in ('0')
+and projeto_roadmap.roadmap_id = " . $max_id . ")
+union
+(select projetos.id, projetos.descricao as projeto_descricao, projetos.status, projetos.status_aprovacao, projeto_roadmap.roadmap_id, projeto_roadmap.prioridade, equipes.descricao as equipe_descricao from projetos
+left join projeto_roadmap on projetos.id = projeto_roadmap.projeto_id
+left join equipes on projetos.equipe_id = equipes.id
+where projetos.status not in ('3')
+and projetos.status_aprovacao not in ('0')
+and projeto_roadmap.projeto_id is null)) a
+order by a.prioridade asc nulls last"));
 
-            if (!is_null($max_id)) {
+        } else {
 
-                $projetos_nao_alocados = DB::table('projetos')
-                    ->select('projetos.id', 'projetos.descricao as projeto_descricao', 'projetos.status', 'projetos.status_aprovacao', 'projeto_roadmap.roadmap_id', 'projeto_roadmap.prioridade', 'equipes.descricao as equipe_descricao')
-                    ->leftjoin('projeto_roadmap', 'projetos.id', '=', 'projeto_roadmap.projeto_id')
-                    ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
-                    ->whereNotIn('projetos.status', [3])
-                    ->whereNotIn('projetos.status_aprovacao', [0])
-                    ->where('projeto_roadmap.roadmap_id', '=', null);
-
-                $projetos = DB::table('projetos')
-                    ->select('projetos.id', 'projetos.descricao as projeto_descricao', 'projetos.status', 'projetos.status_aprovacao', 'projeto_roadmap.roadmap_id', 'projeto_roadmap.prioridade', 'equipes.descricao as equipe_descricao')
-                    ->leftjoin('projeto_roadmap', 'projetos.id', '=', 'projeto_roadmap.projeto_id')
-                    ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
-                    ->whereNotIn('projetos.status', [3])
-                    ->whereNotIn('projetos.status_aprovacao', [0])
-                    ->where('projeto_roadmap.roadmap_id', '=', $max_id - 1)
-                    ->union($projetos_nao_alocados)
-                    ->orderByRaw('projeto_roadmap.prioridade ASC NULLS last')
-                    ->get();
-
-            } else {
-                $projetos = DB::table('projetos')
-                    ->select('projetos.id', 'projetos.descricao as projeto_descricao', 'projetos.status', 'projetos.status_aprovacao', 'projeto_roadmap.roadmap_id', 'projeto_roadmap.prioridade', 'equipes.descricao as equipe_descricao')
-                    ->leftjoin('projeto_roadmap', 'projetos.id', '=', 'projeto_roadmap.projeto_id')
-                    ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
-                    ->whereNotIn('projetos.status', [3])
-                    ->whereNotIn('projetos.status_aprovacao', [0])
-                    ->get();
-
-            }
+            $projetos = DB::select(DB::raw("select * from
+((select projetos.id, projetos.descricao as projeto_descricao, projetos.status, projetos.status_aprovacao, projeto_roadmap.roadmap_id, projeto_roadmap.prioridade, equipes.descricao as equipe_descricao from projetos
+left join projeto_roadmap on projetos.id = projeto_roadmap.projeto_id
+left join equipes on projetos.equipe_id = equipes.id
+where projetos.status not in ('3')
+and projetos.status_aprovacao not in ('0')
+and projeto_roadmap.roadmap_id = " . $id . ")
+union
+(select projetos.id, projetos.descricao as projeto_descricao, projetos.status, projetos.status_aprovacao, projeto_roadmap.roadmap_id, projeto_roadmap.prioridade, equipes.descricao as equipe_descricao from projetos
+left join projeto_roadmap on projetos.id = projeto_roadmap.projeto_id
+left join equipes on projetos.equipe_id = equipes.id
+where projetos.status not in ('3')
+and projetos.status_aprovacao not in ('0')
+and projeto_roadmap.projeto_id is null)) a
+order by a.prioridade asc nulls last"));
         }
-
 
         $atividades = DB::table('atividades')->select('atividades.projeto_id as projeto_id', 'atividades.id as id', 'atividades.competencia_id as competencia_id', 'atividades.descricao as descricao', 'atividades.data_inicio_real', 'alocacoes.data_inicio_proj', 'alocacoes.data_fim_proj',
             'atividades.percentual_real', 'projetos.descricao as projeto', 'recursos.nome as nome', 'atividades.recurso_real_id as recurso_real_id', 'projetos.equipe_id')

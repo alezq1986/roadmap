@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Atividade;
+use App\Roadmap;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -131,6 +133,14 @@ class AjaxController extends Controller
 
         ]);
 
+    }
+
+    function teste()
+    {
+
+        $a = new \AtividadeDependenciaSeeder();
+
+        $a->run();
     }
 
 

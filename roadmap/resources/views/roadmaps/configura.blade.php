@@ -235,8 +235,8 @@
                                                autofocus>
                                         <input id="{{$atividade->id}}-alocacoes-data_inicio_proj" type="date"
                                                class="form-control" name="{{$atividade->id}}-alocacoes-data_inicio_proj"
-                                               valor-atual="{{$atividade->data_inicio_proj}}"
-                                               value="{{$atividade->data_inicio_proj}}"
+                                               valor-atual="{{is_null($atividade->data_inicio_real)?$atividade->data_inicio_proj:$atividade->data_inicio_real}}"
+                                               value="{{is_null($atividade->data_inicio_real)?$atividade->data_inicio_proj:$atividade->data_inicio_real}}"
                                                atividade="{{$atividade->id}}"
                                                coluna="data_inicio_proj"
                                                autofocus

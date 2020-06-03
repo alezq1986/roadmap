@@ -111,7 +111,7 @@
                                     @endif
                                     <div class="row border-bottom">
                                         <div class="col-2">
-                                            {{$atividade->competencia}}
+                                            {{$atividade->descricao}}
                                         </div>
                                         <div class="col-2">
                                             {{$atividade->prazo}}

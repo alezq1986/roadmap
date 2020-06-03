@@ -65,3 +65,6 @@
     background-color: #98dfb6;
 }
 
+.form-group.atividade > div > span {
+    overflow-wrap: break-word;
+}
