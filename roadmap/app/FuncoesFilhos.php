@@ -84,7 +84,7 @@ class FuncoesFilhos extends Model
 
                                 $deletado = $modelo::find($filho_deletar['id']);
 
-                                $deletado->delete();
+                                $a = $deletado->delete();
 
                             }
 

@@ -191,6 +191,8 @@ $(document).ready(function ($) {
 
         let dados = new Object();
 
+        $(this).attr("disabled", true);
+
         dados.roadmap = $("#roadmap-cabecalho").attr("roadmap-id");
 
         let projetos = Array();

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Atividade;
+use App\Relatorio;
 use App\Roadmap;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -109,6 +109,8 @@ class AjaxController extends Controller
 
         $dados_ajax = $request->input('dados');
 
+        $dados_novos_sessao = array();
+
         foreach ($dados_ajax as $d) {
 
             if (isset($d['filhos_incluir'])) {
@@ -138,9 +140,7 @@ class AjaxController extends Controller
     function teste()
     {
 
-        $a = new \AtividadeDependenciaSeeder();
-
-        $a->run();
+        Relatorio::relatorioAtrasoAnalitico(Roadmap::find(2));
     }
 
 

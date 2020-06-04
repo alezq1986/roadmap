@@ -15,7 +15,7 @@ class CreateAlocacoesTable extends Migration
     {
         Schema::create('alocacoes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('atividade_id')->constrained();
+            $table->foreignId('atividade_id')->constrained()->onDelete('cascade');;
             $table->foreignId('recurso_id')->constrained();
             $table->date('data_inicio_proj');
             $table->date('data_fim_proj');

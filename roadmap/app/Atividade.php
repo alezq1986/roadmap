@@ -9,6 +9,7 @@ use App\Roadmap;
 use App\Recurso;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -52,6 +53,10 @@ class Atividade extends Model
         $prioridade = integerValue(DB::table('projeto_roadmap')->where('projeto_id', '=', $this->projeto->id)->first()->prioridade);
     }
 
+    /**
+     * @param \App\Projeto $projeto
+     * @return bool
+     */
     public static function criarDependencias(Projeto $projeto)
     {
 
@@ -59,8 +64,9 @@ class Atividade extends Model
 
         if ($atividades->count() == 0) {
 
-            return null;
+            return true;
         }
+
         $contador_testes = 0;
 
         foreach ($atividades as $atividade) {
@@ -76,15 +82,7 @@ class Atividade extends Model
 
                 case 1:
 
-                    $ap = [4];
-
-                    break;
-
                 case 2:
-
-                    $ap = [4];
-
-                    break;
 
                 case 3:
 
@@ -126,6 +124,10 @@ class Atividade extends Model
                     $ap = [3];
 
                     break;
+
+                default:
+
+                    return true;
             }
 
             if ($contador_testes > 1 && $atividade->competencia_id == 5) {
@@ -153,8 +155,14 @@ class Atividade extends Model
             }
 
         }
+
+        return true;
     }
 
+    /**
+     * @param Request $request
+     * @return bool
+     */
     public static function atualizarAtividades(Request $request)
     {
 
@@ -191,16 +199,27 @@ class Atividade extends Model
 
             }
 
-
             unset($v['data_inicio_proj']);
 
             unset($v['data_fim_proj']);
 
-            $a = Atividade::find($k);
+            try {
 
-            $a->fill($v);
+                $a = Atividade::find($k);
 
-            $a->save();
+                $a->fill($v);
+
+                $a->save();
+
+                $a->projeto->atualizarStatusProjeto();
+
+            } catch (\Exception $e) {
+
+                Log::error('atualizarAtividade', ['atividade' => $a->id, 'erro' => $e]);
+
+            }
+
+
         }
 
         return true;
@@ -208,6 +227,11 @@ class Atividade extends Model
     }
 
 
+    /**
+     * @param \App\Roadmap $roadmap
+     * @return mixed|null
+     * @throws \Exception
+     */
     public function alocarAtividade(Roadmap $roadmap)
     {
         ini_set('memory_limit', '512M');
@@ -216,6 +240,24 @@ class Atividade extends Model
 
         //se a atividade está concluída, apenas repito os dados na alocação
         if ($this->percentual_real == 100) {
+
+            if (is_null($this->data_inicio_real)) {
+
+                throw new \Exception('Atividade sem data de início e percentual 100%.');
+
+            }
+
+            if (is_null($this->data_fim_real)) {
+
+                throw new \Exception('Atividade sem data final e percentual 100%.');
+
+            }
+
+            if (is_null($this->recurso_real_id)) {
+
+                throw new \Exception('Atividade sem recurso e percentual 100%.');
+
+            }
 
             $data_inicio_proj = $this->data_inicio_real;
 
@@ -247,21 +289,17 @@ class Atividade extends Model
 
                         $lista_negra->push($recurso);
 
-                        $melhor_recurso = $this->calcularMelhorRecurso($roadmap, $lista_negra);
+                        //tento alocar o recurso...
+                        try {
 
-                        //se eu conseguir alocar, crio os dados da alocação...
-                        if (!is_null($melhor_recurso['recurso'])) {
+                            $melhor_recurso = $this->calcularMelhorRecurso($roadmap, $lista_negra);
 
-                            $recurso = $melhor_recurso['recurso'];
+                            //se eu não conseguir recurso, crio uma excecão...
+                        } catch (\Exception $e) {
 
-                            $recurso_id = $recurso->id;
+                            Log::error('atualizarAtividade', ['atividade' => $this, 'erro' => $e]);
 
-                            $data_inicio_proj = $melhor_recurso['data'];
-
-                            //... mas se eu não conseguir, retorno null
-                        } else {
-
-                            return null;
+                            return false;
 
                         }
 
@@ -271,23 +309,20 @@ class Atividade extends Model
                 //com os dados da alocação, calculo a data final
                 $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, null, $data_inicio_proj);
 
-                //se ela passou a data fim do recurso...
+                //se ela passou a data fim do recurso, aloco novamente
                 if ($data_fim_proj > $recurso->data_fim) {
 
-                    $melhor_recurso = $this->calcularMelhorRecurso($roadmap);
+                    $lista_negra->push($recurso);
 
-                    //aloco de novo
-                    if (!is_null($melhor_recurso['recurso'])) {
+                    try {
 
-                        $recurso = $melhor_recurso['recurso'];
+                        $melhor_recurso = $this->calcularMelhorRecurso($roadmap, $lista_negra);
 
-                        $recurso_id = $recurso->id;
+                    } catch (\Exception $e) {
 
-                        $data_inicio_proj = $melhor_recurso['data'];
+                        Log::error('atualizarAtividade', ['atividade' => $this, 'erro' => $e]);
 
-                    } else {
-
-                        return null;
+                        return false;
 
                     }
 
@@ -298,21 +333,25 @@ class Atividade extends Model
                 //se não tem recurso alocado, eu aloco do 0
             } else {
 
-                $melhor_recurso = $this->calcularMelhorRecurso($roadmap);
+                //tento alocar o recurso...
+                try {
 
-                if (!is_null($melhor_recurso['recurso'])) {
+                    $melhor_recurso = $this->calcularMelhorRecurso($roadmap, $lista_negra);
 
-                    $recurso = $melhor_recurso['recurso'];
+                    //se eu não conseguir recurso, crio uma excecão...
+                } catch (\Exception $e) {
 
-                    $recurso_id = $recurso->id;
+                    Log::error('atualizarAtividade', ['atividade' => $this, 'erro' => $e]);
 
-                    $data_inicio_proj = $melhor_recurso['data'];
-
-                } else {
-
-                    return null;
+                    return false;
 
                 }
+
+                $recurso = $melhor_recurso['recurso'];
+
+                $recurso_id = $recurso->id;
+
+                $data_inicio_proj = $melhor_recurso['data'];
 
                 $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, null, $data_inicio_proj);
 
@@ -331,21 +370,23 @@ class Atividade extends Model
 
         try {
 
-            $resultado = DB::transaction(function () use ($alocacao) {
+            $atividade_alocada = DB::transaction(function () use ($alocacao) {
 
                 $this->save();
 
-                Alocacao::updateOrCreate(['roadmap_id' => $alocacao->roadmap_id, 'atividade_id' => $alocacao->atividade_id],
+                $a = Alocacao::updateOrCreate(['roadmap_id' => $alocacao->roadmap_id, 'atividade_id' => $alocacao->atividade_id],
                     ['data_inicio_proj' => $alocacao->data_inicio_proj, 'data_fim_proj' => $alocacao->data_fim_proj, 'recurso_id' => $alocacao->recurso_id]);
 
+                return $a;
             });
 
-            return is_null($resultado) ? null : $resultado;
 
         } catch (Exception $e) {
 
-            return null;
+            Log::error('atualizarAtividade', ['alocacao' => $alocacao, 'erro' => $e]);
         }
+
+        return $atividade_alocada;
     }
 
 
@@ -353,11 +394,18 @@ class Atividade extends Model
      * @param \App\Roadmap $roadmap
      * @param Collection|null $lista_negra
      * @return array
+     * @throws \Exception
      */
     public function calcularMelhorRecurso(Roadmap $roadmap, Collection $lista_negra = null)
     {
 
         $todos_recursos = Recurso::recursosCompetentes($this)->where('data_fim', '>', $roadmap->data_base);
+
+        if ($todos_recursos->count() == 0) {
+
+            throw new \Exception ('Não há recursos competentes para a atividade.');
+
+        }
 
         if (!is_null($lista_negra)) {
 
@@ -404,6 +452,12 @@ class Atividade extends Model
 
         }
 
+        if (is_null($primeiro_recurso)) {
+
+            throw new \Exception ('Não há recursos com datas disponíveis para a atividade.');
+
+        }
+
         return array('recurso' => $primeiro_recurso, 'data' => $primeira_data);
     }
 
@@ -415,6 +469,7 @@ class Atividade extends Model
      * @param int $modo : 0 - dias corridos, 1 - exclui fins de semana, 2 - exclui fins de semana e feriados
      * @param Collection $feriados
      * @return mixed
+     * @throws \Exception
      */
     public function calcularDataFimPorPercentual(Roadmap $roadmap, Recurso $recurso, $data_base = null, $data_inicio = null, $modo = 2, Collection $feriados = null)
     {
@@ -442,6 +497,12 @@ class Atividade extends Model
 
 
         if (is_null($this->data_inicio_real)) {
+
+            if ($this->percentual_real > 0) {
+
+                throw new \Exception('Atividade sem data de início com perecentual maior que 0');
+
+            }
 
             $dias_utilizados = 0;
 

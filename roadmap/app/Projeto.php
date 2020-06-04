@@ -35,6 +35,7 @@ class Projeto extends Model
 
                 $projeto = Projeto::create([
                     'descricao' => $request->input('descricao'),
+                    'status' => $request->input('status'),
                     'status_aprovacao' => $request->input('status_aprovacao'),
                     'equipe_id' => $request->input('equipe_id'),
                 ]);
@@ -44,7 +45,11 @@ class Projeto extends Model
 
                     FuncoesFilhos::criarFilhos($request, $projeto);
 
-                    Atividade::criarDependencias($projeto);
+                    if (isset($request->session()->get('filhos')['filhos_incluir'])) {
+
+                        Atividade::criarDependencias($projeto);
+
+                    }
                 }
 
                 return $projeto;
@@ -77,7 +82,11 @@ class Projeto extends Model
 
                     FuncoesFilhos::criarFilhos($request, $projeto);
 
-                    Atividade::criarDependencias($projeto);
+                    if (isset($request->session()->get('filhos')['filhos_incluir'])) {
+
+                        Atividade::criarDependencias($projeto);
+
+                    }
 
                 }
 
@@ -89,10 +98,79 @@ class Projeto extends Model
 
         } catch (Exception $e) {
 
-            return 1;
+            Log::error('atualizarProjeto', ['projeto' => $projeto, 'erro' => $e]);
+
+            return false;
 
         }
     }
 
+    function atualizarStatusProjeto()
+    {
+        $atividades = $this->atividades;
+
+        $at_totais = $atividades->count();
+
+        $at_totais_iniciadas = 0;
+
+        $at_totais_completas = 0;
+
+        $at_testes_iniciadas = 0;
+
+        foreach ($atividades as $atividade) {
+
+            if ($atividade->percentual_real == 100) {
+
+                $at_totais_completas++;
+
+                $at_totais_iniciadas++;
+
+                if ($atividade->competencia == 5) {
+
+                    $at_testes_iniciadas++;
+
+                }
+
+            } elseif ($atividade->percentual_real == 0) {
+
+
+            } else {
+
+                $at_totais_iniciadas++;
+
+                if ($atividade->competencia == 5) {
+
+                    $at_testes_iniciadas++;
+
+                }
+
+            }
+
+        }
+
+        if ($at_totais == $at_totais_completas) {
+
+            $this->status = 3;
+
+        } elseif ($at_testes_iniciadas) {
+
+            $this->status = 2;
+
+        } elseif ($at_totais_iniciadas) {
+
+            $this->status = 1;
+
+        } else {
+
+            $this->status = 0;
+        }
+
+        $this->save();
+
+        return $this;
+
+    }
 
 }
+
+
