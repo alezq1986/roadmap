@@ -7,6 +7,9 @@ use App\Alocacao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Roadmap extends Model
 {
@@ -69,6 +72,8 @@ class Roadmap extends Model
 
             $roadmap = Roadmap::create([
                 'data_base' => $request->input('data_base'),
+                'descricao' => $request->input('descricao'),
+                'alocado' => 0,
             ]);
 
             if ($request->session()->has('filhos')) {
@@ -105,6 +110,57 @@ class Roadmap extends Model
             }
 
         });
+    }
+
+    public function exportarRoadmapExcel()
+    {
+
+        $spreadsheet = new Spreadsheet();
+
+        $alocacoes = $this->alocacoes;
+
+        $header = ['Projeto', 'Atividade', 'Data Início', 'Data Fim', 'Prazo (dias)', 'Recurso', 'Percentual (%)'];
+
+        $spreadsheet->getActiveSheet()
+            ->fromArray(
+                $header,
+                NULL,
+                'A1'
+            );
+
+        $i = 2;
+        foreach ($alocacoes as $alocacao) {
+
+            $arr = [$alocacao->atividade->projeto->descricao, $alocacao->atividade->descricao, $alocacao->data_inicio_proj, $alocacao->data_fim_proj, $alocacao->atividade->prazo, $alocacao->recurso->nome, $alocacao->atividade->percentual_real];
+
+            $spreadsheet->getActiveSheet()
+                ->fromArray(
+                    $arr,
+                    NULL,
+                    'A' . $i
+                );
+
+            $i++;
+
+        }
+
+        $writer = new Xlsx($spreadsheet);
+
+        try {
+
+            $writer->save('roadmap.xlsx');
+
+            $resultado = true;
+
+        } catch (\Exception $e) {
+
+            Log::error('exportarRoadmap', ['roadmap' => $this->id, 'mensagem' => $e]);
+
+        }
+
+        return $resultado;
+
+
     }
 
 }

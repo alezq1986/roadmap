@@ -478,6 +478,19 @@ class ModalPesquisa {
 
                 $(this).parents(".input-group").children("input").val(id_escolhida);
 
+                let legenda = $(this).parents(".input-group").siblings("span");
+
+                if (legenda.length) {
+
+                    legenda.remove();
+
+                    $(this).parents(".input-group").after(
+                        "<span class='small'>" + $(this).text() + "</span>"
+                    )
+
+
+                }
+
                 modal.modal('hide');
 
 
@@ -640,7 +653,6 @@ $(document).ready(function () {
         let idx = $("button[modal-tipo=" + tipo + "]").index($(this));
 
         let m = new ModalPesquisa(tipo, idx);
-
 
         m.criarModal();
 

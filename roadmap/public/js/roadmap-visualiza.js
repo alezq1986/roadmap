@@ -54,4 +54,35 @@ $(document).ready(function () {
 
     });
 
+    $("button#exportar-roadmap").on('click', function (event) {
+
+        event.preventDefault();
+
+        let dados = new Object();
+
+        dados.roadmap = $("#roadmap-cabecalho").attr("roadmap-id");
+
+        let rota = '/roadmaps/exportar';
+
+        let req = ajaxRequest(dados, rota);
+
+        $.when(req).done(function (response) {
+
+            console.log(response.resultado);
+
+            if (response.resultado) {
+
+                alert('Roadmap exportado!');
+
+            } else {
+
+                alert('Ocorreu um erro na exportação.');
+
+            }
+
+
+        });
+
+    });
+
 });

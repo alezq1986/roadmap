@@ -389,4 +389,10 @@ $(document).ready(function ($) {
 
     })
 
+    $("input[coluna=recurso_real_id]").on('blur', function () {
+
+        $(this).addClass('is-invalid');
+
+    });
+
 });

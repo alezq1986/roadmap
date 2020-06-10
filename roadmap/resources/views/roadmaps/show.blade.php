@@ -10,6 +10,10 @@
 @auth
 
 @section('content')
+    <div class="alert alert-secondary" role="alert" id="roadmap-cabecalho" roadmap-id="{{$roadmap->id}}"
+         roadmap-alocado="{{$roadmap->alocado}}">
+        Roadmap: {{$roadmap->descricao}} | data base: {{date('d-m-Y', strtotime($roadmap->data_base))}}
+    </div>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
@@ -30,6 +34,9 @@
                         </div>
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-6">
+                                <button class="btn btn-success" id="exportar-roadmap">
+                                    {{ __('Exportar') }}
+                                </button>
                                 <button class="btn btn-primary float-right" id="pesquisar-roadmap">
                                     {{ __('Pesquisar') }}
                                 </button>
@@ -141,7 +148,7 @@
 @endsection
 
 @section('scripts-especificos')
-    <script type="text/javascript" src="{{ asset('js/projetos.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/roadmap-visualiza.js') }}"></script>
 
 @endsection
 

@@ -216,6 +216,8 @@ order by a.prioridade asc nulls last"));
             ->where('atividades.percentual_real', '<', 100)
             ->whereNotIn('projetos.status_aprovacao', [0])
             ->whereNotIn('projetos.status', [3])
+            ->orderBy('alocacoes.data_inicio_proj', 'ASC')
+            ->orderBy('alocacoes.data_fim_proj', 'ASC')
             ->orderBy('projetos.id', 'ASC')
             ->orderBy('atividades.atividade_codigo', 'ASC')
             ->get();
@@ -233,6 +235,23 @@ order by a.prioridade asc nulls last"));
         $alocar = dispatch(new alocarRoadmap($roadmap));
 
         $request->session()->forget('dados');
+
+    }
+
+    public function exportarRoadmap(Request $request)
+    {
+
+        $roadmap = Roadmap::find(intval($request->input('dados')['roadmap']));
+
+        $exportar = $roadmap->exportarRoadmapExcel();
+
+        $request->session()->forget('dados');
+
+        return response()->json([
+
+            'resultado' => $exportar
+
+        ]);
 
     }
 

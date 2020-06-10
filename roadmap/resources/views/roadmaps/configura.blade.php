@@ -206,10 +206,32 @@
                                             Desalocar recursos de atividades não iniciadas
                                         </label>
                                     </div>
+
+                                </div>
+                            </div>
+                            <div class="row form-group bg-primary sticky-top text-white">
+                                <div class="col-md-2">
+                                    <span>Projeto</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <span>Atividade</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <span>Data de início</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <span>Data fim</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <span>Percentual</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <span>Recurso</span>
                                 </div>
                             </div>
                             @foreach($atividades as $atividade)
-                                <div class="form-group row atividade d-none" atividade="{{$atividade->id}}"
+                                <div class="form-group row atividade d-none border-bottom"
+                                     atividade="{{$atividade->id}}"
                                      projeto="{{$atividade->projeto_id}}">
                                     <div class="col-md-2">
                                         <span>{{$atividade->projeto}}</span>

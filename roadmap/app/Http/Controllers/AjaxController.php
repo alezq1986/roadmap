@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ExportadorExcel;
 use App\Relatorio;
 use App\Roadmap;
 use Illuminate\Http\Request;
@@ -111,23 +112,28 @@ class AjaxController extends Controller
 
         $dados_novos_sessao = array();
 
-        foreach ($dados_ajax as $d) {
+        if (!is_null($dados_ajax)) {
 
-            if (isset($d['filhos_incluir'])) {
 
-                $dados_novos_sessao[$d['tipo']]['filhos_incluir'] = $d['filhos_incluir'];
+            foreach ($dados_ajax as $d) {
+
+                if (isset($d['filhos_incluir'])) {
+
+                    $dados_novos_sessao[$d['tipo']]['filhos_incluir'] = $d['filhos_incluir'];
+
+                }
+
+                if (isset($d['filhos_deletar'])) {
+
+                    $dados_novos_sessao[$d['tipo']]['filhos_deletar'] = $d['filhos_deletar'];
+
+                }
 
             }
 
-            if (isset($d['filhos_deletar'])) {
-
-                $dados_novos_sessao[$d['tipo']]['filhos_deletar'] = $d['filhos_deletar'];
-
-            }
+            $request->session()->put('filhos', $dados_novos_sessao);
 
         }
-
-        $request->session()->put('filhos', $dados_novos_sessao);
 
         return response()->json([
 
@@ -140,7 +146,7 @@ class AjaxController extends Controller
     function teste()
     {
 
-        Relatorio::relatorioAtrasoAnalitico(Roadmap::find(2));
+        //
     }
 
 
