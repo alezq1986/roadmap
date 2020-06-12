@@ -37,7 +37,7 @@ class FuncoesApoio extends Model
 
         $dp = sqrt($var / $elementos);
 
-        $filtrada = array_filter($arr, function ($a) use ($media, $limite) {
+        $filtrada = array_filter($arr, function ($a) use ($media, $limite, $dp) {
 
             return ($a >= $media - $limite * $dp && $a <= $media + $limite * $dp);
 

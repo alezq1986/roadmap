@@ -146,7 +146,9 @@ class AjaxController extends Controller
     function teste()
     {
 
-        //
+        $a = Relatorio::histogramaAtrasos(Roadmap::find(3), 0);
+
+        $b = 1;
     }
 
 

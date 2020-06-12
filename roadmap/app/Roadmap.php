@@ -43,7 +43,13 @@ class Roadmap extends Model
 
     public function alocar()
     {
-        DB::update(DB::raw('truncate table alocacoes restart identity cascade'));
+        DB::table('alocacoes')->where('roadmap_id', '=', $this->id)->delete();
+
+        $max_id = DB::table('alocacoes')->max('id');
+
+        $max_id = is_null($max_id) ? 1 : $max_id + 1;
+
+        DB::update(DB::raw('ALTER SEQUENCE alocacoes_id_seq RESTART WITH ' . $max_id));
 
         $atividades = $this->atividades();
 

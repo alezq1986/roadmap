@@ -13,6 +13,11 @@ class Relatorio extends Model
 
         $alocacoes = $roadmap->alocacoes;
 
+        if ($alocacoes->count() == 0) {
+
+            return false;
+        }
+
         $prazos_fechadas = collect();
 
         $prazos_abertas = collect();
@@ -27,15 +32,15 @@ class Relatorio extends Model
 
             if (!is_null($aloc->atividade->data_inicio_real) && !is_null($aloc->atividade->data_fim_real)) {
 
-                $de = FuncoesData::calcularDias($aloc->atividade->data_inicio_real, $aloc->atividade->data_fim_real);
+                $dadose = FuncoesData::calcularDias($aloc->atividade->data_inicio_real, $aloc->atividade->data_fim_real);
 
-                $prazos_fechadas->push(['projeto' => $aloc->atividade->projeto_id, 'atividade' => $aloc->atividade->id, 'prazo' => $p, 'dias' => $de, 'atraso' => ($de - $p), 'atraso_perc' => ($de - $p) * 100 / $p]);
+                $prazos_fechadas->push(['projeto' => $aloc->atividade->projeto_id, 'atividade' => $aloc->atividade->id, 'prazo' => $p, 'dias' => $dadose, 'atraso' => ($dadose - $p), 'atraso_perc' => ($dadose - $p) * 100 / $p]);
 
             } elseif (!is_null($aloc->atividade->data_inicio_real) && is_null($aloc->atividade->data_fim_real)) {
 
-                $de = FuncoesData::calcularDias($aloc->atividade->data_inicio_real, date('Y-m-d', time()));
+                $dadose = FuncoesData::calcularDias($aloc->atividade->data_inicio_real, date('Y-m-d', time()));
 
-                $prazos_abertas->push(['projeto' => $aloc->atividade->projeto_id, 'atividade' => $aloc->atividade->id, 'prazo' => $p, 'dias' => $de, 'atraso' => ($de - $p), 'atraso_perc' => ($de - $p) * 100 / $p]);
+                $prazos_abertas->push(['projeto' => $aloc->atividade->projeto_id, 'atividade' => $aloc->atividade->id, 'prazo' => $p, 'dias' => $dadose, 'atraso' => ($dadose - $p), 'atraso_perc' => ($dadose - $p) * 100 / $p]);
 
             }
 
@@ -47,13 +52,13 @@ class Relatorio extends Model
 
             $prazo = $a->sum('prazo');
 
-            $dias = $a->sum('dias');
+            $dadosias = $a->sum('dias');
 
-            $atraso = $dias - $prazo;
+            $atraso = $dadosias - $prazo;
 
             $atraso_perc = $atraso * 100 / $prazo;
 
-            $p_prazos_abertas->push(['projeto' => $projeto, 'prazo' => $prazo, 'dias' => $dias, 'atraso' => $atraso, 'atraso_perc' => $atraso_perc]);
+            $p_prazos_abertas->push(['projeto' => $projeto, 'prazo' => $prazo, 'dias' => $dadosias, 'atraso' => $atraso, 'atraso_perc' => $atraso_perc]);
 
         });
 
@@ -63,13 +68,13 @@ class Relatorio extends Model
 
             $prazo = $a->sum('prazo');
 
-            $dias = $a->sum('dias');
+            $dadosias = $a->sum('dias');
 
-            $atraso = $dias - $prazo;
+            $atraso = $dadosias - $prazo;
 
             $atraso_perc = $atraso * 100 / $prazo;
 
-            $p_prazos_fechadas->push(['projeto' => $projeto, 'prazo' => $prazo, 'dias' => $dias, 'atraso' => $atraso, 'atraso_perc' => $atraso_perc]);
+            $p_prazos_fechadas->push(['projeto' => $projeto, 'prazo' => $prazo, 'dias' => $dadosias, 'atraso' => $atraso, 'atraso_perc' => $atraso_perc]);
 
         });
 
@@ -90,7 +95,6 @@ class Relatorio extends Model
     {
         $r = self::relatorioAtrasoSintetico($roadmap);
 
-
         $prazos_fechadas = collect($r['atividades']['fechadas']);
 
         $prazos_abertas = collect($r['atividades']['abertas']);
@@ -100,17 +104,17 @@ class Relatorio extends Model
         $p_prazos_abertas = collect($r['projetos']['abertos']);
 
 
-        $dias_totais_executados_fechadas = $prazos_fechadas->sum('dias');
+        $dadosias_totais_executados_fechadas = $prazos_fechadas->sum('dias');
 
-        $dias_totais_previstos_fechadas = $prazos_fechadas->sum('prazo');
+        $dadosias_totais_previstos_fechadas = $prazos_fechadas->sum('prazo');
 
-        $dias_totais_executados_abertas = $prazos_abertas->sum('dias');
+        $dadosias_totais_executados_abertas = $prazos_abertas->sum('dias');
 
-        $dias_totais_previstos_abertas = $prazos_abertas->sum('prazo');
+        $dadosias_totais_previstos_abertas = $prazos_abertas->sum('prazo');
 
-        $dias_totais_atraso_fechadas = $dias_totais_executados_fechadas - $dias_totais_previstos_fechadas;
+        $dadosias_totais_atraso_fechadas = $dadosias_totais_executados_fechadas - $dadosias_totais_previstos_fechadas;
 
-        $dias_totais_atraso_abertas = $dias_totais_executados_abertas - $dias_totais_previstos_abertas;
+        $dadosias_totais_atraso_abertas = $dadosias_totais_executados_abertas - $dadosias_totais_previstos_abertas;
 
         $atraso_medio_fechadas = $prazos_fechadas->average('atraso');
 
@@ -164,176 +168,224 @@ class Relatorio extends Model
         return [
             'projetos' => [
                 'abertos' => [
-                    'dias_previstos' => $dias_totais_previstos_abertas,
-                    'dias_executados' => $dias_totais_executados_abertas,
-                    'dias_atraso' => $dias_totais_atraso_abertas,
+                    'dias_previstos' => $dadosias_totais_previstos_abertas,
+                    'dias_executados' => $dadosias_totais_executados_abertas,
+                    'dias_atraso' => $dadosias_totais_atraso_abertas,
                     'atraso_medio' => $p_atraso_medio_abertas,
                     'atraso_mediano' => $p_atraso_mediano_abertas,
                     'atraso_perc_medio' => $p_atraso_perc_medio_abertas,
                     'atraso_perc_mediano' => $p_atraso_mediano_abertas,
                     'atraso_dp' => $p_atraso_dp_abertas,
-                    'atraso_perc_dp' => $p_atraso_perc_dp_abertas
+                    'atraso_perc_dp' => $p_atraso_perc_dp_abertas,
+                    'dados' => $p_prazos_abertas->toArray()
                 ],
                 'fechados' => [
-                    'dias_previstos' => $dias_totais_previstos_fechadas,
-                    'dias_executados' => $dias_totais_executados_fechadas,
-                    'dias_atraso' => $dias_totais_atraso_fechadas,
+                    'dias_previstos' => $dadosias_totais_previstos_fechadas,
+                    'dias_executados' => $dadosias_totais_executados_fechadas,
+                    'dias_atraso' => $dadosias_totais_atraso_fechadas,
                     'atraso_medio' => $p_atraso_medio_fechadas,
                     'atraso_mediano' => $p_atraso_mediano_fechadas,
                     'atraso_perc_medio' => $p_atraso_perc_medio_fechadas,
                     'atraso_perc_mediano' => $p_atraso_mediano_fechadas,
                     'atraso_dp' => $p_atraso_dp_fechadas,
-                    'atraso_perc_dp' => $p_atraso_perc_dp_fechadas
-                ],
-                'dados_abertos' => $p_prazos_abertas->toArray(),
-                'dados_fechados' => $p_prazos_fechadas->toArray()
+                    'atraso_perc_dp' => $p_atraso_perc_dp_fechadas,
+                    'dados' => $p_prazos_fechadas->toArray()
+                ]
             ],
             'atividades' => [
                 'abertas' => [
-                    'dias_previstos' => $dias_totais_previstos_abertas,
-                    'dias_executados' => $dias_totais_executados_abertas,
-                    'dias_atraso' => $dias_totais_atraso_abertas,
+                    'dias_previstos' => $dadosias_totais_previstos_abertas,
+                    'dias_executados' => $dadosias_totais_executados_abertas,
+                    'dias_atraso' => $dadosias_totais_atraso_abertas,
                     'atraso_medio' => $atraso_medio_abertas,
                     'atraso_mediano' => $atraso_mediano_abertas,
                     'atraso_perc_medio' => $atraso_perc_medio_abertas,
                     'atraso_perc_mediano' => $atraso_mediano_abertas,
                     'atraso_dp' => $atraso_dp_abertas,
-                    'atraso_perc_dp' => $atraso_perc_dp_abertas
+                    'atraso_perc_dp' => $atraso_perc_dp_abertas,
+                    'dados' => $prazos_abertas->toArray()
                 ],
                 'fechadas' => [
-                    'dias_previstos' => $dias_totais_previstos_fechadas,
-                    'dias_executados' => $dias_totais_executados_fechadas,
-                    'dias_atraso' => $dias_totais_atraso_fechadas,
+                    'dias_previstos' => $dadosias_totais_previstos_fechadas,
+                    'dias_executados' => $dadosias_totais_executados_fechadas,
+                    'dias_atraso' => $dadosias_totais_atraso_fechadas,
                     'atraso_medio' => $atraso_medio_fechadas,
                     'atraso_mediano' => $atraso_mediano_fechadas,
                     'atraso_perc_medio' => $atraso_perc_medio_fechadas,
                     'atraso_perc_mediano' => $atraso_mediano_fechadas,
                     'atraso_dp' => $atraso_dp_fechadas,
-                    'atraso_perc_dp' => $atraso_perc_dp_fechadas
-                ],
-                'dados_abertas' => $prazos_abertas->toArray(),
-                'dados_fechadas' => $prazos_fechadas->toArray()
+                    'atraso_perc_dp' => $atraso_perc_dp_fechadas,
+                    'dados' => $prazos_fechadas->toArray()
+                ]
             ]
         ];
 
     }
 
-    public static function histogramaAtrasos($roadmap, $percentual = 1, $faixas = 10, $normalizado = 1, $outliers = 1)
+    /**
+     * @param $roadmap
+     * @param $tipo_dados : 0 - atividades fechadas, 1 - atividades abertas, 2 - projetos fechados, 3 - projetos abertos
+     * @param int $percentual
+     * @param int $faixas
+     * @param int $normalizado
+     * @param int $outliers
+     * @return array
+     * @throws \Exception
+     */
+    public static function histogramaAtrasos($roadmap, int $tipo_dados, $percentual = 1, $normalizado = 1, $outliers = 3, $faixas = 10)
     {
         $r = self::relatorioAtrasoAnalitico($roadmap);
 
-        $prazos_fechadas = collect();
 
-        $prazos_abertas = collect();
+        switch ($tipo_dados) {
 
-        $p_prazos_fechadas = collect();
+            case 0:
 
-        $p_prazos_abertas = collect();
+                $ret = $r['atividades']['fechadas'];
 
+                break;
 
-        for ($i = 0; $i < sizeof($r['atividades']['dados_fechadas']); $i++) {
+            case 1:
 
-            $r['atividades']['dados_fechadas'][$i]['atraso_normalizado'] = $r['atividades']['dados_fechadas'][$i]['atraso'] / $r['atividades']['fechadas']['atraso_dp'];
+                $ret = $r['atividades']['abertas'];
 
-            $r['atividades']['dados_fechadas'][$i]['atraso_perc_normalizado'] = $r['atividades']['dados_fechadas'][$i]['atraso_perc'] / $r['atividades']['fechadas']['atraso_perc_dp'];
+                break;
 
-            $prazos_fechadas->push($r['atividades']['dados_fechadas'][$i]);
+            case 2:
 
-        }
+                $ret = $r['projetos']['fechados'];
 
+                break;
 
-        for ($i = 0; $i < sizeof($r['atividades']['dados_abertas']); $i++) {
+            case 3:
 
-            $r['atividades']['dados_abertas'][$i]['atraso_normalizado'] = $r['atividades']['dados_abertas'][$i]['atraso'] / $r['atividades']['abertas']['atraso_dp'];
+                $ret = $r['projetos']['abertos'];
 
-            $r['atividades']['dados_abertas'][$i]['atraso_perc_normalizado'] = $r['atividades']['dados_abertas'][$i]['atraso_perc'] / $r['atividades']['abertas']['atraso_perc_dp'];
+                break;
 
-            $prazos_abertas->push($r['atividades']['dados_abertas'][$i]);
+            default:
 
-        }
-
-        for ($i = 0; $i < sizeof($r['projetos']['dados_fechados']); $i++) {
-
-            $r['projetos']['dados_fechados'][$i]['atraso_normalizado'] = $r['projetos']['dados_fechados'][$i]['atraso'] / $r['projetos']['fechados']['atraso_dp'];
-
-            $r['projetos']['dados_fechados'][$i]['atraso_perc_normalizado'] = $r['projetos']['dados_fechados'][$i]['atraso_perc'] / $r['projetos']['fechados']['atraso_perc_dp'];
-
-            $prazos_fechadas->push($r['projetos']['dados_fechados'][$i]);
+                throw new \Exception('Não é um tipo de dado válido.');
 
         }
 
-        for ($i = 0; $i < sizeof($r['projetos']['dados_abertos']); $i++) {
+        $dados = collect();
 
-            $r['projetos']['dados_abertos'][$i]['atraso_normalizado'] = $r['projetos']['dados_abertos'][$i]['atraso'] / $r['projetos']['abertos']['atraso_dp'];
+        for ($i = 0; $i < sizeof($ret['dados']); $i++) {
 
-            $r['projetos']['dados_abertos'][$i]['atraso_perc_normalizado'] = $r['projetos']['dados_abertos'][$i]['atraso_perc'] / $r['projetos']['abertos']['atraso_perc_dp'];
+            $ret['dados'][$i]['atraso_normalizado'] = $ret['dados'][$i]['atraso'] / ($normalizado ? $ret['atraso_dp'] : 1);
 
-            $prazos_abertas->push($r['projetos']['dados_abertos'][$i]);
+            $ret['dados'][$i]['atraso_perc_normalizado'] = $ret['dados'][$i]['atraso_perc'] / ($normalizado ? $ret['atraso_perc_dp'] : 1);
+
+            $dados->push($ret['dados'][$i]);
 
         }
 
         if (!is_null($outliers) && $outliers) {
 
-            $prazos_abertas = $prazos_abertas->filter(function ($p) use ($outliers, $percentual) {
+            $dados = $dados->filter(function ($p) use ($outliers, $percentual, $ret) {
 
                 if ($percentual) {
 
-                    return ($p['atraso_perc'] >= $p['atraso_perc_medio'] - $outliers * $p['atraso_perc_dp'] && $p['atraso_perc'] <= $p['atraso_perc_medio'] + $outliers * $p['atraso_perc_dp']);
+                    return ($p['atraso_perc'] >= $ret['atraso_perc_medio'] - $outliers * $ret['atraso_perc_dp'] && $p['atraso_perc'] <= $ret['atraso_perc_medio'] + $outliers * $ret['atraso_perc_dp']);
 
                 } else {
 
-                    return ($p['atraso'] >= $p['atraso_medio'] - $outliers * $p['atraso_dp'] && $p['atraso'] <= $p['atraso_medio'] + $outliers * $p['atraso_dp']);
+                    return ($p['atraso'] >= $ret['atraso_medio'] - $outliers * $ret['atraso_dp'] && $p['atraso'] <= $ret['atraso_medio'] + $outliers * $ret['atraso_dp']);
 
                 }
 
             });
 
-
         }
 
-        //histograma de atraso de atividades fechadas
-        $min_atraso_fechadas = $prazos_fechadas->min('atraso_normalizado');
+        if ($percentual) {
 
-        $max_atraso_fechadas = $prazos_fechadas->max('atraso_normalizado');
+            $min = $dados->min('atraso_perc_normalizado');
 
-        $intervalo_fechadas = ($max_atraso_fechadas - $min_atraso_fechadas) / ($faixas - 1);
+            $max = $dados->max('atraso_perc_normalizado');
 
-        $valores_intervalos_fechadas = array();
+            $intervalo = ($max - $min) / ($faixas - 1);
 
-        for ($i = 0; $i < $faixas; $i++) {
+            $valores = array();
 
-            if ($i) {
+            for ($i = 0; $i < $faixas; $i++) {
 
-                $valores_intervalos_fechadas[$i]['inicial'] = $valores_intervalos_fechadas[$i - 1]['inicial'] + $intervalo_fechadas;
+                if ($i) {
 
-            } else {
-
-                $valores_intervalos_fechadas[$i]['inicial'] = $min_atraso_fechadas;
-
-            }
-
-            $valores_intervalos_fechadas[$i]['final'] = $valores_intervalos_fechadas[$i]['inicial'] + $intervalo_fechadas;
-
-            $frequencia = $prazos_fechadas->filter(function ($p) use ($i, $faixas, $valores_intervalos_fechadas) {
-
-                if ($i == $faixas - 1) {
-
-                    return ($p['atraso_normalizado'] >= $valores_intervalos_fechadas[$i]['inicial'] && $p['atraso_normalizado'] <= $valores_intervalos_fechadas[$i]['final']);
+                    $valores[$i]['inicial'] = $valores[$i - 1]['inicial'] + $intervalo;
 
                 } else {
 
-                    return ($p['atraso_normalizado'] >= $valores_intervalos_fechadas[$i]['inicial'] && $p['atraso_normalizado'] < $valores_intervalos_fechadas[$i]['final']);
+                    $valores[$i]['inicial'] = $min;
 
                 }
 
-            })->count();
+                $valores[$i]['final'] = $valores[$i]['inicial'] + $intervalo;
 
-            $valores_intervalos_fechadas[$i]['frequencia'] = $frequencia;
+                $frequencia = $dados->filter(function ($p) use ($i, $faixas, $valores) {
 
+                    if ($i == $faixas - 1) {
+
+                        return ($p['atraso_perc_normalizado'] >= $valores[$i]['inicial'] && $p['atraso_perc_normalizado'] <= $valores[$i]['final']);
+
+                    } else {
+
+                        return ($p['atraso_perc_normalizado'] >= $valores[$i]['inicial'] && $p['atraso_perc_normalizado'] < $valores[$i]['final']);
+
+                    }
+
+                })->count();
+
+                $valores[$i]['frequencia'] = $frequencia;
+
+            }
+
+        } else {
+
+            $min = $dados->min('atraso_normalizado');
+
+            $max = $dados->max('atraso_normalizado');
+
+            $intervalo = ($max - $min) / ($faixas - 1);
+
+            $valores = array();
+
+            for ($i = 0; $i < $faixas; $i++) {
+
+                if ($i) {
+
+                    $valores[$i]['inicial'] = $valores[$i - 1]['inicial'] + $intervalo;
+
+                } else {
+
+                    $valores[$i]['inicial'] = $min;
+
+                }
+
+                $valores[$i]['final'] = $valores[$i]['inicial'] + $intervalo;
+
+                $frequencia = $dados->filter(function ($p) use ($i, $faixas, $valores) {
+
+                    if ($i == $faixas - 1) {
+
+                        return ($p['atraso_normalizado'] >= $valores[$i]['inicial'] && $p['atraso_normalizado'] <= $valores[$i]['final']);
+
+                    } else {
+
+                        return ($p['atraso_normalizado'] >= $valores[$i]['inicial'] && $p['atraso_normalizado'] < $valores[$i]['final']);
+
+                    }
+
+                })->count();
+
+                $valores[$i]['frequencia'] = $frequencia;
+
+            }
         }
 
 
-        return $valores_intervalos_fechadas;
+        return $valores;
 
     }
 
