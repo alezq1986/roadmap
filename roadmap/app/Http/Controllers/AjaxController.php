@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\ExportadorExcel;
 use App\Relatorio;
 use App\Roadmap;
+use App\Projeto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class AjaxController extends Controller
@@ -146,9 +148,46 @@ class AjaxController extends Controller
     function teste()
     {
 
-        $a = Relatorio::histogramaAtrasos(Roadmap::find(3), 0);
+        $projetos = Projeto::all();
 
-        $b = 1;
+        foreach ($projetos as $projeto) {
+
+            Log::info('projeto', ['projeto' => $projeto]);
+
+            $status = 0;
+
+            $atividades = $projeto->atividades;
+
+            $sum = 0;
+
+            foreach ($atividades as $atividade) {
+
+                if ($atividade->competencia_id == 5 && $atividade->percentual_real > 0) {
+
+                    $status = 2;
+
+                } elseif ($atividade->percentual_real > 0 && $status == 0) {
+
+                    $status = 1;
+                }
+
+                $sum += $atividade->percentual_real;
+
+            }
+
+            if (sizeof($atividades) > 0 && $sum / sizeof($atividades) == 100) {
+
+                $status = 3;
+
+            }
+
+            $projeto->status = $status;
+
+            $projeto->save();
+
+
+        }
+
     }
 
 

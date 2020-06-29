@@ -55,8 +55,8 @@
                                     @csrf
                                     <div class="form-group row">
                                         <label for="id"
-                                               class="col-md-4 col-form-label text-md-right">{{ __('Id') }}</label>
-                                        <div class="col-md-6">
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Id') }}</label>
+                                        <div class="col-md-4">
                                             <input id="id" type="number"
                                                    class="form-control" name="id"
                                                    value="{{ isset($projeto->id)?$projeto->id:old('id') }}"
@@ -65,9 +65,8 @@
                                     </div>
                                     <div class="form-group row">
                                         <label for="descricao"
-                                               class="col-md-4 col-form-label text-md-right">{{ __('Descrição') }}</label>
-
-                                        <div class="col-md-6">
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Descrição') }}</label>
+                                        <div class="col-md-4">
                                             <input id="descricao" type="text"
                                                    class="form-control @error('descricao') is-invalid @enderror"
                                                    name="descricao"
@@ -81,11 +80,9 @@
                                     </span>
                                             @enderror
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
                                         <label for="equipe_id"
-                                               class="col-md-4 col-form-label text-md-right">{{ __('Equipe') }}</label>
-                                        <div class="col-md-6">
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Equipe') }}</label>
+                                        <div class="col-md-4">
                                             <div class="input-group">
                                                 <input id="equipe_id" type="text"
                                                        class="form-control" name="equipe_id"
@@ -102,8 +99,8 @@
                                     </div>
                                     <div class="form-group row">
                                         <label for="status"
-                                               class="col-md-4 col-form-label text-md-right">{{ __('Status') }}</label>
-                                        <div class="col-md-6">
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Status') }}</label>
+                                        <div class="col-md-4">
                                             <select id="status"
                                                     class="form-control" name="status"
                                                     value="{{ isset($projeto->status)?$projeto->status:old('status') }}"
@@ -126,11 +123,9 @@
                                                 </option>
                                             </select>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
                                         <label for="status_aprovacao"
-                                               class="col-md-4 col-form-label text-md-right">{{ __('Status aprovação') }}</label>
-                                        <div class="col-md-6">
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Status aprovação') }}</label>
+                                        <div class="col-md-4">
                                             <select id="status_aprovacao"
                                                     class="form-control" name="status_aprovacao"
                                                     value="{{ isset($projeto->status_aprovacao)?$projeto->status_aprovacao:old('status_aprovacao') }}">
@@ -151,6 +146,25 @@
                                                     Suspenso
                                                 </option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="data_entrega"
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Data entrega') }}</label>
+
+                                        <div class="col-md-4">
+                                            <input id="data_entrega" type="date"
+                                                   class="form-control @error('data_entrega') is-invalid @enderror"
+                                                   name="data_entrega"
+                                                   value="{{ isset($projeto->data_entrega)?$projeto->data_entrega:old('data_entrega') }}"
+                                                   required
+                                                   autocomplete="data_entrega" autofocus>
+
+                                            @error('data_entrega')
+                                            <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                            @enderror
                                         </div>
                                     </div>
                                 </form>

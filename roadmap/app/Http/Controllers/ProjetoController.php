@@ -30,7 +30,7 @@ class ProjetoController extends Controller
             }
 
             if ($request->has('descricao') && $request->get('descricao') != null) {
-                array_push($where, ['descricao', 'like', "%{$request->get('descricao')}%"]);
+                array_push($where, ['descricao', 'ilike', "%{$request->get('descricao')}%"]);
             }
 
             $projetos = Projeto::where($where)->orderBy('id', 'ASC')->paginate(10);
@@ -77,7 +77,9 @@ class ProjetoController extends Controller
      */
     public function show(projeto $projeto)
     {
-        //
+        $atividades = $projeto->atividades;
+
+        return view('projetos.show', ['projeto' => $projeto, 'atividades' => $atividades]);
     }
 
     /**

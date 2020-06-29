@@ -3,7 +3,9 @@
 namespace App;
 
 use App\FuncoesApoio;
+use App\Projeto;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class Relatorio extends Model
@@ -22,9 +24,9 @@ class Relatorio extends Model
 
         $prazos_abertas = collect();
 
-        $p_prazos_fechadas = collect();
+        $proj_prazos_fechados = collect();
 
-        $p_prazos_abertas = collect();
+        $proj_prazos_abertos = collect();
 
         $alocacoes->each(function ($aloc) use ($prazos_fechadas, $prazos_abertas) {
 
@@ -46,42 +48,35 @@ class Relatorio extends Model
 
         });
 
-        $prazos_abertas->groupBy('projeto')->each(function ($a) use (&$p_prazos_abertas) {
+
+        $prazos_abertas->merge($prazos_fechadas)->groupBy('projeto')->each(function ($a) use (&$proj_prazos_fechados, $proj_prazos_abertos) {
 
             $projeto = $a->first()['projeto'];
 
             $prazo = $a->sum('prazo');
 
-            $dadosias = $a->sum('dias');
+            $dias = $a->sum('dias');
 
-            $atraso = $dadosias - $prazo;
-
-            $atraso_perc = $atraso * 100 / $prazo;
-
-            $p_prazos_abertas->push(['projeto' => $projeto, 'prazo' => $prazo, 'dias' => $dadosias, 'atraso' => $atraso, 'atraso_perc' => $atraso_perc]);
-
-        });
-
-        $prazos_fechadas->groupBy('projeto')->each(function ($a) use (&$p_prazos_fechadas) {
-
-            $projeto = $a->first()['projeto'];
-
-            $prazo = $a->sum('prazo');
-
-            $dadosias = $a->sum('dias');
-
-            $atraso = $dadosias - $prazo;
+            $atraso = $dias - $prazo;
 
             $atraso_perc = $atraso * 100 / $prazo;
 
-            $p_prazos_fechadas->push(['projeto' => $projeto, 'prazo' => $prazo, 'dias' => $dadosias, 'atraso' => $atraso, 'atraso_perc' => $atraso_perc]);
+            if (Projeto::find($projeto)->status == 3) {
+
+                $proj_prazos_fechados->push(['projeto' => $projeto, 'prazo' => $prazo, 'dias' => $dias, 'atraso' => $atraso, 'atraso_perc' => $atraso_perc]);
+
+            } else {
+
+                $proj_prazos_abertos->push(['projeto' => $projeto, 'prazo' => $prazo, 'dias' => $dias, 'atraso' => $atraso, 'atraso_perc' => $atraso_perc]);
+
+            }
 
         });
 
         return [
             'projetos' => [
-                'abertos' => $p_prazos_abertas->toArray(),
-                'fechados' => $p_prazos_fechadas->toArray()
+                'abertos' => $proj_prazos_abertos->toArray(),
+                'fechados' => $proj_prazos_fechados->toArray()
             ],
             'atividades' => [
                 'abertas' => $prazos_abertas->toArray(),
@@ -104,17 +99,17 @@ class Relatorio extends Model
         $p_prazos_abertas = collect($r['projetos']['abertos']);
 
 
-        $dadosias_totais_executados_fechadas = $prazos_fechadas->sum('dias');
+        $dias_totais_executados_fechadas = $prazos_fechadas->sum('dias');
 
-        $dadosias_totais_previstos_fechadas = $prazos_fechadas->sum('prazo');
+        $dias_totais_previstos_fechadas = $prazos_fechadas->sum('prazo');
 
-        $dadosias_totais_executados_abertas = $prazos_abertas->sum('dias');
+        $dias_totais_executados_abertas = $prazos_abertas->sum('dias');
 
-        $dadosias_totais_previstos_abertas = $prazos_abertas->sum('prazo');
+        $dias_totais_previstos_abertas = $prazos_abertas->sum('prazo');
 
-        $dadosias_totais_atraso_fechadas = $dadosias_totais_executados_fechadas - $dadosias_totais_previstos_fechadas;
+        $dias_totais_atraso_fechadas = $dias_totais_executados_fechadas - $dias_totais_previstos_fechadas;
 
-        $dadosias_totais_atraso_abertas = $dadosias_totais_executados_abertas - $dadosias_totais_previstos_abertas;
+        $dias_totais_atraso_abertas = $dias_totais_executados_abertas - $dias_totais_previstos_abertas;
 
         $atraso_medio_fechadas = $prazos_fechadas->average('atraso');
 
@@ -157,20 +152,20 @@ class Relatorio extends Model
 
         $p_atraso_perc_mediano_abertas = $p_prazos_abertas->median('atraso_perc');
 
-        $p_atraso_dp_fechadas = FuncoesApoio::calcularDesvioPadrao($p_prazos_fechadas->pluck('atraso')->toArray());
+        $p_atraso_dp_fechadas = $p_prazos_fechadas->count() > 0 ? FuncoesApoio::calcularDesvioPadrao($p_prazos_fechadas->pluck('atraso')->toArray()) : null;
 
-        $p_atraso_perc_dp_fechadas = FuncoesApoio::calcularDesvioPadrao($p_prazos_fechadas->pluck('atraso_perc')->toArray());
+        $p_atraso_perc_dp_fechadas = $p_prazos_fechadas->count() > 0 ? FuncoesApoio::calcularDesvioPadrao($p_prazos_fechadas->pluck('atraso_perc')->toArray()) : null;
 
-        $p_atraso_dp_abertas = FuncoesApoio::calcularDesvioPadrao($p_prazos_abertas->pluck('atraso')->toArray());
+        $p_atraso_dp_abertas = $p_prazos_abertas->count() > 0 ? FuncoesApoio::calcularDesvioPadrao($p_prazos_abertas->pluck('atraso')->toArray()) : null;
 
-        $p_atraso_perc_dp_abertas = FuncoesApoio::calcularDesvioPadrao($p_prazos_abertas->pluck('atraso_perc')->toArray());
+        $p_atraso_perc_dp_abertas = $p_prazos_abertas->count() > 0 ? FuncoesApoio::calcularDesvioPadrao($p_prazos_abertas->pluck('atraso_perc')->toArray()) : null;
 
         return [
             'projetos' => [
                 'abertos' => [
-                    'dias_previstos' => $dadosias_totais_previstos_abertas,
-                    'dias_executados' => $dadosias_totais_executados_abertas,
-                    'dias_atraso' => $dadosias_totais_atraso_abertas,
+                    'dias_previstos' => $dias_totais_previstos_abertas,
+                    'dias_executados' => $dias_totais_executados_abertas,
+                    'dias_atraso' => $dias_totais_atraso_abertas,
                     'atraso_medio' => $p_atraso_medio_abertas,
                     'atraso_mediano' => $p_atraso_mediano_abertas,
                     'atraso_perc_medio' => $p_atraso_perc_medio_abertas,
@@ -180,9 +175,9 @@ class Relatorio extends Model
                     'dados' => $p_prazos_abertas->toArray()
                 ],
                 'fechados' => [
-                    'dias_previstos' => $dadosias_totais_previstos_fechadas,
-                    'dias_executados' => $dadosias_totais_executados_fechadas,
-                    'dias_atraso' => $dadosias_totais_atraso_fechadas,
+                    'dias_previstos' => $dias_totais_previstos_fechadas,
+                    'dias_executados' => $dias_totais_executados_fechadas,
+                    'dias_atraso' => $dias_totais_atraso_fechadas,
                     'atraso_medio' => $p_atraso_medio_fechadas,
                     'atraso_mediano' => $p_atraso_mediano_fechadas,
                     'atraso_perc_medio' => $p_atraso_perc_medio_fechadas,
@@ -194,9 +189,9 @@ class Relatorio extends Model
             ],
             'atividades' => [
                 'abertas' => [
-                    'dias_previstos' => $dadosias_totais_previstos_abertas,
-                    'dias_executados' => $dadosias_totais_executados_abertas,
-                    'dias_atraso' => $dadosias_totais_atraso_abertas,
+                    'dias_previstos' => $dias_totais_previstos_abertas,
+                    'dias_executados' => $dias_totais_executados_abertas,
+                    'dias_atraso' => $dias_totais_atraso_abertas,
                     'atraso_medio' => $atraso_medio_abertas,
                     'atraso_mediano' => $atraso_mediano_abertas,
                     'atraso_perc_medio' => $atraso_perc_medio_abertas,
@@ -206,9 +201,9 @@ class Relatorio extends Model
                     'dados' => $prazos_abertas->toArray()
                 ],
                 'fechadas' => [
-                    'dias_previstos' => $dadosias_totais_previstos_fechadas,
-                    'dias_executados' => $dadosias_totais_executados_fechadas,
-                    'dias_atraso' => $dadosias_totais_atraso_fechadas,
+                    'dias_previstos' => $dias_totais_previstos_fechadas,
+                    'dias_executados' => $dias_totais_executados_fechadas,
+                    'dias_atraso' => $dias_totais_atraso_fechadas,
                     'atraso_medio' => $atraso_medio_fechadas,
                     'atraso_mediano' => $atraso_mediano_fechadas,
                     'atraso_perc_medio' => $atraso_perc_medio_fechadas,
@@ -224,7 +219,7 @@ class Relatorio extends Model
 
     /**
      * @param $roadmap
-     * @param $tipo_dados : 0 - atividades fechadas, 1 - atividades abertas, 2 - projetos fechados, 3 - projetos abertos
+     * @param $tipo_dado : 0 - atividades fechadas, 1 - atividades abertas, 2 - projetos fechados, 3 - projetos abertos
      * @param int $percentual
      * @param int $faixas
      * @param int $normalizado
@@ -232,12 +227,11 @@ class Relatorio extends Model
      * @return array
      * @throws \Exception
      */
-    public static function histogramaAtrasos($roadmap, int $tipo_dados, $percentual = 1, $normalizado = 1, $outliers = 3, $faixas = 10)
+    public static function histogramaAtraso($roadmap, int $tipo_dado, $percentual = 1, $normalizado = 1, $outliers = 3, $faixas = 10)
     {
         $r = self::relatorioAtrasoAnalitico($roadmap);
 
-
-        switch ($tipo_dados) {
+        switch ($tipo_dado) {
 
             case 0:
 
@@ -271,11 +265,17 @@ class Relatorio extends Model
 
         $dados = collect();
 
+        if (sizeof($ret['dados']) == 0) {
+
+            return $dados;
+
+        }
+
         for ($i = 0; $i < sizeof($ret['dados']); $i++) {
 
-            $ret['dados'][$i]['atraso_normalizado'] = $ret['dados'][$i]['atraso'] / ($normalizado ? $ret['atraso_dp'] : 1);
+            $ret['dados'][$i]['atraso_normalizado'] = ($ret['dados'][$i]['atraso'] - ($normalizado ? $ret['atraso_medio'] : 0)) / ($normalizado ? $ret['atraso_dp'] : 1);
 
-            $ret['dados'][$i]['atraso_perc_normalizado'] = $ret['dados'][$i]['atraso_perc'] / ($normalizado ? $ret['atraso_perc_dp'] : 1);
+            $ret['dados'][$i]['atraso_perc_normalizado'] = ($ret['dados'][$i]['atraso_perc'] - ($normalizado ? $ret['atraso_perc_medio'] : 0)) / ($normalizado ? $ret['atraso_perc_dp'] : 1);
 
             $dados->push($ret['dados'][$i]);
 
@@ -384,8 +384,79 @@ class Relatorio extends Model
             }
         }
 
-
         return $valores;
+
+    }
+
+    /**
+     * @param Roadmap $roadmap
+     * @param $tipo_dado
+     * @param $n
+     * @param $percentual
+     * @return array
+     * @throws \Exception
+     */
+    public static function tabelaAtraso(Roadmap $roadmap, $tipo_dado, $percentual, $n = 10)
+    {
+        $r = self::relatorioAtrasoAnalitico($roadmap);
+
+        switch ($tipo_dado) {
+
+            case 0:
+
+                $ret = $r['projetos']['fechados'];
+
+                break;
+
+            case 1:
+
+                $ret = $r['projetos']['abertos'];
+
+                break;
+
+            default:
+
+                throw new \Exception('Não é um tipo de dado válido.');
+
+        }
+
+        $dados = collect($ret['dados']);
+
+        if (sizeof($ret['dados']) == 0) {
+
+            return $dados;
+
+        }
+
+        if ($percentual) {
+
+            $dados = $dados->sortByDesc('atraso_perc')->take($n);
+
+        } else {
+
+            $dados = $dados->sortByDesc('atraso')->take($n);
+
+        }
+
+        $projetos = collect();
+
+        foreach ($dados as $dado) {
+
+            $projeto = json_decode(json_encode(DB::table('projetos')
+                ->select('projetos.descricao as projeto', 'equipes.descricao as equipe')
+                ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
+                ->where('projetos.id', '=', $dado['projeto'])
+                ->first()), true);
+
+            $projeto['atraso'] = $dado['atraso'];
+
+            $projeto['atraso_perc'] = $dado['atraso_perc'];
+
+            $projetos->push($projeto);
+
+        }
+
+        return $projetos->toArray();
 
     }
 

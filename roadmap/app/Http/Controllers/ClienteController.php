@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Equipe;
+use App\Cliente;
 use Illuminate\Http\Request;
 
-class EquipeController extends Controller
+class ClienteController extends Controller
 {
 
-    protected $rules = ['descricao' => 'required|string|max:100'];
+    protected $rules = ['nome' => 'required|string|max:100'];
 
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -27,18 +28,18 @@ class EquipeController extends Controller
                 array_push($where, ['id', '=', $request->get('id')]);
             }
 
-            if ($request->has('descricao') && $request->get('descricao') != null) {
-                array_push($where, ['descricao', 'ilike', "%{$request->get('descricao')}%"]);
+            if ($request->has('nome') && $request->get('nome') != null) {
+                array_push($where, ['nome', 'ilike', "%{$request->get('nome')}%"]);
             }
 
-            $equipes = Equipe::where($where)->paginate(10);
+            $clientes = Cliente::where($where)->paginate(10);
 
         } else {
 
-            $equipes = Equipe::orderBy('id', 'ASC')->paginate(10);
+            $clientes = Cliente::orderBy('id', 'ASC')->paginate(10);
         }
 
-        return view('equipes.index', ['equipes' => $equipes, 'data' => $data]);
+        return view('clientes.index', ['clientes' => $clientes, 'data' => $data]);
     }
 
     /**
@@ -48,7 +49,7 @@ class EquipeController extends Controller
      */
     public function create()
     {
-        return view('equipes.create');
+        return view('clientes.create');
     }
 
     /**
@@ -61,19 +62,18 @@ class EquipeController extends Controller
     {
         $request->validate($this->rules);
 
-        equipe::criarEquipe($request);
+        Cliente::criarCliente($request);
 
-        return redirect('equipes/');
-
+        return redirect('clientes/');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param \App\equipe $equipe
+     * @param Cliente $cliente
      * @return void
      */
-    public function show(equipe $equipe)
+    public function show(Cliente $cliente)
     {
         //
     }
@@ -81,44 +81,40 @@ class EquipeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Equipe $equipe
-     * @return \Illuminate\Http\Response
+     * @param Cliente $cliente
+     * @return void
      */
-    public function edit(Equipe $equipe)
+    public function edit(Cliente $cliente)
     {
-        return view('equipes.edit', ['equipe' => $equipe]);
+        return view('clientes.edit', ['cliente' => $cliente]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Equipe $equipe
-     * @return void
+     * @param Cliente $cliente
+     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Equipe $equipe)
+    public function update(Request $request, Cliente $cliente)
     {
-
         $request->validate($this->rules);
 
-        $equipe->atualizarEquipe($request, $equipe);
+        $cliente->atualizarCliente($request, $cliente);
 
-        return redirect('equipes/');
-
-
+        return redirect('clientes/');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Equipe $equipe
+     * @param Cliente $cliente
      * @return void
      */
-    public function destroy(Equipe $equipe)
+    public function destroy(Cliente $cliente)
     {
-        $equipe->destroy($equipe->id);
+        $cliente->destroy($cliente->id);
 
-        return redirect('equipes/');
+        return redirect('clientes/');
     }
-
 }

@@ -28,7 +28,7 @@ class CompetenciaController extends Controller
             }
 
             if ($request->has('descricao') && $request->get('descricao') != null) {
-                array_push($where, ['descricao', 'like', "%{$request->get('descricao')}%"]);
+                array_push($where, ['descricao', 'ilike', "%{$request->get('descricao')}%"]);
             }
 
             $competencias = Competencia::where($where)->paginate(10);

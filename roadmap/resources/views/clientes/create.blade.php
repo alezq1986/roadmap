@@ -34,40 +34,23 @@
                     <div class="tab-pane fade show active" id="pills-principal" role="tabpanel"
                          aria-labelledby="pills-principal-tab">
                         <div class="card">
-                            <div class="card-header">{{ __('Cadastrar roadmap') }}</div>
+                            <div class="card-header">{{ __('Cadastrar cliente') }}</div>
                             <div class="card-body">
-                                <form method="POST" id="form-principal" action="{{ route('roadmaps.store') }}">
+                                <form method="POST" id="form-principal" action="{{ route('clientes.store') }}">
                                     @csrf
 
                                     <div class="form-group row">
-                                        <label for="descricao"
-                                               class="col-md-4 col-form-label text-md-right">{{ __('Descrição') }}</label>
+                                        <label for="nome"
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Nome') }}</label>
                                         <div class="col-md-6">
-                                            <input id="descricao" type="text"
-                                                   class="form-control @error('descricao') is-invalid @enderror"
-                                                   name="descricao"
-                                                   value="{{ isset($roadmap->descricao)?$roadmap->descricao:old('descricao') }}"
+                                            <input id="nome" type="text"
+                                                   class="form-control @error('nome') is-invalid @enderror"
+                                                   name="nome"
+                                                   value="{{ isset($cliente->nome)?$cliente->nome:old('nome') }}"
                                                    required
-                                                   autocomplete="descricao" autofocus>
+                                                   autocomplete="nome" autofocus>
 
-                                            @error('descricao')
-                                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="data_base"
-                                               class="col-md-4 col-form-label text-md-right">{{ __('Data base') }}</label>
-                                        <div class="col-md-6">
-                                            <input id="data_base" type="date"
-                                                   class="form-control @error('data_base') is-invalid @enderror"
-                                                   name="data_base"
-                                                   value="{{  isset($roadmap->data_base)?$roadmap->data_base:old('data_base')  }}"
-                                                   required autocomplete="data_base">
-
-                                            @error('data_base')
+                                            @error('nome')
                                             <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>

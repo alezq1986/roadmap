@@ -1,12 +1,15 @@
-$(document).ready(function ($) {
+class Grafico {
 
-    $("#reload-button").on('click', function () {
+    constructor(tipo) {
 
-        $(this).attr("disabled", true);
+        this.tipo = tipo;
+    }
 
-        $("canvas").fadeOut(300);
+    criarGrafico(target_id) {
 
-        $('#chart1').after(
+        $("#" + target_id + "-chart").fadeOut(300);
+
+        $("#" + target_id).append(
             "<div class='cv-spinner'>" +
             "<span class='spinner'></span>\n" +
             "</div>"
@@ -14,95 +17,215 @@ $(document).ready(function ($) {
 
         let dados = new Object();
 
-        dados.tipo_dado = $("select#tipo").val();
+        let r;
 
-        dados.roadmap_id = $("select#roadmap").val();
+        switch (this.tipo) {
 
-        dados.percentual = ($("input#percentual:checked").length) ? 1 : 0;
+            case 'histograma_atraso':
 
-        dados.normalizado = ($("input#normalizado:checked").length) ? 1 : 0;
+                dados.tipo_dado = $("#" + target_id).find("select#tipo").val();
 
-        let r = ajaxRequest(dados, '/relatorios/pegar-dados');
+                dados.roadmap_id = $("#" + target_id).find("select#roadmap").val();
 
-        $.when(r).done(function (response) {
+                dados.percentual = ($("#" + target_id).find("input#percentual:checked").length) ? 1 : 0;
 
-            $('.cv-spinner').fadeOut(300);
+                dados.normalizado = ($("#" + target_id).find("input#normalizado:checked").length) ? 1 : 0;
 
-            $("canvas").fadeIn(300);
+                r = ajaxRequest(dados, '/relatorios/histograma-atraso');
 
-            $("#reload-button").attr("disabled", false);
+                $.when(r).done(function (response) {
 
-            let resultado = response.resultado;
+                    $("#" + target_id).find('.cv-spinner').fadeOut(300);
 
-            let labels = new Array();
+                    $("#" + target_id + "-chart").children().remove();
 
-            let data = new Array();
+                    $("#" + target_id + "-chart").fadeIn(300);
 
-            let p = '';
+                    let resultado = response.resultado;
 
-            let d = 0;
+                    if (resultado.length) {
 
-            if (dados.percentual && dados.normalizado == 0) {
+                        let labels = new Array();
 
-                p = '%';
+                        let data = new Array();
 
-            }
+                        let colors = new Array();
 
-            if (dados.normalizado) {
+                        let title = "Atraso (dias)";
 
-                d = 2;
+                        let p = '';
 
-            }
+                        let d = 0;
 
-            for (let i = 0; i < resultado.length; i++) {
+                        if (dados.percentual && dados.normalizado == 0) {
 
-                labels[i] = 'de ' + resultado[i]['inicial'].toFixed(d).toLocaleString('pt-BR') + p + ' até ' + resultado[i]['final'].toFixed(d).toLocaleString('pt-BR') + p;
+                            p = '%';
 
-                data[i] = resultado[i]['frequencia'];
+                            title = "Atraso (percentual)";
 
-            }
+                        }
 
-            var ctx = document.getElementById('myChart').getContext('2d');
-            var myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Atraso normalizado',
-                        data: data,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
+                        if (dados.normalizado) {
+
+                            d = 2;
+
+                            title += " normalizado";
+
+                        }
+
+                        let r = 255;
+
+                        let g = 240;
+
+                        let b = 160;
+
+                        for (let i = 0; i < resultado.length; i++) {
+
+                            labels[i] = 'de ' + resultado[i]['inicial'].toFixed(d).toLocaleString('pt-BR') + p + ' até ' + resultado[i]['final'].toFixed(d).toLocaleString('pt-BR') + p;
+
+                            data[i] = resultado[i]['frequencia'];
+
+                            colors[i] = "rgba(" + r + ", " + g + "," + b + ", 0.8)";
+
+                            r = (r * 1).toFixed(0);
+
+                            g = (g * 0.9).toFixed(0);
+
+                            b = (b * 0.9).toFixed(0);
+
+                        }
+
+                        $("#" + target_id + "-chart").append(
+                            "<canvas></canvas>"
+                        )
+
+                        let ctx = document.getElementById(target_id + '-chart').getElementsByTagName('canvas')[0].getContext('2d');
+
+                        let myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: title,
+                                    data: data,
+                                    backgroundColor: colors,
+                                    borderColor: [],
+                                    borderWidth: 0
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
                             }
-                        }]
+                        });
+
+                    } else {
+
+                        $("#" + target_id + "-chart").append(
+                            "<span>Não há resultados.</span>"
+                        );
+
                     }
-                }
-            });
+
+                });
 
 
-        });
+                break;
 
+            case 'tabela_atraso':
+
+                dados.tipo_dado = $("#" + target_id).find("select#tipo").val();
+
+                dados.roadmap_id = $("#" + target_id).find("select#roadmap").val();
+
+                dados.percentual = ($("#" + target_id).find("input#percentual:checked").length) ? 1 : 0;
+
+                r = ajaxRequest(dados, '/relatorios/tabela-atraso');
+
+                $.when(r).done(function (response) {
+
+                    $("#" + target_id).find('.cv-spinner').fadeOut(300);
+
+                    $("#" + target_id + "-chart").fadeIn(300);
+
+                    let resultado = response.resultado;
+
+                    if (resultado.length) {
+
+                        let tabela =
+                            "<table class='table table-striped mt-2'>"
+                            + "<thead>"
+                            + "<tr>"
+                            + "<th>Projeto</th>"
+                            + "<th>Equipe</th>"
+                            + "<th>Atraso (dias)</th>"
+                            + "<th>Atraso (%)</th>"
+                            + "</tr>"
+                            + "</thead>"
+                            + "<tbody>";
+
+                        for (let i = 0; i < resultado.length; i++) {
+
+                            tabela +=
+                                "<tr>"
+                                + "<td>" + resultado[i]['projeto'] + "</td>"
+                                + "<td>" + resultado[i]['equipe'] + "</td>"
+                                + "<td>" + resultado[i]['atraso'] + "</td>"
+                                + "<td>" + resultado[i]['atraso_perc'].toFixed(0).toLocaleString('pt-BR') + "</td>"
+                                + "</tr>"
+                        }
+
+                        tabela +=
+                            "</tbody>"
+                            + "</table>";
+
+                        $("#" + target_id + "-chart").append(tabela);
+
+                    } else {
+
+                        $("#" + target_id + "-chart").append(
+                            "<span>Não há resultados.</span>"
+                        );
+
+                    }
+
+                });
+
+
+                break;
+
+            default:
+
+        }
+
+    }
+
+
+}
+
+
+$(document).ready(function ($) {
+
+    $("#reload-button[chart=chart1]").on('click', function () {
+
+        let chart = new Grafico('histograma_atraso');
+
+        chart.criarGrafico($(this).attr("chart"));
+
+    });
+
+    $("#reload-button[chart=chart2]").on('click', function () {
+
+        $("#chart2-chart").children().remove();
+
+        let chart = new Grafico('tabela_atraso');
+
+        chart.criarGrafico($(this).attr("chart"));
 
     });
 

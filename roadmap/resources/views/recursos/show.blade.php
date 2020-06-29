@@ -16,9 +16,6 @@
                 {{-- Botões --}}
                 <div class="row mb-2 pb-2 border-bottom">
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-primary main-buttons" form="form-principal">
-                            {{ __('Atualizar') }}
-                        </button>
                         <form class="d-inline" method="POST"
                               action="{{ route('recursos.destroy', $recurso) }}"
                               onsubmit="return confirm('Tem certeza que deseja remover {{$recurso->nome}} ?')">
@@ -41,12 +38,12 @@
                            role="tab" aria-controls="pills-competencias" aria-selected="false">Competências</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="pills-equipes-tab" data-toggle="pill" href="#pills-equipes"
+                        <a class="nav-link" id="pills-equipe-tab" data-toggle="pill" href="#pills-equipes"
                            role="tab" aria-controls="pills-equipes" aria-selected="false">Equipes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="pills-bloqueios-tab" data-toggle="pill" href="#pills-bloqueios"
-                           role="tab" aria-controls="pills-bloqueios" aria-selected="false">Bloqueios</a>
+                        <a class="nav-link" id="pills-alocacoes-tab" data-toggle="pill" href="#pills-alocacoes"
+                           role="tab" aria-controls="pills-alocacoes" aria-selected="false">Equipes</a>
                     </li>
                 </ul>
                 {{-- Conteúdo da navegação --}}
@@ -63,17 +60,19 @@
                                     @csrf
                                     <div class="form-group row">
                                         <label for="id"
-                                               class="col-md-2 col-form-label text-md-right">{{ __('Id') }}</label>
-                                        <div class="col-md-4">
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Id') }}</label>
+                                        <div class="col-md-6">
 
                                             <input id="id" type="number"
                                                    class="form-control" name="id"
                                                    value="{{ isset($recurso->id)?$recurso->id:old('id') }}"
                                                    disabled>
                                         </div>
+                                    </div>
+                                    <div class="form-group row">
                                         <label for="nome"
-                                               class="col-md-2 col-form-label text-md-right">{{ __('Nome') }}</label>
-                                        <div class="col-md-4">
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Nome') }}</label>
+                                        <div class="col-md-6">
 
                                             <input id="nome" type="text"
                                                    class="form-control @error('nome') is-invalid @enderror" name="nome"
@@ -88,11 +87,12 @@
                                             @enderror
                                         </div>
                                     </div>
+
                                     <div class="form-group row">
                                         <label for="data_inicio"
-                                               class="col-md-2 col-form-label text-md-right">{{ __('Data de início') }}</label>
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Data de início') }}</label>
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <input id="data_inicio" type="date"
                                                    class="form-control @error('data_inicio') is-invalid @enderror"
                                                    name="data_inicio"
@@ -105,10 +105,13 @@
                                     </span>
                                             @enderror
                                         </div>
-                                        <label for="data_fim"
-                                               class="col-md-2 col-form-label text-md-right">{{ __('Data fim') }}</label>
+                                    </div>
 
-                                        <div class="col-md-4">
+                                    <div class="form-group row">
+                                        <label for="data_fim"
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Data fim') }}</label>
+
+                                        <div class="col-md-6">
                                             <input id="data_fim" type="date"
                                                    class="form-control @error('data_fim') is-invalid @enderror"
                                                    name="data_fim"
@@ -122,13 +125,15 @@
                                             @enderror
                                         </div>
                                     </div>
+
+
                                 </form>
                             </div>
                         </div>
                     </div>
                     {{-- Aba Competências --}}
                     <div class="tab-pane fade" id="pills-competencias" role="tabpanel"
-                         aria-labelledby="pills-competencias-tab">
+                         aria-labelledby="pills-principal-tab">
                         <div class="card mb-5">
                             <div class="card-header">{{ __('Competências') }}</div>
                             <div class="card-body">
@@ -153,8 +158,8 @@
                                     </div>
                                     <div class="form-group row">
                                         <label for="competencia_id"
-                                               class="col-md-2 col-form-label text-md-right">{{ __('Competência') }}</label>
-                                        <div class="col-md-4">
+                                               class="col-md-4 col-form-label text-md-right">{{ __('Competência') }}</label>
+                                        <div class="col-md-6">
                                             <div class="input-group">
                                                 <input id="competencia_id" type="text"
                                                        class="form-control" name="competencia_id"
@@ -168,21 +173,10 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="1"
-                                                       id="permite_aloc_automatica" name="permite_aloc_automatica"
-                                                       tipo="competencia_recurso"
-                                                       coluna="permite_aloc_automatica">
-                                                <label class="form-check-label" for="permite_aloc_automatica">
-                                                    Permite alocação automática
-                                                </label>
-                                            </div>
-                                        </div>
                                     </div>
                                     <div class="form-group row mb-0">
-                                        <div class="col-md-12">
-                                            <button class="btn btn-primary float-right incluir-filho"
+                                        <div class="col-md-6 offset-md-4">
+                                            <button class="btn btn-primary incluir-filho"
                                                     tipo="competencia_recurso">
                                                 {{ __('Incluir') }}
                                             </button>
@@ -200,7 +194,6 @@
                                         <th class="d-none" coluna="id">Id</th>
                                         <th coluna="recurso_id">Recurso</th>
                                         <th coluna="competencia_id">Competencia</th>
-                                        <th coluna="permite_aloc_automatica">Alocação automática</th>
                                         <th>Ação</th>
                                     </tr>
                                     </thead>
@@ -215,10 +208,6 @@
                                             <td coluna="competencia_id"
                                                 coluna-valor="{{ $competencia->pivot->competencia_id }}">{{ $competencia->pivot->competencia_id }}
                                                 - {{ $competencia->descricao }}</td>
-                                            <td coluna="permite_aloc_automatica"
-                                                coluna-valor="{{ $competencia->pivot->permite_aloc_automatica}}">{{ $competencia->pivot->permite_aloc_automatica }}
-                                                - @if ($competencia->pivot->permite_aloc_automatica == 0) Não @else
-                                                    Sim @endif</td>
                                             <td>
                                                 <a type="button"
                                                    class="btn btn-danger action-buttons remover-filho">
@@ -239,7 +228,7 @@
                     </div>
                     {{-- Aba Equipes --}}
                     <div class="tab-pane fade" id="pills-equipes" role="tabpanel"
-                         aria-labelledby="pills-equipes-tab">
+                         aria-labelledby="pills-principal-tab">
                         <div class="card mb-5">
                             <div class="card-header">{{ __('Equipes') }}</div>
                             <div class="card-body">
@@ -280,8 +269,8 @@
                                         </div>
                                     </div>
                                     <div class="form-group row mb-0">
-                                        <div class="col-md-12">
-                                            <button class="btn btn-primary float-right incluir-filho"
+                                        <div class="col-md-6 offset-md-4">
+                                            <button class="btn btn-primary incluir-filho"
                                                     tipo="equipe_recurso">
                                                 {{ __('Incluir') }}
                                             </button>
@@ -331,99 +320,6 @@
                             </div>
                         </div>
                     </div>
-                    {{-- Aba Bloqueios --}}
-                    <div class="tab-pane fade" id="pills-bloqueios" role="tabpanel"
-                         aria-labelledby="pills-bloqueios-tab">
-                        <div class="card mb-5">
-                            <div class="card-header">{{ __('Bloqueios') }}</div>
-                            <div class="card-body">
-                                <form method="POST" action="" tipo="bloqueios" class="form-filho">
-                                    @csrf
-                                    <div class="form-group row d-none">
-                                        <label for="id"
-                                               class="col-md-3 col-form-label text-md-right">{{ __('Id') }}</label>
-                                        <div class="col-md-3">
-                                            <input id="id" type="text"
-                                                   class="form-control" name="id" tipo="bloqueios"
-                                                   coluna="id" disabled>
-                                        </div>
-                                        <label for="recurso_id"
-                                               class="col-md-3 col-form-label text-md-right">{{ __('Recurso') }}</label>
-                                        <div class="col-md-3">
-                                            <input id="recurso_id" type="text"
-                                                   class="form-control" name="recurso_id" tipo="bloqueios"
-                                                   coluna="recurso_id" value="{{isset($recurso->id)?$recurso->id:null}}"
-                                                   disabled>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="data_inicio"
-                                               class="col-md-2 col-form-label text-md-right">{{ __('Data de início') }}</label>
-                                        <div class="col-md-4">
-                                            <input id="data_inicio" type="date"
-                                                   class="form-control" name="data_inicio"
-                                                   tipo="bloqueios"
-                                                   coluna="data_inicio" autofocus>
-                                        </div>
-                                        <label for="data_fim"
-                                               class="col-md-2 col-form-label text-md-right">{{ __('Data fim') }}</label>
-                                        <div class="col-md-4">
-                                            <input id="data_fim" type="date"
-                                                   class="form-control" name="data_fim"
-                                                   tipo="bloqueios"
-                                                   coluna="data_fim" autofocus>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row mb-0">
-                                        <div class="col-md-12">
-                                            <button class="btn btn-primary float-right incluir-filho"
-                                                    tipo="bloqueios">
-                                                {{ __('Incluir') }}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header">{{ __('Bloqueios') }}</div>
-                            <div class="card-body">
-                                <table class="table table-striped mt-2 tabela-filha" tipo="bloqueios">
-                                    <thead>
-                                    <tr>
-                                        <th class="d-none" coluna="id">Id</th>
-                                        <th coluna="recurso_id">Recurso</th>
-                                        <th coluna="data_inicio">Data início</th>
-                                        <th coluna="data_fim">Data fim</th>
-                                        <th>Ação</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($bloqueios as $bloqueio)
-                                        <tr id="{{ $bloqueio->id }}">
-                                            <td class="d-none" coluna="id"
-                                                coluna-valor="{{ $bloqueio->id }}"></td>
-                                            <td coluna="recurso_id"
-                                                coluna-valor="{{ $bloqueio->recurso_id }}">{{ $bloqueio->recurso_id }}
-                                                - {{ $recurso->nome }}</td>
-                                            <td coluna="data_inicio"
-                                                coluna-valor="{{ $bloqueio->data_inicio }}">{{$bloqueio->data_inicio }}</td>
-                                            <td coluna="data_fim"
-                                                coluna-valor="{{ $bloqueio->data_fim }}">{{$bloqueio->data_fim }}</td>
-                                            <td>
-                                                <a type="button"
-                                                   class="btn btn-danger action-buttons remover-filho">
-                                                    <i class="fa fa-trash fa-sm"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>

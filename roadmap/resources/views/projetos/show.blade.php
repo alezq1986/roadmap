@@ -16,9 +16,15 @@
                 {{-- Botões --}}
                 <div class="row mb-2 pb-2 border-bottom">
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-primary main-buttons" form="form-principal">
-                            {{ __('Cadastrar') }}
-                        </button>
+                        <form class="d-inline" method="POST"
+                              action="{{ route('projetos.destroy', $projeto) }}"
+                              onsubmit="return confirm('Tem certeza que deseja remover {{$projeto->descricao}} ?')">
+                            @csrf
+                            @method("DELETE")
+                            <button type="submit" class="btn btn-danger main-buttons">
+                                {{ __('Excluir') }}
+                            </button>
+                        </form>
                     </div>
                 </div>
                 {{-- Navegação --}}
@@ -31,6 +37,10 @@
                         <a class="nav-link" id="pills-atividades-tab" data-toggle="pill" href="#pills-atividades"
                            role="tab" aria-controls="pills-atividades" aria-selected="false">Atividades</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-alocacao-tab" data-toggle="pill" href="#pills-alocacao"
+                           role="tab" aria-controls="pills-alocacao" aria-selected="false">Alocação</a>
+                    </li>
                 </ul>
                 {{-- Conteúdo da navegação --}}
                 <div class="tab-content" id="pills-tabContent">
@@ -38,15 +48,13 @@
                     <div class="tab-pane fade show active" id="pills-principal" role="tabpanel"
                          aria-labelledby="pills-principal-tab">
                         <div class="card">
-                            <div class="card-header">{{ __('Editar projeto') }}</div>
+                            <div class="card-header">{{ __('Projeto') }}</div>
                             <div class="card-body">
-                                <form method="POST" id="form-principal"
-                                      action="{{ route('projetos.store') }}">
-                                    @csrf
-                                    <div class="form-group row d-none">
+                                <form method="" id="form-principal">
+                                    <div class="form-group row">
                                         <label for="id"
-                                               class="col-md-4 col-form-label text-md-right">{{ __('Id') }}</label>
-                                        <div class="col-md-6">
+                                               class="col-md-2 col-form-label text-md-right">{{ __('Id') }}</label>
+                                        <div class="col-md-4">
                                             <input id="id" type="number"
                                                    class="form-control" name="id"
                                                    value="{{ isset($projeto->id)?$projeto->id:old('id') }}"
@@ -56,22 +64,14 @@
                                     <div class="form-group row">
                                         <label for="descricao"
                                                class="col-md-2 col-form-label text-md-right">{{ __('Descrição') }}</label>
-
                                         <div class="col-md-4">
                                             <input id="descricao" type="text"
-                                                   class="form-control @error('descricao') is-invalid @enderror"
+                                                   class="form-control"
                                                    name="descricao"
                                                    value="{{ isset($projeto->descricao)?$projeto->descricao:old('descricao') }}"
                                                    required
-                                                   autocomplete="descricao" autofocus>
-
-                                            @error('descricao')
-                                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                            @enderror
+                                                   autocomplete="descricao" disabled>
                                         </div>
-
                                         <label for="equipe_id"
                                                class="col-md-2 col-form-label text-md-right">{{ __('Equipe') }}</label>
                                         <div class="col-md-4">
@@ -79,10 +79,10 @@
                                                 <input id="equipe_id" type="text"
                                                        class="form-control" name="equipe_id"
                                                        value="{{ isset($projeto->equipe_id)?$projeto->equipe_id:old('equipe_id') }}"
-                                                       autofocus>
+                                                       disabled>
                                                 <div class="input-group-append">
                                                     <button class="input-group-text"
-                                                            modal-tipo="equipes">
+                                                            modal-tipo="">
                                                         <i class="fa fa-search"></i>
                                                     </button>
                                                 </div>
@@ -98,7 +98,7 @@
                                                     value="{{ isset($projeto->status)?$projeto->status:old('status') }}"
                                                     disabled>
                                                 <option value="0"
-                                                        @if((isset($projeto->status) && $projeto->status == 0) || !isset($projeto->status) ) selected @endif>
+                                                        @if(is_null($projeto->status)  && $projeto->status == 0) selected @endif>
                                                     Não iniciado
                                                 </option>
                                                 <option value="1"
@@ -120,7 +120,8 @@
                                         <div class="col-md-4">
                                             <select id="status_aprovacao"
                                                     class="form-control" name="status_aprovacao"
-                                                    value="{{ isset($projeto->status_aprovacao)?$projeto->status_aprovacao:old('status_aprovacao') }}">
+                                                    value="{{ isset($projeto->status_aprovacao)?$projeto->status_aprovacao:old('status_aprovacao') }}"
+                                                    disabled>
                                                 <option value="0"
                                                         @if(isset($projeto->status_aprovacao) && $projeto->status_aprovacao == 0) selected @endif>
                                                     Não aprovado
@@ -146,17 +147,11 @@
 
                                         <div class="col-md-4">
                                             <input id="data_entrega" type="date"
-                                                   class="form-control @error('data_entrega') is-invalid @enderror"
+                                                   class="form-control"
                                                    name="data_entrega"
                                                    value="{{ isset($projeto->data_entrega)?$projeto->data_entrega:old('data_entrega') }}"
                                                    required
-                                                   autocomplete="data_entrega" autofocus>
-
-                                            @error('data_entrega')
-                                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                            @enderror
+                                                   autocomplete="data_entrega" disabled>
                                         </div>
                                     </div>
                                 </form>
@@ -166,13 +161,10 @@
                     {{-- Aba Atividades --}}
                     <div class="tab-pane fade" id="pills-atividades" role="tabpanel"
                          aria-labelledby="pills-atividades-tab">
-
                         <div class="card mb-5">
                             <div class="card-header">{{ __('Atividades') }}</div>
                             <div class="card-body">
-                                <form class="form-filho" method="POST" action="" tipo="atividades">
-                                    @csrf
-
+                                <form class="form-filho" method="" action="" tipo="atividades">
                                     <div class="form-group row">
                                         <label for="atividades.id"
                                                class="col-md-2 col-form-label text-md-right">{{ __('Id') }}</label>
@@ -198,7 +190,7 @@
                                                 <input id="atividades.atividade_codigo" type="number" min="1"
                                                        class="form-control" name="atividades.atividade_codigo"
                                                        coluna="atividade_codigo"
-                                                       autofocus>
+                                                       disabled>
                                                 <div class="input-group-append">
                                                     <button class="input-group-text"
                                                             sequencial-tipo="atividade_codigo">
@@ -215,7 +207,7 @@
                                             <input id="atividades.descricao" type="text"
                                                    class="form-control" name="atividades.descricao"
                                                    coluna="descricao"
-                                                   autofocus>
+                                                   disabled>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -225,11 +217,10 @@
                                             <div class="input-group">
                                                 <input id="atividades.competencia_id" type="text"
                                                        class="form-control" name="atividades.competencia_id"
-                                                       autofocus
-                                                       coluna="competencia_id">
+                                                       coluna="competencia_id" disabled>
                                                 <div class="input-group-append">
                                                     <button class="input-group-text"
-                                                            modal-tipo="competencias">
+                                                            modal-tipo="competencias" disabled>
                                                         <i class="fa fa-search"></i>
                                                     </button>
                                                 </div>
@@ -241,7 +232,7 @@
                                             <input id="atividades.prazo" type="text"
                                                    class="form-control" name="atividades.prazo"
                                                    coluna="prazo"
-                                                   autofocus>
+                                                   disabled>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -251,7 +242,7 @@
                                             <input id="atividades.data_inicio_real" type="date"
                                                    class="form-control" name="atividades.data_inicio_real"
                                                    coluna="data_inicio_real"
-                                                   autofocus>
+                                                   disabled>
                                         </div>
                                         <label for="atividades.data_fim_real"
                                                class="col-md-2 col-form-label text-md-right">{{ __('Data fim') }}</label>
@@ -259,7 +250,7 @@
                                             <input id="atividades.data_fim_real" type="date"
                                                    class="form-control" name="atividades.data_fim_real"
                                                    coluna="data_fim_real"
-                                                   autofocus>
+                                                   disabled>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -270,10 +261,10 @@
                                                 <input id="atividades.recurso_real_id" type="text"
                                                        class="form-control" name="atividades.recurso_real_id"
                                                        coluna="recurso_real_id"
-                                                       autofocus>
+                                                       disabled>
                                                 <div class="input-group-append">
                                                     <button class="input-group-text"
-                                                            modal-tipo="recursos_competencias">
+                                                            modal-tipo="recursos_competencias" disabled>
                                                         <i class="fa fa-search"></i>
                                                     </button>
                                                 </div>
@@ -286,16 +277,10 @@
                                                    class="form-control" name="atividades.percentual_real"
                                                    coluna="percentual_real"
                                                    value="0"
-                                                   autofocus>
+                                                   disabled>
                                         </div>
                                     </div>
                                     <div class="form-group row mb-0">
-                                        <div class="col-md-6 offset-md-4">
-                                            <button class="btn btn-primary incluir-filho"
-                                                    tipo="atividades">
-                                                {{ __('Incluir') }}
-                                            </button>
-                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -316,20 +301,54 @@
                                         <th coluna="data_fim_real" class="d-none">Data fim</th>
                                         <th coluna="recurso_real_id">Recurso</th>
                                         <th coluna="percentual_real" class="d-none">Percentual</th>
-                                        <th coluna="">Ação</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-
+                                    @foreach($atividades as $atividade)
+                                        <tr id="{{ $atividade->id }}">
+                                            <td class="d-none" coluna="id"
+                                                coluna-valor="{{ $atividade->id }}">{{ $atividade->id }}</td>
+                                            <td class="d-none" coluna="projeto_id"
+                                                coluna-valor="{{ $atividade->projeto_id }}">{{ $atividade->projeto_id }}</td>
+                                            <td coluna="atividade_codigo"
+                                                coluna-valor="{{ $atividade->atividade_codigo }}">{{ $atividade->atividade_codigo }}</td>
+                                            <td coluna="descricao"
+                                                coluna-valor="{{ $atividade->descricao }}">{{ $atividade->descricao }}</td>
+                                            <td coluna="competencia_id"
+                                                coluna-valor="{{ $atividade->competencia_id }}">{{ $atividade->competencia_id }}</td>
+                                            <td coluna="prazo"
+                                                coluna-valor="{{ $atividade->prazo }}">{{ $atividade->prazo }}</td>
+                                            <td class="d-none" coluna="data_inicio_real"
+                                                coluna-valor="{{ $atividade->data_inicio_real }}">{{ $atividade->data_inicio_real }}</td>
+                                            <td class="d-none" coluna="data_fim_real"
+                                                coluna-valor="{{ $atividade->data_fim_real }}">{{ $atividade->data_fim_real }}</td>
+                                            <td coluna="recurso_real_id"
+                                                coluna-valor="{{ $atividade->recurso_real_id }}">{{ $atividade->recurso_real_id }}</td>
+                                            <td class="d-none" coluna="percentual_real"
+                                                coluna-valor="{{ $atividade->percentual_real }}">{{ $atividade->percentual_real }}</td>
+                                        </tr>
+                                    @endforeach
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-
+                    </div>
+                    {{-- Aba Alocação --}}
+                    <div class="tab-pane fade" id="pills-alocacao" role="tabpanel"
+                         aria-labelledby="pills-alocacao-tab">
+                        <div id="gantt"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
+@section('scripts-especificos')
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="{{ asset('js/roadmap-gantt.js') }}"></script>
+    <link href="{{ asset('css/roadmap-gantt.css') }}" rel="stylesheet">
+
+@endsection
+
 @endauth

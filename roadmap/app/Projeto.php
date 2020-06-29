@@ -35,9 +35,10 @@ class Projeto extends Model
 
                 $projeto = Projeto::create([
                     'descricao' => $request->input('descricao'),
-                    'status' => $request->input('status'),
+                    'status' => 0,
                     'status_aprovacao' => $request->input('status_aprovacao'),
                     'equipe_id' => $request->input('equipe_id'),
+                    'data_entrega' => $request->input('data_entrega'),
                 ]);
 
 
@@ -75,6 +76,7 @@ class Projeto extends Model
                 $projeto->equipe_id = $request->input('equipe_id');
                 $projeto->status = $request->input('status');
                 $projeto->status_aprovacao = $request->input('status_aprovacao');
+                $projeto->data_entrega = $request->input('data_entrega');
 
                 $projeto->save();
 
@@ -125,7 +127,7 @@ class Projeto extends Model
 
                 $at_totais_iniciadas++;
 
-                if ($atividade->competencia == 5) {
+                if ($atividade->competencia_id == 5) {
 
                     $at_testes_iniciadas++;
 
@@ -138,7 +140,7 @@ class Projeto extends Model
 
                 $at_totais_iniciadas++;
 
-                if ($atividade->competencia == 5) {
+                if ($atividade->competencia_id == 5) {
 
                     $at_testes_iniciadas++;
 

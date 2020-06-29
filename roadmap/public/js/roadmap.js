@@ -204,6 +204,13 @@ class FormFilho {
 
         $("form[tipo=" + this.tipo + "]").find("input[coluna], select[coluna]").each(function () {
 
+            let valor = null;
+
+            if ($(this).attr("type") == "checkbox" && $(this).is(':checked') == false) {
+
+                let valor
+            }
+
             formulario_dados[$(this).attr("coluna")] = $(this).val();
 
         });
@@ -558,6 +565,14 @@ $(document).ready(function () {
     r3.equipe_id = 'unique';
 
     regras['equipe_recurso'] = r3;
+
+    let r4 = new Object();
+
+    r4.data_inicio = 'required|date';
+
+    r4.data_fim = 'required|date';
+
+    regras['bloqueios'] = r4;
 
     let filhos = FormFilho.pegarFilhos();
 

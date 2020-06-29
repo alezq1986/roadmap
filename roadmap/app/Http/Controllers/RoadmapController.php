@@ -212,13 +212,15 @@ order by a.prioridade asc nulls last"));
             'atividades.percentual_real', 'projetos.descricao as projeto', 'recursos.nome as nome', 'atividades.recurso_real_id as recurso_real_id', 'projetos.equipe_id')
             ->leftJoin('projetos', 'atividades.projeto_id', '=', 'projetos.id')
             ->leftJoin('recursos', 'atividades.recurso_real_id', '=', 'recursos.id')
-            ->leftJoin('alocacoes', 'atividades.id', '=', 'alocacoes.atividade_id')
+            ->leftJoinSub('SELECT DISTINCT on (atividade_id) * from alocacoes order by atividade_id,  roadmap_id DESC', 'alocacoes', function ($join) {
+                $join->on('atividades.id', '=', 'alocacoes.atividade_id');
+            })
             ->where('atividades.percentual_real', '<', 100)
             ->whereNotIn('projetos.status_aprovacao', [0])
             ->whereNotIn('projetos.status', [3])
+            ->orderBy('projetos.id', 'ASC')
             ->orderBy('alocacoes.data_inicio_proj', 'ASC')
             ->orderBy('alocacoes.data_fim_proj', 'ASC')
-            ->orderBy('projetos.id', 'ASC')
             ->orderBy('atividades.atividade_codigo', 'ASC')
             ->get();
 
@@ -250,6 +252,84 @@ order by a.prioridade asc nulls last"));
         return response()->json([
 
             'resultado' => $exportar
+
+        ]);
+
+    }
+
+    public function gantt($id)
+    {
+
+        $roadmap = Roadmap::find($id);
+
+        return view('roadmaps.gantt', ['roadmap' => $roadmap]);
+
+    }
+
+    public function ganttDados(Request $request)
+    {
+
+        $dados_ajax = $request->get('dados');
+
+        $atividades = DB::table('atividades')->select(
+            'atividades.id as atividade_id', 'atividades.projeto_id', 'atividades.descricao', 'atividades.prazo', DB::raw('coalesce(atividades.data_inicio_real, alocacoes.data_inicio_proj) as data_inicio'), DB::raw('coalesce(atividades.data_fim_real, alocacoes.data_fim_proj) as data_fim'), 'atividades.percentual_real',
+            'competencias.descricao as competencia',
+            'equipes.descricao as equipe',
+            'recursos.nome as recurso',
+            'projeto_roadmap.prioridade',
+            'projetos.descricao as projeto', 'projetos.status', 'projetos.status_aprovacao')
+            ->leftJoin('alocacoes', 'atividades.id', '=', 'alocacoes.atividade_id')
+            ->leftJoin('projetos', 'atividades.projeto_id', '=', 'projetos.id')
+            ->leftJoin('competencias', 'atividades.competencia_id', '=', 'competencias.id')
+            ->leftJoin('equipes', 'projetos.equipe_id', '=', 'equipes.id')
+            ->leftJoin('projeto_roadmap', function ($join) {
+                $join->on('atividades.projeto_id', '=', 'projeto_roadmap.projeto_id')
+                    ->on('alocacoes.roadmap_id', '=', 'projeto_roadmap.roadmap_id');
+            })
+            ->leftJoin('recursos', 'atividades.recurso_real_id', '=', 'recursos.id')
+            ->orderBy('projeto_roadmap.prioridade', 'ASC')
+            ->orderBy('atividades.atividade_codigo', 'ASC');
+
+        $dependencias = DB::table('atividades')->select('atividade_dependencia.atividade_id as atividade', 'atividade_dependencia.dependencia_id as dependencia')
+            ->leftJoin('atividade_dependencia', 'atividades.id', '=', 'atividade_dependencia.atividade_id')
+            ->leftJoin('alocacoes', 'atividades.id', '=', 'alocacoes.atividade_id')
+            ->leftJoin('projetos', 'atividades.projeto_id', '=', 'projetos.id');
+
+        $projetos = DB::table('atividades')->select('atividades.projeto_id', DB::raw('COUNT(atividades.projeto_id) as qtd'))
+            ->leftJoin('alocacoes', 'atividades.id', '=', 'alocacoes.atividade_id')
+            ->leftJoin('roadmaps', 'alocacoes.roadmap_id', '=', 'roadmaps.id')
+            ->leftJoin('projetos', 'atividades.projeto_id', '=', 'projetos.id')
+            ->groupBy('atividades.projeto_id');
+
+        if (isset($dados_ajax['projeto_id']) && !is_null($dados_ajax['projeto_id'])) {
+
+            $atividades = $atividades->where('projetos.id', '=', $dados_ajax['projeto_id']);
+
+            $dependencias = $dependencias->where('projetos.id', '=', $dados_ajax['projeto_id']);
+
+            $projetos = $projetos->where('projetos.id', '=', $dados_ajax['projeto_id']);
+
+        }
+
+        if (isset($dados_ajax['roadmap_id']) && !is_null($dados_ajax['roadmap_id'])) {
+
+            $atividades = $atividades->where('alocacoes.roadmap_id', '=', $dados_ajax['roadmap_id']);
+
+            $dependencias = $dependencias->where('alocacoes.roadmap_id', '=', $dados_ajax['roadmap_id']);
+
+            $projetos = $projetos->where('alocacoes.roadmap_id', '=', $dados_ajax['roadmap_id']);
+
+        }
+
+        $atividades = $atividades->get();
+
+        $dependencias = $dependencias->get();
+
+        $projetos = $projetos->get();
+
+        return response()->json([
+
+            'resultado' => ['atividades' => $atividades, 'dependencias' => $dependencias]
 
         ]);
 

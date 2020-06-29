@@ -39,7 +39,7 @@ class RecursoController extends Controller
             }
 
             if ($request->has('nome') && $request->get('nome') != null) {
-                array_push($where, ['nome', 'like', "%{$request->get('nome')}%"]);
+                array_push($where, ['nome', 'ilike', "%{$request->get('nome')}%"]);
             }
 
             if ($request->has('data_inicio_de') && $request->get('data_inicio_de') != null) {
@@ -119,7 +119,9 @@ class RecursoController extends Controller
 
         $equipes = $recurso->equipes;
 
-        return view('recursos.edit', ['recurso' => $recurso, 'competencias' => $competencias, 'equipes' => $equipes]);
+        $bloqueios = $recurso->bloqueios;
+
+        return view('recursos.edit', ['recurso' => $recurso, 'competencias' => $competencias, 'equipes' => $equipes, 'bloqueios' => $bloqueios]);
     }
 
     /**

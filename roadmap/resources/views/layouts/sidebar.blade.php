@@ -5,6 +5,9 @@
         <div class="card-body">
             <ul>
                 <li>
+                    <a href="{{ route('clientes.index')}}">Clientes</a>
+                </li>
+                <li>
                     <a href="{{ route('recursos.index')}}">Recursos</a>
                 </li>
                 <li>
@@ -18,6 +21,9 @@
                 </li>
                 <li>
                     <a href="{{ route('roadmaps.index')}}">Roadmaps</a>
+                </li>
+                <li>
+                    <a href="{{ route('relatorios')}}">Relatorios</a>
                 </li>
             </ul>
         </div>

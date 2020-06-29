@@ -69,6 +69,15 @@
     overflow-wrap: break-word;
 }
 
+.chartdiv {
+    display: none;
+    text-align: center;
+}
+
+.chartdiv span {
+    display: inline-block;
+}
+
 
 .cv-spinner {
     height: 100%;
@@ -91,3 +100,5 @@
         transform: rotate(360deg);
     }
 }
+
+

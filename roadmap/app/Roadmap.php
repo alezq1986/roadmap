@@ -125,7 +125,7 @@ class Roadmap extends Model
 
         $alocacoes = $this->alocacoes;
 
-        $header = ['Projeto', 'Atividade', 'Data Início', 'Data Fim', 'Prazo (dias)', 'Recurso', 'Percentual (%)'];
+        $header = ['Projeto', 'Atividade', 'Data Início', 'Data Fim', 'Prazo (dias)', 'Recurso', 'Percentual (%)', 'Status Aprovação'];
 
         $spreadsheet->getActiveSheet()
             ->fromArray(
@@ -137,7 +137,39 @@ class Roadmap extends Model
         $i = 2;
         foreach ($alocacoes as $alocacao) {
 
-            $arr = [$alocacao->atividade->projeto->descricao, $alocacao->atividade->descricao, $alocacao->data_inicio_proj, $alocacao->data_fim_proj, $alocacao->atividade->prazo, $alocacao->recurso->nome, $alocacao->atividade->percentual_real];
+            $status = null;
+
+            switch ($alocacao->atividade->projeto->status_aprovacao) {
+
+                case 0:
+
+                    $status = 'Não aprovado';
+
+                    break;
+
+                case 1:
+
+                    $status = 'Previsto';
+
+                    break;
+
+                case 2:
+
+                    $status = 'Aprovado';
+
+                    break;
+
+                case 3:
+
+                    $status = 'Suspenso';
+
+                    break;
+
+                default:
+
+            }
+
+            $arr = [$alocacao->atividade->projeto->descricao, $alocacao->atividade->descricao, $alocacao->data_inicio_proj, $alocacao->data_fim_proj, $alocacao->atividade->prazo, $alocacao->recurso->nome, $alocacao->atividade->percentual_real, $status];
 
             $spreadsheet->getActiveSheet()
                 ->fromArray(

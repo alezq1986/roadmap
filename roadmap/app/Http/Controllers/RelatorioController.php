@@ -17,7 +17,7 @@ class RelatorioController extends Controller
 
     }
 
-    public function pegarDados(Request $request)
+    public function histogramaAtraso(Request $request)
     {
 
         $dados_ajax = $request->get('dados');
@@ -30,7 +30,28 @@ class RelatorioController extends Controller
 
         $normalizado = $dados_ajax['normalizado'];
 
-        $resultado = Relatorio::histogramaAtrasos(Roadmap::find($roadmap_id), $tipo_dado, $percentual, $normalizado, null);
+        $resultado = Relatorio::histogramaAtraso(Roadmap::find($roadmap_id), $tipo_dado, $percentual, $normalizado, 3, 20);
+
+        return response()->json([
+
+            'resultado' => $resultado
+
+        ]);
+
+    }
+
+    public function tabelaAtraso(Request $request)
+    {
+
+        $dados_ajax = $request->get('dados');
+
+        $tipo_dado = $dados_ajax['tipo_dado'];
+
+        $roadmap_id = $dados_ajax['roadmap_id'];
+
+        $percentual = $dados_ajax['percentual'];
+
+        $resultado = Relatorio::tabelaAtraso(Roadmap::find($roadmap_id), $tipo_dado, $percentual);
 
         return response()->json([
 
