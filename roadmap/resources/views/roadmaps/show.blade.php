@@ -34,12 +34,16 @@
                         </div>
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-6">
-                                <button class="btn btn-success" id="exportar-roadmap">
-                                    {{ __('Exportar') }}
-                                </button>
                                 <button class="btn btn-primary float-right" id="pesquisar-roadmap">
                                     {{ __('Pesquisar') }}
                                 </button>
+                                <button class="btn btn-success float-right mr-2" id="exportar-roadmap">
+                                    {{ __('Exportar') }}
+                                </button>
+                                <a class="btn btn-warning float-right mr-2" id="gantt-roadmap"
+                                   href="{{ route('roadmaps.gantt', $roadmap)}}">
+                                    {{ __('Gantt') }}
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -53,11 +57,18 @@
                             <div class="card">
                                 <div class="card-header">
                                     <div class="row">
-                                        <div class="col-md-2">
+                                        <div class="col-md-1">
+                                            <a class="btn btn-secondary action-buttons"
+                                               href="{{ route('projetos.show', $atividade->projeto_id) }}">
+                                                <i class="fa fa-eye fa-sm"></i>
+                                            </a>
+                                        </div>
+                                        <div class="col-md-1">
                                             <div
                                                 class="badge badge-light prioridade">{{$atividade->prioridade}}</div>
                                         </div>
                                         <div class="col-md-3">({{$atividade->projeto_id}}) {{$atividade->projeto}}</div>
+
                                         <div
                                             class="col-md-3">{{$atividade->equipe}}</div>
                                         <div class="col-md-2">

@@ -173,6 +173,8 @@ class RoadmapController extends Controller
 
             $max_id = DB::table('projeto_roadmap')->max('roadmap_id');
 
+            $max_id = is_null($max_id) ? 0 : $max_id;
+
             $projetos = DB::select(DB::raw("select * from
 ((select projetos.id, projetos.descricao as projeto_descricao, projetos.status, projetos.status_aprovacao, projeto_roadmap.roadmap_id, projeto_roadmap.prioridade, equipes.descricao as equipe_descricao from projetos
 left join projeto_roadmap on projetos.id = projeto_roadmap.projeto_id

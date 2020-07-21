@@ -15,7 +15,7 @@ class CompetenciaRecursoSeeder extends Seeder
 
         DB::table('competencia_recurso')->insert(['recurso_id' => 1, 'competencia_id' => 4, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 2, 'competencia_id' => 4, 'permite_aloc_automatica' => 1]);
-        DB::table('competencia_recurso')->insert(['recurso_id' => 3, 'competencia_id' => 4, 'permite_aloc_automatica' => 1]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 3, 'competencia_id' => 5, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 4, 'competencia_id' => 4, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 5, 'competencia_id' => 1, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 6, 'competencia_id' => 1, 'permite_aloc_automatica' => 1]);
@@ -34,7 +34,7 @@ class CompetenciaRecursoSeeder extends Seeder
         DB::table('competencia_recurso')->insert(['recurso_id' => 19, 'competencia_id' => 2, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 20, 'competencia_id' => 6, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 21, 'competencia_id' => 6, 'permite_aloc_automatica' => 0]);
-        DB::table('competencia_recurso')->insert(['recurso_id' => 22, 'competencia_id' => 7, 'permite_aloc_automatica' => 1], ['recurso_id' => 22, 'competencia_id' => 2, 'permite_aloc_automatica' => 0]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 22, 'competencia_id' => 7, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 23, 'competencia_id' => 5, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 24, 'competencia_id' => 5, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 25, 'competencia_id' => 5, 'permite_aloc_automatica' => 1]);
@@ -59,6 +59,7 @@ class CompetenciaRecursoSeeder extends Seeder
         DB::table('competencia_recurso')->insert(['recurso_id' => 44, 'competencia_id' => 1, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 45, 'competencia_id' => 6, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 46, 'competencia_id' => 1, 'permite_aloc_automatica' => 1]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 46, 'competencia_id' => 6, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 47, 'competencia_id' => 1, 'permite_aloc_automatica' => 0]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 48, 'competencia_id' => 1, 'permite_aloc_automatica' => 0]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 49, 'competencia_id' => 1, 'permite_aloc_automatica' => 1]);
@@ -68,6 +69,7 @@ class CompetenciaRecursoSeeder extends Seeder
         DB::table('competencia_recurso')->insert(['recurso_id' => 53, 'competencia_id' => 2, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 54, 'competencia_id' => 2, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 55, 'competencia_id' => 2, 'permite_aloc_automatica' => 0]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 55, 'competencia_id' => 7, 'permite_aloc_automatica' => 0]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 56, 'competencia_id' => 2, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 57, 'competencia_id' => 2, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 58, 'competencia_id' => 5, 'permite_aloc_automatica' => 0]);
@@ -82,8 +84,16 @@ class CompetenciaRecursoSeeder extends Seeder
         DB::table('competencia_recurso')->insert(['recurso_id' => 67, 'competencia_id' => 5, 'permite_aloc_automatica' => 0]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 68, 'competencia_id' => 3, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 69, 'competencia_id' => 3, 'permite_aloc_automatica' => 0]);
-        DB::table('competencia_recurso')->insert(['recurso_id' => 46, 'competencia_id' => 6, 'permite_aloc_automatica' => 1]);
-        DB::table('competencia_recurso')->insert(['recurso_id' => 70, 'competencia_id' => 1, 'permite_aloc_automatica' => 1]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 70, 'competencia_id' => 5, 'permite_aloc_automatica' => 1]);
         DB::table('competencia_recurso')->insert(['recurso_id' => 71, 'competencia_id' => 5, 'permite_aloc_automatica' => 1]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 72, 'competencia_id' => 5, 'permite_aloc_automatica' => 1]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 73, 'competencia_id' => 2, 'permite_aloc_automatica' => 0]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 74, 'competencia_id' => 5, 'permite_aloc_automatica' => 0]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 75, 'competencia_id' => 4, 'permite_aloc_automatica' => 1]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 76, 'competencia_id' => 4, 'permite_aloc_automatica' => 1]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 76, 'competencia_id' => 5, 'permite_aloc_automatica' => 1]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 77, 'competencia_id' => 1, 'permite_aloc_automatica' => 1]);
+        DB::table('competencia_recurso')->insert(['recurso_id' => 78, 'competencia_id' => 1, 'permite_aloc_automatica' => 1]);
+
     }
 }

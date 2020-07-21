@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class alocarRoadmap implements ShouldQueue
 {
@@ -36,9 +37,23 @@ class alocarRoadmap implements ShouldQueue
 
         $this->roadmap->save();
 
-        $alocacao = $this->roadmap->alocar();
+        try {
+
+            $alocacao = $this->roadmap->alocar();
+
+        } catch (\Exception $e) {
+
+            $this->roadmap->alocado = 0;
+
+            $this->roadmap->save();
+
+            Log::error('alocarRoadmap', ['roadmap' => $this->roadmap->id, 'erro' => $e]);
+
+        }
+
 
         if (!$alocacao) {
+
             $this->roadmap->alocado = 2;
 
             $this->roadmap->save();

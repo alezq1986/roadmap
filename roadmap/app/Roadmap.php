@@ -13,7 +13,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Roadmap extends Model
 {
-    protected $fillable = ['data_base'];
+    protected $fillable = ['data_base', 'descricao'];
 
 
     public function alocacoes()
@@ -23,7 +23,9 @@ class Roadmap extends Model
 
     public function projetos()
     {
-        return $this->belongsToMany('App\Projeto')->withPivot('prioridade');
+
+        return $this->belongsToMany('App\Projeto')->withPivot('prioridade')->orderBy('projeto_roadmap.prioridade');
+
     }
 
     public function atividades()
@@ -101,6 +103,8 @@ class Roadmap extends Model
         DB::transaction(function () use ($request, $roadmap) {
 
             $roadmap->data_base = $request->input('data_base');
+
+            $roadmap->descricao = $request->input('descricao');
 
             $roadmap->save();
 

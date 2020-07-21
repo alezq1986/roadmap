@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\ExportadorExcel;
+use App\Atividade;
 use App\Relatorio;
 use App\Roadmap;
 use App\Projeto;
@@ -148,45 +149,7 @@ class AjaxController extends Controller
     function teste()
     {
 
-        $projetos = Projeto::all();
 
-        foreach ($projetos as $projeto) {
-
-            Log::info('projeto', ['projeto' => $projeto]);
-
-            $status = 0;
-
-            $atividades = $projeto->atividades;
-
-            $sum = 0;
-
-            foreach ($atividades as $atividade) {
-
-                if ($atividade->competencia_id == 5 && $atividade->percentual_real > 0) {
-
-                    $status = 2;
-
-                } elseif ($atividade->percentual_real > 0 && $status == 0) {
-
-                    $status = 1;
-                }
-
-                $sum += $atividade->percentual_real;
-
-            }
-
-            if (sizeof($atividades) > 0 && $sum / sizeof($atividades) == 100) {
-
-                $status = 3;
-
-            }
-
-            $projeto->status = $status;
-
-            $projeto->save();
-
-
-        }
 
     }
 

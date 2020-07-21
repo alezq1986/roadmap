@@ -323,18 +323,35 @@ class Recurso extends Model
 
         for ($i = 0; $i < (sizeof($datas_indisponiveis) - 1); $i++) {
 
-            $data_inicio = max(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i)['data_fim'], 1, $feriados), $datas_limite_recurso['data_inicio'], $primeira_data_apos_dependencias, FuncoesData::moverDiaUtil($roadmap['data_base'], 1, $feriados));
+            if (!$i) {
 
-            $data_fim = min(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i + 1)['data_inicio'], -1, $feriados), $datas_limite_recurso['data_fim']);
+                $prazo_inicial_data = max($roadmap->data_base, $this->data_inicio, $primeira_data_apos_dependencias);
 
-            $prazo_disponivel = FuncoesData::calcularDias($data_inicio, $data_fim, 2, 0, $di = collect(), $feriados);
+                $prazo_inicial_disponivel = FuncoesData::calcularDias($prazo_inicial_data, $datas_indisponiveis->get(0)['data_inicio'], 2, 0, $di = collect(), $feriados);
 
-            if ($prazo_disponivel >= $prazo) {
+                if ($prazo_inicial_disponivel >= $prazo) {
 
-                $primeira_data_recurso = $data_inicio;
+                    $primeira_data_recurso = $prazo_inicial_data;
 
-                break;
+                    break;
 
+                }
+
+            } else {
+
+                $data_inicio = max(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i)['data_fim'], 1, $feriados), $datas_limite_recurso['data_inicio'], $primeira_data_apos_dependencias, FuncoesData::moverDiaUtil($roadmap['data_base'], 1, $feriados));
+
+                $data_fim = min(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i + 1)['data_inicio'], -1, $feriados), $datas_limite_recurso['data_fim']);
+
+                $prazo_disponivel = FuncoesData::calcularDias($data_inicio, $data_fim, 2, 0, $di = collect(), $feriados);
+
+                if ($prazo_disponivel >= $prazo) {
+
+                    $primeira_data_recurso = $data_inicio;
+
+                    break;
+
+                }
             }
 
         }
