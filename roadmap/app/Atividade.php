@@ -294,6 +294,10 @@ class Atividade extends Model
 
                             $melhor_recurso = $this->calcularMelhorRecurso($roadmap, $lista_negra);
 
+                            $recurso = $melhor_recurso['recurso'];
+
+                            $data_inicio_proj = $melhor_recurso['data'];
+
                             //se eu não conseguir recurso, crio uma excecão...
                         } catch (\Exception $e) {
 
@@ -318,6 +322,10 @@ class Atividade extends Model
 
                         $melhor_recurso = $this->calcularMelhorRecurso($roadmap, $lista_negra);
 
+                        $recurso = $melhor_recurso['recurso'];
+
+                        $data_inicio_proj = $melhor_recurso['data'];
+
                     } catch (\Exception $e) {
 
                         Log::error('atualizarAtividade', ['atividade' => $this, 'erro' => $e]);
@@ -338,6 +346,10 @@ class Atividade extends Model
 
                     $melhor_recurso = $this->calcularMelhorRecurso($roadmap, $lista_negra);
 
+                    $recurso = $melhor_recurso['recurso'];
+
+                    $data_inicio_proj = $melhor_recurso['data'];
+
                     //se eu não conseguir recurso, crio uma excecão...
                 } catch (\Exception $e) {
 
@@ -347,11 +359,7 @@ class Atividade extends Model
 
                 }
 
-                $recurso = $melhor_recurso['recurso'];
-
                 $recurso_id = $recurso->id;
-
-                $data_inicio_proj = $melhor_recurso['data'];
 
                 $data_fim_proj = $this->calcularDataFimPorPercentual($roadmap, $recurso, null, $data_inicio_proj);
 

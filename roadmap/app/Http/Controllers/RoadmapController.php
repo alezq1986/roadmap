@@ -183,12 +183,12 @@ where projetos.status not in ('3')
 and projetos.status_aprovacao not in ('0')
 and projeto_roadmap.roadmap_id = " . $max_id . ")
 union
-(select projetos.id, projetos.descricao as projeto_descricao, projetos.status, projetos.status_aprovacao, projeto_roadmap.roadmap_id, projeto_roadmap.prioridade, equipes.descricao as equipe_descricao from projetos
-left join projeto_roadmap on projetos.id = projeto_roadmap.projeto_id
+(select projetos.id, projetos.descricao as projeto_descricao, projetos.status, projetos.status_aprovacao, pr.roadmap_id, pr.prioridade, equipes.descricao as equipe_descricao from projetos
+left join (select * from projeto_roadmap where roadmap_id = " . $max_id . ") pr on projetos.id = pr.projeto_id
 left join equipes on projetos.equipe_id = equipes.id
 where projetos.status not in ('3')
 and projetos.status_aprovacao not in ('0')
-and projeto_roadmap.projeto_id is null)) a
+and pr.roadmap_id is null)) a
 order by a.prioridade asc nulls last"));
 
         } else {
@@ -201,12 +201,12 @@ where projetos.status not in ('3')
 and projetos.status_aprovacao not in ('0')
 and projeto_roadmap.roadmap_id = " . $id . ")
 union
-(select projetos.id, projetos.descricao as projeto_descricao, projetos.status, projetos.status_aprovacao, projeto_roadmap.roadmap_id, projeto_roadmap.prioridade, equipes.descricao as equipe_descricao from projetos
-left join projeto_roadmap on projetos.id = projeto_roadmap.projeto_id
+(select projetos.id, projetos.descricao as projeto_descricao, projetos.status, projetos.status_aprovacao, pr.roadmap_id, pr.prioridade, equipes.descricao as equipe_descricao from projetos
+left join (select * from projeto_roadmap where roadmap_id = " . $id . ") pr on projetos.id = pr.projeto_id
 left join equipes on projetos.equipe_id = equipes.id
 where projetos.status not in ('3')
 and projetos.status_aprovacao not in ('0')
-and projeto_roadmap.projeto_id is null)) a
+and pr.roadmap_id is null)) a
 order by a.prioridade asc nulls last"));
         }
 

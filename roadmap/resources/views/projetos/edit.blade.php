@@ -104,9 +104,9 @@
                                             <select id="status"
                                                     class="form-control" name="status"
                                                     value="{{ isset($projeto->status)?$projeto->status:old('status') }}"
-                                                    disabled>
+                                                    readonly="readonly">
                                                 <option value="0"
-                                                        @if(is_null($projeto->status)  && $projeto->status == 0) selected @endif>
+                                                        @if(isset($projeto->status)  && $projeto->status == 0) selected @endif>
                                                     Não iniciado
                                                 </option>
                                                 <option value="1"

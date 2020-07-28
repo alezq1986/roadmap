@@ -42,6 +42,7 @@ class Recurso extends Model
     /**
      * @param Atividade $atividade
      * @return int
+     * @throws \Exception
      */
     public static function recursosCompetentes(Atividade $atividade)
     {
@@ -74,7 +75,7 @@ class Recurso extends Model
 
         } else {
 
-            return 1;
+            throw new \Exception('Não há recursos competentes para a tarefa.');
         }
 
     }
@@ -337,22 +338,22 @@ class Recurso extends Model
 
                 }
 
-            } else {
-
-                $data_inicio = max(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i)['data_fim'], 1, $feriados), $datas_limite_recurso['data_inicio'], $primeira_data_apos_dependencias, FuncoesData::moverDiaUtil($roadmap['data_base'], 1, $feriados));
-
-                $data_fim = min(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i + 1)['data_inicio'], -1, $feriados), $datas_limite_recurso['data_fim']);
-
-                $prazo_disponivel = FuncoesData::calcularDias($data_inicio, $data_fim, 2, 0, $di = collect(), $feriados);
-
-                if ($prazo_disponivel >= $prazo) {
-
-                    $primeira_data_recurso = $data_inicio;
-
-                    break;
-
-                }
             }
+
+            $data_inicio = max(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i)['data_fim'], 1, $feriados), $datas_limite_recurso['data_inicio'], $primeira_data_apos_dependencias, FuncoesData::moverDiaUtil($roadmap['data_base'], 1, $feriados));
+
+            $data_fim = min(FuncoesData::moverDiaUtil($datas_indisponiveis->get($i + 1)['data_inicio'], -1, $feriados), $datas_limite_recurso['data_fim']);
+
+            $prazo_disponivel = FuncoesData::calcularDias($data_inicio, $data_fim, 2, 0, $di = collect(), $feriados);
+
+            if ($prazo_disponivel >= $prazo) {
+
+                $primeira_data_recurso = $data_inicio;
+
+                break;
+
+            }
+
 
         }
 
