@@ -23,7 +23,7 @@
                     <a href="{{ route('roadmaps.index')}}">Roadmaps</a>
                 </li>
                 <li>
-                    <a href="{{ route('relatorios')}}">Relatorios</a>
+                    <a href="{{ route('relatorios.dashboard')}}">Dashboard</a>
                 </li>
             </ul>
         </div>

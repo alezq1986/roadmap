@@ -81,7 +81,7 @@ class Roadmap extends Model
             $roadmap = Roadmap::create([
                 'data_base' => $request->input('data_base'),
                 'descricao' => $request->input('descricao'),
-                'alocado' => 0,
+                'alocado' => '0',
             ]);
 
             if ($request->session()->has('filhos')) {

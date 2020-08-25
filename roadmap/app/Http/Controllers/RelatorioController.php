@@ -8,12 +8,12 @@ use Illuminate\Http\Request;
 
 class RelatorioController extends Controller
 {
-    public function show()
+    public function dashboard()
     {
 
         $roadmaps = Roadmap::all();
 
-        return view('relatorios.show', ['roadmaps' => $roadmaps]);
+        return view('relatorios.dashboard', ['roadmaps' => $roadmaps]);
 
     }
 

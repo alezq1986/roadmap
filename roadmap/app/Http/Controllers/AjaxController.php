@@ -148,7 +148,7 @@ class AjaxController extends Controller
 
     function teste()
     {
-
+$a = 1;
 
 
     }
