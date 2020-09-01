@@ -186,6 +186,10 @@
                                                     tipo="competencia_recurso">
                                                 {{ __('Incluir') }}
                                             </button>
+                                            <button class="btn btn-primary atualizar-filho d-none"
+                                                    tipo="competencia_recurso">
+                                                {{ __('Atualizar') }}
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -208,7 +212,7 @@
                                     @foreach($competencias as $competencia)
                                         <tr id="{{ $competencia->id }}">
                                             <td class="d-none" coluna="id"
-                                                coluna-valor=""></td>
+                                                coluna-valor="{{ $competencia->pivot->id }}"></td>
                                             <td coluna="recurso_id"
                                                 coluna-valor="{{ $competencia->pivot->recurso_id }}">{{ $competencia->pivot->recurso_id }}
                                                 - {{ $recurso->nome }}</td>
@@ -223,6 +227,9 @@
                                                 <a type="button"
                                                    class="btn btn-danger action-buttons remover-filho">
                                                     <i class="fa fa-trash fa-sm"></i>
+                                                </a>
+                                                <a type="button" class="btn btn-primary action-buttons editar-filho">
+                                                    <i class="fa fa-edit fa-sm"></i>
                                                 </a>
                                                 <a type="button" class="btn btn-primary action-buttons"
                                                    href="{{ route('competencias.edit', $competencia) }}"

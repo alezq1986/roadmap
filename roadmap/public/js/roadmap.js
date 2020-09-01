@@ -204,14 +204,16 @@ class FormFilho {
 
         $("form[tipo=" + this.tipo + "]").find("input[coluna], select[coluna]").each(function () {
 
-            let valor = null;
-
             if ($(this).attr("type") == "checkbox" && $(this).is(':checked') == false) {
 
-                let valor
+                formulario_dados[$(this).attr("coluna")] = 0;
+
+            } else {
+
+                formulario_dados[$(this).attr("coluna")] = $(this).val();
+
             }
 
-            formulario_dados[$(this).attr("coluna")] = $(this).val();
 
         });
 
@@ -243,7 +245,6 @@ class FormFilho {
         let v1 = $("input[tipo=" + this.tipo + "][coluna=" + k1 + "]").val();
 
         let v2 = $("input[tipo=" + this.tipo + "][coluna=" + k2 + "]").val();
-
 
         let fd = Object.entries(this.formulario_dados);
 
@@ -290,7 +291,24 @@ class FormFilho {
 
         this.tabela.find("td[coluna=id][coluna-valor=" + id + "]").parent("tr").children("td").each(function () {
 
-            $("input[coluna=" + $(this).attr('coluna') + "], select[coluna=" + $(this).attr('coluna') + "]").val($(this).attr("coluna-valor"));
+            let target = $("input[coluna=" + $(this).attr('coluna') + "], select[coluna=" + $(this).attr('coluna') + "]");
+
+            if (target.attr("type") == "checkbox") {
+
+                if ($(this).attr("coluna-valor") == 0) {
+
+                    target.prop('checked', false);
+
+                } else {
+
+                    target.prop('checked', true);
+                }
+            } else {
+
+                target.val($(this).attr("coluna-valor"));
+
+            }
+
 
         });
 
@@ -310,9 +328,19 @@ class FormFilho {
 
             let is = $("input[coluna=" + $(this).attr("coluna") + "], select[coluna=" + $(this).attr("coluna") + "]");
 
-            $(this).attr("coluna-valor", is.val());
+            if (is.attr("type") == "checkbox" && is.is(':checked') == false) {
 
-            $(this).html(is.val());
+                $(this).attr("coluna-valor", 0);
+
+                $(this).html(0);
+
+            } else {
+
+                $(this).attr("coluna-valor", is.val());
+
+                $(this).html(is.val());
+
+            }
 
             $(this).addClass("new-row");
 

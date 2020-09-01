@@ -26,7 +26,7 @@ class Promotion extends Model
         return $this->hasMany('App\PromotionThen');
     }
 
-    protected function verify_if(PromotionIf $pi, ShoppingCart $sc)
+    protected static function verify_if(PromotionIf $pi, ShoppingCart $sc)
     {
         switch ($pi->type) {
 
@@ -34,11 +34,15 @@ class Promotion extends Model
 
                 if ($pi->amount_type == 0) {
 
-                    return (int)floor($sc->value / $pi->value);
+                    $v = $sc->value / $pi->value;
+
+                    return $v->floor();
 
                 } else {
 
-                    return (int)floor($sc->item_quantity / $pi->value);
+                    $v = $sc->item_quantity / $pi->value;
+
+                    return $v->floor();
 
                 }
 
@@ -52,7 +56,9 @@ class Promotion extends Model
 
                     })->sum('value');
 
-                    return (int)floor($items_value / $pi->value);
+                    $v = $items_value / $pi->value;
+
+                    return $v->floor();
 
                 } else {
 
@@ -62,7 +68,9 @@ class Promotion extends Model
 
                     })->sum('quantity');
 
-                    return (int)floor($items_quantity / $pi->quantity);
+                    $v = $items_quantity / $pi->quantity;
+
+                    return $v->floor();
 
                 }
 
@@ -76,7 +84,9 @@ class Promotion extends Model
 
                     })->sum('value');
 
-                    return (int)floor($items_value / $pi->value);
+                    $v = $items_value / $pi->value;
+
+                    return $v->floor();
 
                 } else {
 
@@ -86,7 +96,9 @@ class Promotion extends Model
 
                     })->sum('quantity');
 
-                    return (int)floor($items_quantity / $pi->quantity);
+                    $v = $items_quantity / $pi->quantity;
+
+                    return $v->floor();
 
                 }
 
@@ -108,9 +120,9 @@ class Promotion extends Model
 
         $sci_quantity = new Decimal($sci->quantity);
 
-        $sci_promotion_discount = !is_null($sci->promotion_discount)? new Decimal('0'): new Decimal($sci->promotion_discount);
+        $sci_promotion_discount = is_null($sci->promotion_discount)? new Decimal('0'): new Decimal($sci->promotion_discount);
 
-        $sci_net_value = !is_null($sci->net_value)? $sci_value: new Decimal($sci->net_value);
+        $sci_net_value = is_null($sci->net_value)? $sci_value: new Decimal($sci->net_value);
 
         switch ($discount_type) {
 
@@ -152,16 +164,12 @@ class Promotion extends Model
 
         }
 
-        $sci->promotion_discount += $discount;
-
-        $sci->net_value -= $discount;
-
         return array('discount' => $discount->round(2, Decimal::ROUND_HALF_EVEN), 'remainder' => $remainder->round(2, Decimal::ROUND_HALF_EVEN));
 
     }
 
 
-    protected function verify_then(PromotionThen $pt, ShoppingCart $sc)
+    protected static function verify_then(PromotionThen $pt, ShoppingCart $sc)
     {
 
         $discounts = collect();
@@ -220,7 +228,7 @@ class Promotion extends Model
 
         foreach ($matches[0] as $m) {
 
-            $replace = '$this->verify_if(\\App\\PromotionIf::find(' . preg_replace('(if_)', '', $m) . '), \$sc)';
+            $replace = '\\App\\Promotion::verify_if(\\App\\PromotionIf::find(' . preg_replace('(if_)', '', $m) . '), \$sc)';
 
             $expression = preg_replace($pattern, $replace, $expression, 1);
 
@@ -242,29 +250,17 @@ class Promotion extends Model
         //fase 1: vejo quais promoções são aplicáveis
         $promotions = Promotion::all();
 
-        $applicable = collect();
-
-        $applicable_thens = collect();
+        $applicable_promotions = collect();
 
         foreach ($promotions as $promotion) {
 
-            $a['promotion'] = $promotion->id;
+            $a['promotion'] = $promotion;
 
             $a['times'] = min($promotion->verify_promotion($sc), $promotion->max_times);
 
             if ($a['times'] >= 1) {
 
-                $applicable->push($a);
-
-                foreach ($promotion->thens as $then) {
-
-                    $b['then'] = $then;
-
-                    $b['times'] = $a['times'];
-
-                    $applicable_thens->push($b);
-
-                }
+                $applicable_promotions->push($a);
 
             }
 
@@ -274,23 +270,30 @@ class Promotion extends Model
 
 
         //não cumulativas
-        if (!$cummulative) {
+        if ($cummulative) {
 
 
-            
+
+
             //cumulativas
         } else {
 
             //1 - promoções em itens, por preço de oferta
-            $item_promotions = $applicable_thens->filter(function ($item) {
 
-                return $item['then']->type == 1;
+            foreach ($applicable_promotions as $ap){
 
-            });
+                $item_thens = $ap['promotion']->thens->filter(function ($p) {
 
-            foreach ($item_promotions as $ip) {
+                    return $p->type == 1;
 
-                $discounts = $promotion->verify_then($ip['then'], $sc);
+                });
+
+            }
+
+
+            foreach ($item_thens as $it) {
+
+                $discounts = Promotion::verify_then($it, $sc);
 
                 foreach ($discounts as $discount) {
 

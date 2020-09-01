@@ -46,11 +46,8 @@ class Projeto extends Model
 
                     FuncoesFilhos::criarFilhos($request, $projeto);
 
-                    if (isset($request->session()->get('filhos')['filhos_incluir'])) {
+                    Atividade::criarDependencias($projeto);
 
-                        Atividade::criarDependencias($projeto);
-
-                    }
                 }
 
                 return $projeto;
@@ -84,11 +81,8 @@ class Projeto extends Model
 
                     FuncoesFilhos::criarFilhos($request, $projeto);
 
-                    if (isset($request->session()->get('filhos')['filhos_incluir'])) {
+                    Atividade::criarDependencias($projeto);
 
-                        Atividade::criarDependencias($projeto);
-
-                    }
 
                 }
 

@@ -21,7 +21,7 @@ class Recurso extends Model
 
     public function competencias()
     {
-        return $this->belongsToMany('App\Competencia')->withPivot('permite_aloc_automatica')->orderBy('id', 'ASC');
+        return $this->belongsToMany('App\Competencia')->withPivot('id', 'permite_aloc_automatica')->orderBy('id', 'ASC');
     }
 
     public function equipes()

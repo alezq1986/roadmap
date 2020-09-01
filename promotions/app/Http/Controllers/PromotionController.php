@@ -89,19 +89,19 @@ class PromotionController extends Controller
     public function calculatePromotions()
     {
 
-        //Promotion::calculate_promotions(ShoppingCart::find(1));
+        $a = Promotion::calculate_promotions(ShoppingCart::find(1));
 
-        //$a = Promotion::calculate_promotions(ShoppingCart::find(1));
+        $b=1;
 
-        $sc = ShoppingCart::find(1);
-        $sc->calculated_items = $sc->items;
-        $sc->dismember('789124');
-
-        echo "<pre>";
-        print_r($sc->calculated_items);
-        print_r($sc->calculated_items[1]);
-        print_r($sc->calculated_items[1]->quantity);
-        echo "</pre>";
+//        $sc = ShoppingCart::find(1);
+//        $sc->calculated_items = $sc->items;
+//        $sc->dismember('789124');
+//
+//        echo "<pre>";
+//        print_r($sc->calculated_items);
+//        print_r($sc->calculated_items[1]);
+//        print_r($sc->calculated_items[1]->quantity);
+//        echo "</pre>";
 
 
     }
