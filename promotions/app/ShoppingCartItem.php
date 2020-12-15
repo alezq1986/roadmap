@@ -7,7 +7,7 @@ use Decimal\Decimal;
 
 class ShoppingCartItem extends Model
 {
-    protected $fillable = ['shopping_cart_id', 'product_id', 'quantity', 'unit_value', 'value', 'promotion_discount', 'net_value'];
+    protected $fillable = ['shopping_cart_id','index' ,'product_id', 'quantity', 'unit_value', 'value', 'promotion_discount', 'net_value'];
 
     protected function shopping_cart()
     {
@@ -81,7 +81,7 @@ class ShoppingCartItem extends Model
 
     public function setQuantityAttribute($value)
     {
-        if ($value instanceof Decimal) {
+        if ($value instanceof Decimal || $value == null) {
 
             $this->attributes['quantity'] = $value;
 
@@ -96,7 +96,7 @@ class ShoppingCartItem extends Model
 
     public function setValueAttribute($value)
     {
-        if ($value instanceof Decimal) {
+        if ($value instanceof Decimal || $value == null) {
 
             $this->attributes['value'] = $value;
 
@@ -111,7 +111,7 @@ class ShoppingCartItem extends Model
 
     public function setUnitValueAttribute($value)
     {
-        if ($value instanceof Decimal) {
+        if ($value instanceof Decimal || $value == null) {
 
             $this->attributes['unit_value'] = $value;
 
@@ -126,7 +126,7 @@ class ShoppingCartItem extends Model
 
     public function setPromotionDiscountAttribute($value)
     {
-        if ($value instanceof Decimal) {
+        if ($value instanceof Decimal || $value == null) {
 
             $this->attributes['promotion_discount'] = $value;
 
@@ -141,7 +141,7 @@ class ShoppingCartItem extends Model
 
     public function setNetValueAttribute($value)
     {
-        if ($value instanceof Decimal) {
+        if ($value instanceof Decimal || $value == null) {
 
             $this->attributes['net_value'] = $value;
 

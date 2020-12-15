@@ -15,10 +15,10 @@ class ParameterSeeder extends Seeder
         DB::update(DB::raw('truncate table parameters restart identity cascade'));
 
         //0 - não; 1 - sim
-        Parameter::create(['param_code' => 1, 'param_value' => '1', 'description' => 'Promoções cumulativas']);
+        Parameter::create(['param_code' => 1, 'param_value' => '0', 'description' => 'Promoções cumulativas']);
         Parameter::create(['param_code' => 2, 'param_value' => '0.01', 'description' => 'Valor mínimo do produto']);
-        //0 - agrupar itens e aplicar sobre o valor médio do item; 1 - desmembrar itens e aplicar sobre os de maior valor
-        Parameter::create(['param_code' => 2, 'param_value' => '0.01', 'description' => 'Tratamento de promoções cumulativas']);
+        //0 - agrupar itens e aplicar sobre o valor médio do item; 1 - manter como registrado e aplicar sobre os de maior valor
+        Parameter::create(['param_code' => 3, 'param_value' => '0.01', 'description' => 'Tratamento de valor dos itens']);
 
 
     }

@@ -7,6 +7,7 @@ use App\ShoppingCartItem;
 use App\Parameter;
 use App\PromotionIf;
 use App\PromotionThen;
+use App\Product;
 use Decimal\Decimal;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +27,7 @@ class Promotion extends Model
         return $this->hasMany('App\PromotionThen');
     }
 
-    protected static function verify_if(PromotionIf $pi, ShoppingCart $sc)
+    protected static function verifyIf(PromotionIf $pi, ShoppingCart $sc)
     {
         switch ($pi->type) {
 
@@ -109,7 +110,7 @@ class Promotion extends Model
 
     }
 
-    protected static function calculate_discount(ShoppingCartItem $sci, $discount_type, Decimal $discount_value, Decimal $quantity)
+    protected static function calculateDiscount(ShoppingCartItem $sci, $discount_type, Decimal $discount_value, Decimal $quantity)
     {
 
         $min_item_value = new Decimal(DB::table('parameters')->where('param_code', '=', '2')->first()->param_value);
@@ -120,9 +121,9 @@ class Promotion extends Model
 
         $sci_quantity = new Decimal($sci->quantity);
 
-        $sci_promotion_discount = is_null($sci->promotion_discount)? new Decimal('0'): new Decimal($sci->promotion_discount);
+        $sci_promotion_discount = is_null($sci->promotion_discount) ? new Decimal('0') : new Decimal($sci->promotion_discount);
 
-        $sci_net_value = is_null($sci->net_value)? $sci_value: new Decimal($sci->net_value);
+        $sci_net_value = is_null($sci->net_value) ? $sci_value : new Decimal($sci->net_value);
 
         switch ($discount_type) {
 
@@ -169,7 +170,7 @@ class Promotion extends Model
     }
 
 
-    protected static function verify_then(PromotionThen $pt, ShoppingCart $sc)
+    protected static function verifyThen(PromotionThen $pt, ShoppingCartItem $sci)
     {
 
         $discounts = collect();
@@ -183,28 +184,30 @@ class Promotion extends Model
 
             case 1:
 
-                $eligible_items = $sc->items->filter(function ($item) use ($pt) {
+                if ($pt->product_id == $sci->product_id) {
 
-                    return $item->product_id == $pt->product_id;
+                    return self::calculateDiscount($sci, $pt->discount_type, new Decimal ($pt->discount_value), new Decimal ($pt->quantity));
 
-                });
 
-                foreach ($eligible_items as $item) {
+                } else {
 
-                    $discount['promotion'] = $pt->promotion_id;
 
-                    $discount['then'] = $pt->id;
-
-                    $discount['item'] = $item->id;
-
-                    $discount['discount'] = self::calculate_discount($item, $pt->discount_type, new Decimal ($pt->discount_value), new Decimal ($pt->quantity));
-
-                    $discounts->push($discount);
+                    return array('discount' => new Decimal('0'), new Decimal('0'));
 
                 }
 
-
             case 2:
+
+                if (Product::where('product_id', '=', $pt->product_id)->first()->isInCategory($pt->category_id, $pt->category_level)) {
+
+                    return self::calculateDiscount($sci, $pt->discount_type, new Decimal ($pt->discount_value), new Decimal ($pt->quantity));
+
+
+                } else {
+
+                    return array('discount' => new Decimal('0'), new Decimal('0'));
+
+                }
 
                 break;
 
@@ -217,7 +220,7 @@ class Promotion extends Model
         return $discounts;
     }
 
-    protected function verify_promotion(ShoppingCart $sc)
+    protected function verifyPromotion(ShoppingCart $sc)
     {
 
         $expression = $this->expression;
@@ -228,7 +231,7 @@ class Promotion extends Model
 
         foreach ($matches[0] as $m) {
 
-            $replace = '\\App\\Promotion::verify_if(\\App\\PromotionIf::find(' . preg_replace('(if_)', '', $m) . '), \$sc)';
+            $replace = '\\App\\Promotion::verifyIf(\\App\\PromotionIf::find(' . preg_replace('(if_)', '', $m) . '), \$sc)';
 
             $expression = preg_replace($pattern, $replace, $expression, 1);
 
@@ -240,76 +243,152 @@ class Promotion extends Model
 
     }
 
-    public static function calculate_promotions(ShoppingCart $sc, $cummulative = 0, $average_value = 0)
+    public static function calculatePromotions(ShoppingCart $sc, $cummulative = 0)
     {
 
         $results = array('items' => $i = collect());
 
-        $sc->calculated_sci = $sc->items;
+        $sc->calculated_items = $sc->items;
 
-        //fase 1: vejo quais promoções são aplicáveis
+        //1: vejo quais promoções são aplicáveis
         $promotions = Promotion::all();
 
         $applicable_promotions = collect();
 
+        $applicable_thens = collect();
+
         foreach ($promotions as $promotion) {
 
-            $a['promotion'] = $promotion;
+            $ap['promotion'] = $promotion;
 
-            $a['times'] = min($promotion->verify_promotion($sc), $promotion->max_times);
+            $ap['times'] = min($promotion->verifyPromotion($sc), $promotion->max_times);
 
-            if ($a['times'] >= 1) {
+            if ($ap['times'] >= 1) {
 
-                $applicable_promotions->push($a);
+                //1.1: crio a collection de promoções aplicáveis
+                $applicable_promotions->push($ap);
+
+                //1.2: crio a collection de thens aplicáveis
+                foreach ($promotion->thens as $pt) {
+
+                    $at['then'] = $pt;
+
+                    $at['times'] = $ap['times'];
+
+                    $at['times_used'] = 0;
+
+                    $applicable_thens->push($at);
+
+                }
 
             }
 
         }
 
-        //fase 2: aplico as promoções
+        //2: calculo as promoções
 
 
-        //não cumulativas
+        //2A:cumulativas
         if ($cummulative) {
 
 
-
-
-            //cumulativas
+            //2B: não cumulativas
         } else {
 
-            //1 - promoções em itens, por preço de oferta
+            //2B.1: passo item a item verificando as promoções aplicáveis
+            foreach ($sc->calculated_items as $ci) {
 
-            foreach ($applicable_promotions as $ap){
+                foreach ($applicable_thens as $at) {
 
-                $item_thens = $ap['promotion']->thens->filter(function ($p) {
-
-                    return $p->type == 1;
-
-                });
-
-            }
+                    if ($at['times'] >= $at['times_used']) {
 
 
-            foreach ($item_thens as $it) {
-
-                $discounts = Promotion::verify_then($it, $sc);
-
-                foreach ($discounts as $discount) {
-
-                    if (isset($results['items'][$discount['item']])) {
-
-                        $results['items'][$discount['item']]->push(array('promotion'=>$discount['promotion'], 'then' =>$discount['then'], 'discount' => $discount['discount']));
 
                     } else {
-
-                        $results['items'][$discount['item']] = collect(array('promotion'=>$discount['promotion'], 'then' =>$discount['then'], 'discount' => $discount['discount']));
 
                     }
 
                 }
 
+
+                //1.1: vejo se há promoções aplicadas
+
+                //1A - verifico todas as promoções aplicáveis sobre o item
+                foreach ($applicable_promotions as $ap) {
+
+
+                    $item_thens = $ap['promotion']->thens->filter(function ($pt) use ($csci) {
+
+                        return ($pt->type == 1 && $pt->product_id == $csci->product_id);
+
+                    });
+
+                    $discounts = collect();
+
+                    //1B - calculo as promoções
+                    foreach ($item_thens as $it) {
+
+                        $d['promotion'] = $it->promotion_id;
+
+                        $d['then'] = $it->promotion_id;
+
+                        $d['discount'] = Promotion::verifyThen($it, $csci);
+
+                        $discounts = Promotion::verifyThen($it, $sc);
+
+                        foreach ($discounts as $discount) {
+
+                            if (isset($results['items'][$discount['item']])) {
+
+                                $results['items'][$discount['item']]->push(array('promotion' => $discount['promotion'], 'then' => $discount['then'], 'discount' => $discount['discount']));
+
+                            } else {
+
+                                $results['items'][$discount['item']] = collect(array('promotion' => $discount['promotion'], 'then' => $discount['then'], 'discount' => $discount['discount']));
+
+                            }
+
+                        }
+
+                    }
+
+
+                }
+
+
             }
+
+
+//            foreach ($applicable_promotions as $ap){
+//
+//                $item_thens = $ap['promotion']->thens->filter(function ($p) {
+//
+//                    return $p->type == 1;
+//
+//                });
+//
+//            }
+//
+//
+//            foreach ($item_thens as $it) {
+//
+//                $discounts = Promotion::verifyThen($it, $sc);
+//
+//                foreach ($discounts as $discount) {
+//
+//                    if (isset($results['items'][$discount['item']])) {
+//
+//                        $results['items'][$discount['item']]->push(array('promotion'=>$discount['promotion'], 'then' =>$discount['then'], 'discount' => $discount['discount']));
+//
+//                    } else {
+//
+//                        $results['items'][$discount['item']] = collect(array('promotion'=>$discount['promotion'], 'then' =>$discount['then'], 'discount' => $discount['discount']));
+//
+//                    }
+//
+//                }
+//
+//            }
 
 
         }

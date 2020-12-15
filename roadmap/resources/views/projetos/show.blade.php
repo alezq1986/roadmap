@@ -41,6 +41,10 @@
                         <a class="nav-link" id="pills-alocacao-tab" data-toggle="pill" href="#pills-alocacao"
                            role="tab" aria-controls="pills-alocacao" aria-selected="false">Alocação</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-roadmaps-tab" data-toggle="pill" href="#pills-roadmaps"
+                           role="tab" aria-controls="pills-roadmaps" aria-selected="false">Roadmaps</a>
+                    </li>
                 </ul>
                 {{-- Conteúdo da navegação --}}
                 <div class="tab-content" id="pills-tabContent">
@@ -337,6 +341,10 @@
                     <div class="tab-pane fade" id="pills-alocacao" role="tabpanel"
                          aria-labelledby="pills-alocacao-tab">
                         <div id="gantt"></div>
+                    </div>
+                    {{-- Aba Roadmaps --}}
+                    <div class="tab-pane fade" id="pills-roadmaps" role="tabpanel"
+                         aria-labelledby="pills-roadmaps-tab">
                     </div>
                 </div>
             </div>

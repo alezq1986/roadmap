@@ -13,7 +13,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Roadmap extends Model
 {
-    protected $fillable = ['data_base', 'descricao'];
+    protected $fillable = ['data_base', 'descricao', 'alocado'];
 
 
     public function alocacoes()

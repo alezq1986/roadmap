@@ -4,17 +4,19 @@ namespace App;
 
 use Decimal\Decimal;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ShoppingCart extends Model
 {
     protected $fillable = ['external_id', 'customer_id', 'item_quantity', 'value', 'promotion_discount', 'net_value'];
 
-    public $calculated_items;
 
     protected function items()
     {
-        return $this->hasMany('App\ShoppingCartItem');
+        return $this->hasMany('App\ShoppingCartItem')->orderBy('product_id')->orderBy('unit_value', 'DESC');
     }
+
 
     public function getItemQuantityAttribute($value)
     {
@@ -70,7 +72,7 @@ class ShoppingCart extends Model
 
     public function setItemQuantityAttribute($value)
     {
-        if ($value instanceof Decimal) {
+        if ($value instanceof Decimal || $value == null) {
 
             $this->attributes['item_quantity'] = $value;
 
@@ -85,7 +87,7 @@ class ShoppingCart extends Model
 
     public function setValueAttribute($value)
     {
-        if ($value instanceof Decimal) {
+        if ($value instanceof Decimal || $value == null) {
 
             $this->attributes['value'] = $value;
 
@@ -100,7 +102,7 @@ class ShoppingCart extends Model
 
     public function setPromotionDiscountAttribute($value)
     {
-        if ($value instanceof Decimal) {
+        if ($value instanceof Decimal || $value == null) {
 
             $this->attributes['promotion_discount'] = $value;
 
@@ -115,7 +117,7 @@ class ShoppingCart extends Model
 
     public function setNetValueAttribute($value)
     {
-        if ($value instanceof Decimal) {
+        if ($value instanceof Decimal || $value == null) {
 
             $this->attributes['net_value'] = $value;
 
@@ -134,28 +136,48 @@ class ShoppingCart extends Model
 
         $aggregate_items = collect();
 
-        foreach ($this->calculated_items as $sci) {
+        foreach ($this->items as $item) {
 
-            if (isset($reference[$sci->product_id]) && ($sci->product_id == $product_id || $product_id == null)) {
+            if (isset($reference[$item->product_id]) && ($item->product_id == $product_id || $product_id == null)) {
 
-                $aggregate_items[$reference[$sci->product_id]]->quantity += $sci->quantity;
+                $aggregate_items[$reference[$item->product_id]]->quantity += $item->quantity;
 
-                $aggregate_items[$reference[$sci->product_id]]->value += $sci->value;
+                $aggregate_items[$reference[$item->product_id]]->value += $item->value;
 
-                $aggregate_items[$reference[$sci->product_id]]->promotion_discount += $sci->promotion_discount;
+                $aggregate_items[$reference[$item->product_id]]->promotion_discount += $item->promotion_discount;
 
-                $aggregate_items[$reference[$sci->product_id]]->net_value += $sci->net_value;
+                $aggregate_items[$reference[$item->product_id]]->net_value += $item->net_value;
 
-                $aggregate_items[$reference[$sci->product_id]]->unit_value = $aggregate_items[$reference[$sci->product_id]]->value / $aggregate_items[$reference[$sci->product_id]]->quantity;
+                $aggregate_items[$reference[$item->product_id]]->unit_value = $aggregate_items[$reference[$item->product_id]]->value / $aggregate_items[$reference[$item->product_id]]->quantity;
 
             } else {
 
-                $aggregate_items->push($sci);
+                $aggregate_items->push($item);
 
-                $reference[$sci->product_id] = $aggregate_items->count() - 1;
+                $reference[$item->product_id] = $aggregate_items->count() - 1;
 
             }
 
+        }
+
+        //acertar o valor unitário
+
+        foreach ($aggregate_items as $ai){
+
+            if ($ai->value != $ai->unit_value * $ai->quantity) {
+
+                $ai_old_value = $ai->value;
+
+                $ai_new_value = $ai->unit_value * $ai->quantity;
+
+                $ai->value = $ai_new_value;
+
+                $ai->promotion_discount += ($ai_new_value - $ai_old_value);
+
+            } else {
+
+
+            }
 
         }
 
@@ -171,6 +193,8 @@ class ShoppingCart extends Model
 
             if ($sci->product_id == $product_id || $product_id == null) {
 
+                $remaining_discount = $sci->promotion_discount;
+
                 for ($quantity = $sci->quantity; $quantity > 0; $quantity--) {
 
                     $new_sci = $sci;
@@ -179,11 +203,23 @@ class ShoppingCart extends Model
 
                     $new_sci->value = $new_sci->quantity * $new_sci->unit_value;
 
-                    $new_sci->promotion_discount = $sci->promotion_discount ?? new Decimal('0') * $new_sci->quantity / $sci->quantity;
+                    if ($quantity <= 1) {
 
-                    $new_sci->net_value = $new_sci->value -  $new_sci->promotion_discount;
+                        $new_sci->promotion_discount = $remaining_discount ?? new Decimal('0');
+
+                    } else {
+
+
+                        $new_sci->promotion_discount = $sci->promotion_discount ?? new Decimal('0') * $new_sci->quantity / $sci->quantity;
+
+                    }
+
+
+                    $new_sci->net_value = $new_sci->value - $new_sci->promotion_discount;
 
                     $dismembered_items->push($new_sci);
+
+                    $remaining_discount -= $new_sci->promotion_discount;
 
                 }
             } else {

@@ -17,3 +17,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('shoppingcarts', 'ApiController@getAllShoppingCarts');
+Route::get('shoppingcart/{id}', 'ApiController@getShoppingCart');
+Route::post('shoppingcart', 'ApiController@createShoppingCart');
+Route::put('shoppingcart/{id}', 'ApiController@updateShoppingCart');
+Route::delete('shoppingcart/{id}','ApiController@deleteShoppingCart');
+
+Route::post('applypromotions','ApiController@applyPromotions');

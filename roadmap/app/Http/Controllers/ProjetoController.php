@@ -79,6 +79,13 @@ class ProjetoController extends Controller
     {
         $atividades = $projeto->atividades;
 
+        $roadmaps = collect();
+
+        foreach ($projeto->atividades as $atividade) {
+
+
+        }
+
         return view('projetos.show', ['projeto' => $projeto, 'atividades' => $atividades]);
     }
 

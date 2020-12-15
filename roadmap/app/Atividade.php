@@ -236,6 +236,8 @@ class Atividade extends Model
     {
         ini_set('memory_limit', '512M');
 
+        ini_set('max_execution_time', '60');
+
         $lista_negra = collect();
 
         //se a atividade está concluída, apenas repito os dados na alocação
