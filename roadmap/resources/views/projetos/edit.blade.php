@@ -376,4 +376,36 @@
     </div>
 @endsection
 
+@section('scripts-especificos')
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            let m = 0;
+
+            $("button[modal-tipo=competencias]").on('click', function () {
+
+                m = 1;
+
+            });
+
+            $(".input-group-append").on('click', 'li', function () {
+
+                if ($(this).parents("div[tipo=competencias]").length == 1) {
+
+                    let d = $(this).text();
+
+                    $("input[coluna=descricao]").val(d);
+
+                    m = 0;
+                }
+
+            });
+
+        });
+
+    </script>
+
+@endsection
+
 @endauth

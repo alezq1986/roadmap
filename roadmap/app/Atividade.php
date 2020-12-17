@@ -168,8 +168,6 @@ class Atividade extends Model
 
         $dados = json_decode($request->get('dados'), true);
 
-        $limpar_recursos = $dados['parametros']['limpar_recursos'];
-
         unset($dados['parametros']['limpar_recursos']);
 
         foreach ($dados['atividades'] as $k => $v) {
@@ -193,7 +191,7 @@ class Atividade extends Model
 
             }
 
-            if ($limpar_recursos || empty($v['recurso_real_id'])) {
+            if (empty($v['recurso_real_id'])) {
 
                 $v['recurso_real_id'] = null;
 

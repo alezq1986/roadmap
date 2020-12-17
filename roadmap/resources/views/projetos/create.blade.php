@@ -344,8 +344,6 @@
 
                 m = 1;
 
-                console.log(m);
-
             });
 
             $(".input-group-append").on('click', 'li', function () {

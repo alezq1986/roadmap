@@ -222,8 +222,6 @@ $(document).ready(function ($) {
 
         let atividades = new Object();
 
-        parametros.limpar_recursos = ($("input#limpar_recursos:checked").length) ? 1 : 0;
-
         parametros.roadmap_id = $("#roadmap-cabecalho").attr("roadmap-id");
 
         $("input[atividade]").each(function () {

@@ -117,7 +117,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-9">
+                    <div class="col-md-12">
                         <div id="projetos-prioriza">
 
                         </div>
@@ -128,7 +128,7 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <div class="row">
-                                                <div class="col-md-2">
+                                                <div class="col-md-1">
                                                     <div
                                                         class="badge badge-light prioridade">{{$projeto->prioridade}}</div>
                                                     <div class="badge badge-dark prioridade"></div>
@@ -152,7 +152,7 @@
                                                         @break
                                                     @endswitch
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-1">
                                                     @switch($projeto->status_aprovacao)
                                                         @case(0)
                                                         <span class='badge badge-secondary'>Não aprovado</span>
@@ -168,6 +168,9 @@
                                                         @break
                                                     @endswitch
                                                 </div>
+                                                <div class="col-md-2 text-right">
+                                                    {{App\Projeto::find($projeto->id)->created_at->format("d.m.y")}}
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="card-body">
@@ -177,9 +180,7 @@
                             @endforeach
                         </div>
                     </div>
-                    <div class="col-md-3">
 
-                    </div>
                 </div>
             </div>
 
@@ -191,24 +192,13 @@
                     <div class="col-md-12">
                         <button class="btn btn-primary previous" id="button-previous-2">Anterior</button>
                         <button class="btn  btn-primary next" id="button-next-3">Próximo</button>
+                        <button class="btn  btn-warning" id="button-limpar">Limpar Recursos</button>
                     </div>
                 </div>
                 <div class="row" id="atualizacao-atividades-conteudo">
                     <div class="col-md-12">
                         <form method="POST" id="form-atividades">
                             @csrf
-                            <div class="form-group row">
-                                <div class="col-md-12">
-                                    <div class="alert alert-primary" role="alert">
-                                        <input id="limpar_recursos" type="checkbox"
-                                               class="form-check-input ml-1" name="limpar_recursos" value="1">
-                                        <label class="form-check-label ml-4" for="limpar_recursos">
-                                            Desalocar recursos de atividades não iniciadas
-                                        </label>
-                                    </div>
-
-                                </div>
-                            </div>
                             <div class="row form-group bg-primary sticky-top text-white">
                                 <div class="col-md-2">
                                     <span>Projeto</span>
@@ -283,23 +273,36 @@
                                                autofocus>
                                     </div>
                                     <div class="col-md-2">
-                                        <div class="input-group">
-                                            <input id="{{$atividade->id}}-recursos-recurso_real_id" type="text"
-                                                   class="form-control"
-                                                   name="{{$atividade->id}}-recursos-recurso_real_id"
-                                                   valor-atual="{{$atividade->recurso_real_id}}"
-                                                   value="{{$atividade->recurso_real_id}}"
-                                                   atividade="{{$atividade->id}}"
-                                                   coluna="recurso_real_id"
-                                                   autofocus>
-                                            <div class="input-group-append">
-                                                <button class="input-group-text"
-                                                        modal-tipo="recursos_competencias_equipes">
-                                                    <i class="fa fa-search"></i>
-                                                </button>
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <div class="input-group">
+                                                    <input id="{{$atividade->id}}-recursos-recurso_real_id" type="text"
+                                                           class="form-control"
+                                                           name="{{$atividade->id}}-recursos-recurso_real_id"
+                                                           valor-atual="{{$atividade->recurso_real_id}}"
+                                                           value="{{$atividade->recurso_real_id}}"
+                                                           atividade="{{$atividade->id}}"
+                                                           coluna="recurso_real_id"
+                                                           autofocus>
+                                                    <div class="input-group-append">
+                                                        <button class="input-group-text"
+                                                                modal-tipo="recursos_competencias_equipes">
+                                                            <i class="fa fa-search"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <span class="small">{{$atividade->nome}}</span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input id="{{$atividade->id}}-recursos-fixar" type="checkbox"
+                                                       class="form-check-input" name="{{$atividade->id}}-recursos-fixar"
+                                                       valor-atual="{{$atividade->percentual_real>0?1:0}}"
+                                                       value={{$atividade->percentual_real>0?1:0}}"
+                                               atividade="{{$atividade->id}}"
+                                                coluna="fixar"
+                                                autofocus @if($atividade->percentual_real>0) checked @endif>
                                             </div>
                                         </div>
-                                        <span class="small">{{$atividade->nome}}</span>
                                     </div>
                                 </div>
 
@@ -320,32 +323,32 @@
                 <div class="row" id="alocacao-projetos-conteudo">
 
                     <div class="col-md-12">
-                            <div class="alert alert-warning" role="alert" id="alert-alteracao">
-                                <h4 class="alert-heading">Atenção!</h4>
-                                <p>Foram identificadas modificações na seleção e/ou priorização de projetos em relação
-                                    ao Roadmap
-                                    anterior. Para prosseguir com a alocação, as modificações deverão ser salvas
-                                    antes.</p>
-                                <hr>
-                                <button class="btn btn-secondary" id="configura-salvar">Salvar</button>
-                            </div>
-                            <div class="alert alert-primary" role="alert" id="alert-alocacao">
-                                <h4 class="alert-heading">Pronto!</h4>
-                                <p>O Roadmap está pronto para ser alocado. Ao clicar no botão abaixo, a requisição será
-                                    incluída em uma fila e você será notificado quando estiver pronta.</p>
-                                <hr>
-                                <button class="btn btn-secondary" id="configura-alocar">Alocar</button>
-                            </div>
-                            <div class="alert alert-danger" role="alert" id="alert-emprocesso">
-                                <h4 class="alert-heading">Em processo!</h4>
-                                <p>Há um processo de alocação deste Roadmap em curso. Aguarde o término.</p>
-                                <hr>
-                            </div>
-                            <div class="alert alert-success" role="alert" id="alert-pronto">
-                                <h4 class="alert-heading">Alocado!</h4>
-                                <p>Este Roadmap já está alocado e não foram identificadas modificações.</p>
-                                <hr>
-                            </div>
+                        <div class="alert alert-warning" role="alert" id="alert-alteracao">
+                            <h4 class="alert-heading">Atenção!</h4>
+                            <p>Foram identificadas modificações na seleção e/ou priorização de projetos em relação
+                                ao Roadmap
+                                anterior. Para prosseguir com a alocação, as modificações deverão ser salvas
+                                antes.</p>
+                            <hr>
+                            <button class="btn btn-secondary" id="configura-salvar">Salvar</button>
+                        </div>
+                        <div class="alert alert-primary" role="alert" id="alert-alocacao">
+                            <h4 class="alert-heading">Pronto!</h4>
+                            <p>O Roadmap está pronto para ser alocado. Ao clicar no botão abaixo, a requisição será
+                                incluída em uma fila e você será notificado quando estiver pronta.</p>
+                            <hr>
+                            <button class="btn btn-secondary" id="configura-alocar">Alocar</button>
+                        </div>
+                        <div class="alert alert-danger" role="alert" id="alert-emprocesso">
+                            <h4 class="alert-heading">Em processo!</h4>
+                            <p>Há um processo de alocação deste Roadmap em curso. Aguarde o término.</p>
+                            <hr>
+                        </div>
+                        <div class="alert alert-success" role="alert" id="alert-pronto">
+                            <h4 class="alert-heading">Alocado!</h4>
+                            <p>Este Roadmap já está alocado e não foram identificadas modificações.</p>
+                            <hr>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -359,6 +362,33 @@
 @section('scripts-especificos')
     <script type="text/javascript" src="{{ asset('js/multiselect.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/roadmap-configura.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+
+            $("button#button-limpar").on('click', function () {
+
+                $("input[coluna='fixar']").each(function () {
+
+                    if ($(this).is(':checked') == false) {
+
+                        let a = $(this).attr("atividade");
+
+                        $("input[coluna='recurso_real_id'][atividade='" + a + "']").val("");
+
+                    }
+
+                })
+
+            });
+
+
+        });
+
+
+    </script>
+
+
 
 @endsection
 
