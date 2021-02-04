@@ -14,6 +14,6 @@ class ShoppingCartSeeder extends Seeder
     {
         DB::update(DB::raw('truncate table shopping_carts restart identity cascade'));
 
-        ShoppingCart::create(['external_id' => '123', 'customer_id' => '34005301827', 'item_quantity' => 11, 'value' => 340.00, 'promotion_discount' => null, 'net_value' => null]);
+        ShoppingCart::create(['external_id' => '123', 'customer_id' => '34005301827', 'item_quantity' => 11, 'value' => 340.00, 'discount' => null, 'net_value' => null]);
     }
 }

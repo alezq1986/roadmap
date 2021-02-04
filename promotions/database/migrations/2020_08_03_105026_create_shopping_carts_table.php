@@ -19,7 +19,7 @@ class CreateShoppingCartsTable extends Migration
             $table->string('customer_id');
             $table->unsignedInteger('item_quantity');
             $table->decimal('value', 11,2);
-            $table->decimal('promotion_discount', 11, 2)->nullable();
+            $table->decimal('discount', 11, 2)->nullable();
             $table->decimal('net_value', 11, 2)->nullable();
             $table->timestamps();
         });

@@ -121,7 +121,7 @@ class Promotion extends Model
 
         $sci_quantity = new Decimal($sci->quantity);
 
-        $sci_promotion_discount = is_null($sci->promotion_discount) ? new Decimal('0') : new Decimal($sci->promotion_discount);
+        $sci_discount = is_null($sci->discount) ? new Decimal('0') : new Decimal($sci->discount);
 
         $sci_net_value = is_null($sci->net_value) ? $sci_value : new Decimal($sci->net_value);
 

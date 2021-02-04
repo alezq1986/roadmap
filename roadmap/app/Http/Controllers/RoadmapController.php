@@ -180,14 +180,14 @@ class RoadmapController extends Controller
 left join projeto_roadmap on projetos.id = projeto_roadmap.projeto_id
 left join equipes on projetos.equipe_id = equipes.id
 where projetos.status not in ('3')
-and projetos.status_aprovacao not in ('0')
+and projetos.status_aprovacao in ('1', '2')
 and projeto_roadmap.roadmap_id = " . $max_id . ")
 union
 (select projetos.id, projetos.descricao as projeto_descricao, projetos.status, projetos.status_aprovacao, pr.roadmap_id, pr.prioridade, equipes.descricao as equipe_descricao from projetos
 left join (select * from projeto_roadmap where roadmap_id = " . $max_id . ") pr on projetos.id = pr.projeto_id
 left join equipes on projetos.equipe_id = equipes.id
 where projetos.status not in ('3')
-and projetos.status_aprovacao not in ('0')
+and projetos.status_aprovacao in ('1', '2')
 and pr.roadmap_id is null)) a
 order by a.prioridade asc nulls last"));
 
@@ -198,14 +198,14 @@ order by a.prioridade asc nulls last"));
 left join projeto_roadmap on projetos.id = projeto_roadmap.projeto_id
 left join equipes on projetos.equipe_id = equipes.id
 where projetos.status not in ('3')
-and projetos.status_aprovacao not in ('0')
+and projetos.status_aprovacao in ('1', '2')
 and projeto_roadmap.roadmap_id = " . $id . ")
 union
 (select projetos.id, projetos.descricao as projeto_descricao, projetos.status, projetos.status_aprovacao, pr.roadmap_id, pr.prioridade, equipes.descricao as equipe_descricao from projetos
 left join (select * from projeto_roadmap where roadmap_id = " . $id . ") pr on projetos.id = pr.projeto_id
 left join equipes on projetos.equipe_id = equipes.id
 where projetos.status not in ('3')
-and projetos.status_aprovacao not in ('0')
+and projetos.status_aprovacao in ('1', '2')
 and pr.roadmap_id is null)) a
 order by a.prioridade asc nulls last"));
         }
@@ -218,7 +218,7 @@ order by a.prioridade asc nulls last"));
                 $join->on('atividades.id', '=', 'alocacoes.atividade_id');
             })
             ->where('atividades.percentual_real', '<', 100)
-            ->whereNotIn('projetos.status_aprovacao', [0])
+            ->whereIn('projetos.status_aprovacao', [1, 2])
             ->whereNotIn('projetos.status', [3])
             ->orderBy('projetos.id', 'ASC')
             ->orderBy('alocacoes.data_inicio_proj', 'ASC')

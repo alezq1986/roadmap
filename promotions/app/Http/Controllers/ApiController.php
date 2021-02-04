@@ -27,7 +27,7 @@ class ApiController extends Controller
                 $sc->customer_id = $request_content->customer_id;
                 $sc->item_quantity = $request_content->item_quantity;
                 $sc->value = $request_content->value;
-                $sc->promotion_discount = $request_content->promotion_discount;
+                $sc->discount = $request_content->discount;
                 $sc->net_value = $request_content->net_value;
                 $sc->save();
 
@@ -40,7 +40,7 @@ class ApiController extends Controller
                         'quantity' => $item->quantity,
                         'unit_value' => $item->unit_value,
                         'value' => $item->value,
-                        'promotion_discount' => $item->promotion_discount,
+                        'discount' => $item->discount,
                         'net_value' => $item->net_value,
                     ]);
 
@@ -79,7 +79,7 @@ class ApiController extends Controller
                     'customer_id' => $request->customer_id,
                     'item_quantity' => $request->item_quantity,
                     'value' => $request->value,
-                    'promotion_discount' => $request->promotion_discount,
+                    'discount' => $request->discount,
                     'net_value' => $request->net_value,
                 ]);
 

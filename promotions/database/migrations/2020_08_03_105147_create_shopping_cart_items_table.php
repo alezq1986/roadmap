@@ -21,7 +21,8 @@ class CreateShoppingCartItemsTable extends Migration
             $table->decimal('unit_value', 11, 2);
             $table->decimal('quantity', 10, 4);
             $table->decimal('value', 11, 2);
-            $table->decimal('promotion_discount', 11, 2)->nullable();
+            $table->decimal('discount', 11, 2)->nullable();
+            $table->decimal('net_unit_value', 11, 2)->nullable();
             $table->decimal('net_value', 11, 2)->nullable();
             $table->timestamps();
         });

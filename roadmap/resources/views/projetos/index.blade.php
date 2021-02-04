@@ -31,6 +31,36 @@
                                            value="{{ isset($_GET['descricao'])?$_GET['descricao']:'' }}" autofocus>
                                 </div>
                             </div>
+                            <div class="form-group row">
+                                <label for="id"
+                                       class="col-md-1 col-form-label text-md-right">{{ __('Status aprov.') }}</label>
+                                <div class="col-md-3">
+                                    <select id="status_aprovacao" class="form-control" name="status_aprovacao"
+                                            value="{{ isset($_GET['status_aprovacao'])?$_GET['status_aprovacao']:'' }}"
+                                            autofocus>
+                                        <option value="0"
+                                                @if(isset($_GET['status_aprovacao']) && $_GET['status_aprovacao'] == 0) selected @endif>
+                                            Não aprovado
+                                        </option>
+                                        <option value="1"
+                                                @if(isset($_GET['status_aprovacao']) && $_GET['status_aprovacao'] == 1) selected @endif>
+                                            Previsto
+                                        </option>
+                                        <option value="2"
+                                                @if(isset($_GET['status_aprovacao']) && $_GET['status_aprovacao'] == 2) selected @endif>
+                                            Aprovado
+                                        </option>
+                                        <option value="3"
+                                                @if(isset($_GET['status_aprovacao']) && $_GET['status_aprovacao'] == 3) selected @endif>
+                                            Suspenso
+                                        </option>
+                                        <option value=""
+                                                @if(!isset($_GET['status_aprovacao']) || $_GET['status_aprovacao'] == '') selected @endif>
+                                            Todos
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="form-group row mb-0">
                                 <div class="col-md-6 offset-md-6">
                                     <button type="submit" class="btn btn-primary float-right">
@@ -54,6 +84,54 @@
                                     <i class="fa fa-plus-square fa-sm"></i>
                                     {{ __('Novo') }}
                                 </a>
+                                <a class="btn btn-warning float-right mr-2" data-toggle="modal"
+                                   data-target="#modal_reprovar">
+                                    <i class="fa fa-ban fa-sm"></i>
+                                    {{ __('Reprovar') }}
+                                </a>
+
+                                <div class="modal fade" id="modal_reprovar" tabindex="-1" role="dialog"
+                                     aria-hidden="true">
+                                    <form id="form_reprovar" method="GET" action="{{ route('projetos.reprovar') }}">
+                                        @csrf
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Reprovar projetos
+                                                        previstos</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="form-group row">
+                                                        <label for="data_criacao"
+                                                               class="col-md-2 col-form-label text-md-right">{{ __('Data de criação') }}</label>
+
+                                                        <div class="col-md-6">
+                                                            <input id="data_criacao" type="date"
+                                                                   class="form-control"
+                                                                   name="data_criacao"
+                                                                   value="{{ date('Y-m-d') }}"
+                                                                   required
+                                                                   autocomplete="data_criacao" autofocus>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Fechar
+                                                    </button>
+                                                    <button class="btn btn-primary" type="submit">
+                                                        Confirmar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
                             </div>
                         </div>
                         <table class="table table-striped mt-2" id="laravel">
@@ -61,6 +139,9 @@
                             <tr>
                                 <th>Id</th>
                                 <th>Descrição</th>
+                                <th>Status de aprovação</th>
+                                <th>Status</th>
+                                <th>Data de criação</th>
                                 <th class="text-right">Ação</th>
                             </tr>
                             </thead>
@@ -69,6 +150,41 @@
                                 <tr>
                                     <td>{{ $projeto->id }}</td>
                                     <td>{{ $projeto->descricao }}</td>
+                                    <td>@switch($projeto->status_aprovacao)
+                                            @case (0)
+                                            Não aprovado
+                                            @break
+
+                                            @case (1)
+                                            Previsto
+                                            @break
+
+                                            @case (2)
+                                            Aprovado
+                                            @break
+
+                                            @default
+                                            Suspenso
+                                        @endswitch
+                                    </td>
+                                    <td>@switch($projeto->status)
+                                            @case (0)
+                                            Não iniciado
+                                            @break
+
+                                            @case (1)
+                                            Em desenvolvimento
+                                            @break
+
+                                            @case (2)
+                                            Em teste
+                                            @break
+
+                                            @default
+                                            Finalizado
+                                        @endswitch
+                                    </td>
+                                    <td>{{ $projeto->created_at->format('d-m-Y') }}</td>
                                     <td class="text-right">
                                         <a class="btn btn-success action-buttons"
                                            href="{{ route('projetos.show', $projeto->id) }}">

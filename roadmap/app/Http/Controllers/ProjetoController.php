@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Projeto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 
 class ProjetoController extends Controller
@@ -33,6 +34,10 @@ class ProjetoController extends Controller
                 array_push($where, ['descricao', 'ilike', "%{$request->get('descricao')}%"]);
             }
 
+            if ($request->has('status_aprovacao') && $request->get('status_aprovacao') != null) {
+                array_push($where, ['status_aprovacao', '=', $request->get('status_aprovacao')]);
+            }
+
             $projetos = Projeto::where($where)->orderBy('id', 'ASC')->paginate(10);
 
         } else {
@@ -41,6 +46,27 @@ class ProjetoController extends Controller
         }
 
         return view('projetos.index', ['projetos' => $projetos, 'data' => $data]);
+    }
+
+    public function reprovar(Request $request)
+    {
+        $data = $request->all();
+
+        if (!empty($data) && $request->has('data_criacao')) {
+
+            $dt = Carbon::createFromFormat('Y-m-d', $request->get('data_criacao'))->endOfDay()->toDateTimeString();
+
+            Projeto::where('status_aprovacao', '=', 1)->where('created_at', '<=', $dt)
+                ->update(['status_aprovacao' => 0]);
+
+        }
+
+        $projetos = Projeto::orderBy('id', 'ASC')->paginate(10);
+
+        $data = null;
+
+        return view('projetos.index', ['projetos' => $projetos, 'data' => $data]);
+
     }
 
     /**

@@ -7,7 +7,7 @@ use Decimal\Decimal;
 
 class ShoppingCartItem extends Model
 {
-    protected $fillable = ['shopping_cart_id','index' ,'product_id', 'quantity', 'unit_value', 'value', 'promotion_discount', 'net_value'];
+    protected $fillable = ['shopping_cart_id','index' ,'product_id', 'quantity', 'unit_value', 'value', 'discount', 'net_value', 'net_unit_value'];
 
     protected function shopping_cart()
     {
@@ -53,7 +53,7 @@ class ShoppingCartItem extends Model
         }
     }
 
-    public function getPromotionDiscountAttribute($value)
+    public function getDiscountAttribute($value)
     {
         if ($value instanceof Decimal || is_null($value)) {
 
@@ -67,6 +67,19 @@ class ShoppingCartItem extends Model
     }
 
     public function getNetValueAttribute($value)
+    {
+        if ($value instanceof Decimal || is_null($value)) {
+
+            return $value;
+
+        } else {
+
+            return new Decimal ($value);
+
+        }
+    }
+
+    public function getNetUnitValueAttribute($value)
     {
         if ($value instanceof Decimal || is_null($value)) {
 
@@ -124,22 +137,37 @@ class ShoppingCartItem extends Model
         }
     }
 
-    public function setPromotionDiscountAttribute($value)
+    public function setDiscountAttribute($value)
     {
         if ($value instanceof Decimal || $value == null) {
 
-            $this->attributes['promotion_discount'] = $value;
+            $this->attributes['discount'] = $value;
 
         } else {
 
             $value = strval($value);
 
-            $this->attributes['promotion_discount'] = new Decimal ($value);
+            $this->attributes['discount'] = new Decimal ($value);
 
         }
     }
 
     public function setNetValueAttribute($value)
+    {
+        if ($value instanceof Decimal || $value == null) {
+
+            $this->attributes['net_value'] = $value;
+
+        } else {
+
+            $value = strval($value);
+
+            $this->attributes['net_value'] = new Decimal ($value);
+
+        }
+    }
+
+    public function setNetUnitValueAttribute($value)
     {
         if ($value instanceof Decimal || $value == null) {
 
