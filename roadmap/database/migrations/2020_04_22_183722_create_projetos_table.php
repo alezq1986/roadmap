@@ -17,10 +17,10 @@ class CreateProjetosTable extends Migration
             $table->id();
             $table->string('descricao', 100);
             $table->foreignId('equipe_id')->constrained();
-            $table->foreignId('cliente_id')->constrained();
+            $table->foreignId('cliente_id')->nullable()->constrained();
             $table->char('status');
             $table->char('status_aprovacao');
-            $table->date('data_entrega');
+            $table->date('data_entrega')->nullable();
             $table->timestamps();
         });
     }

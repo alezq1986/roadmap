@@ -16,6 +16,7 @@ class EquipeRecursoSeeder extends Seeder
         DB::table('equipe_recurso')->insert(['recurso_id' => 1, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 2, 'equipe_id' => 2]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 3, 'equipe_id' => 1]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 3, 'equipe_id' => 7]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 4, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 4, 'equipe_id' => 2]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 5, 'equipe_id' => 1]);
@@ -31,14 +32,16 @@ class EquipeRecursoSeeder extends Seeder
         DB::table('equipe_recurso')->insert(['recurso_id' => 13, 'equipe_id' => 5]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 14, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 15, 'equipe_id' => 1]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 16, 'equipe_id' => 1]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 16, 'equipe_id' => 2]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 16, 'equipe_id' => 5]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 16, 'equipe_id' => 6]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 17, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 18, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 18, 'equipe_id' => 2]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 18, 'equipe_id' => 5]);
-        DB::table('equipe_recurso')->insert(['recurso_id' => 19, 'equipe_id' => 1]);
-        DB::table('equipe_recurso')->insert(['recurso_id' => 19, 'equipe_id' => 2]);
-        DB::table('equipe_recurso')->insert(['recurso_id' => 19, 'equipe_id' => 5]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 18, 'equipe_id' => 6]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 19, 'equipe_id' => 7]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 20, 'equipe_id' => 3]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 20, 'equipe_id' => 4]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 21, 'equipe_id' => 1]);
@@ -48,14 +51,17 @@ class EquipeRecursoSeeder extends Seeder
         DB::table('equipe_recurso')->insert(['recurso_id' => 22, 'equipe_id' => 4]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 22, 'equipe_id' => 5]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 22, 'equipe_id' => 6]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 22, 'equipe_id' => 7]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 22, 'equipe_id' => 8]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 22, 'equipe_id' => 9]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 23, 'equipe_id' => 1]);
-        DB::table('equipe_recurso')->insert(['recurso_id' => 23, 'equipe_id' => 5]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 24, 'equipe_id' => 3]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 25, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 25, 'equipe_id' => 5]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 26, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 27, 'equipe_id' => 2]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 28, 'equipe_id' => 1]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 28, 'equipe_id' => 7]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 29, 'equipe_id' => 4]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 30, 'equipe_id' => 4]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 31, 'equipe_id' => 1]);
@@ -64,6 +70,9 @@ class EquipeRecursoSeeder extends Seeder
         DB::table('equipe_recurso')->insert(['recurso_id' => 31, 'equipe_id' => 4]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 31, 'equipe_id' => 5]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 31, 'equipe_id' => 6]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 31, 'equipe_id' => 7]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 31, 'equipe_id' => 8]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 31, 'equipe_id' => 9]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 32, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 33, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 34, 'equipe_id' => 1]);
@@ -80,6 +89,9 @@ class EquipeRecursoSeeder extends Seeder
         DB::table('equipe_recurso')->insert(['recurso_id' => 45, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 45, 'equipe_id' => 2]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 45, 'equipe_id' => 6]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 45, 'equipe_id' => 7]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 45, 'equipe_id' => 8]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 45, 'equipe_id' => 9]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 46, 'equipe_id' => 5]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 47, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 48, 'equipe_id' => 1]);
@@ -95,6 +107,9 @@ class EquipeRecursoSeeder extends Seeder
         DB::table('equipe_recurso')->insert(['recurso_id' => 55, 'equipe_id' => 4]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 55, 'equipe_id' => 5]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 55, 'equipe_id' => 6]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 55, 'equipe_id' => 7]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 55, 'equipe_id' => 8]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 55, 'equipe_id' => 9]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 56, 'equipe_id' => 4]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 57, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 57, 'equipe_id' => 2]);
@@ -115,6 +130,9 @@ class EquipeRecursoSeeder extends Seeder
         DB::table('equipe_recurso')->insert(['recurso_id' => 68, 'equipe_id' => 4]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 68, 'equipe_id' => 5]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 68, 'equipe_id' => 6]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 68, 'equipe_id' => 7]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 68, 'equipe_id' => 8]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 68, 'equipe_id' => 9]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 69, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 70, 'equipe_id' => 1]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 71, 'equipe_id' => 4]);
@@ -126,6 +144,13 @@ class EquipeRecursoSeeder extends Seeder
         DB::table('equipe_recurso')->insert(['recurso_id' => 77, 'equipe_id' => 3]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 77, 'equipe_id' => 4]);
         DB::table('equipe_recurso')->insert(['recurso_id' => 78, 'equipe_id' => 6]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 79, 'equipe_id' => 1]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 80, 'equipe_id' => 1]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 81, 'equipe_id' => 1]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 82, 'equipe_id' => 1]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 83, 'equipe_id' => 7]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 84, 'equipe_id' => 5]);
+        DB::table('equipe_recurso')->insert(['recurso_id' => 85, 'equipe_id' => 5]);
 
     }
 }

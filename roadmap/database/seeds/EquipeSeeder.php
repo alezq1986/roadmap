@@ -20,5 +20,9 @@ class EquipeSeeder extends Seeder
         Equipe::create(['descricao' => 'Projetos Novos']);
         Equipe::create(['descricao' => 'Inovação']);
         Equipe::create(['descricao' => 'Comper']);
+        Equipe::create(['descricao' => 'Petz']);
+        Equipe::create(['descricao' => 'Negrão']);
+        Equipe::create(['descricao' => 'Angeloni']);
+
     }
 }

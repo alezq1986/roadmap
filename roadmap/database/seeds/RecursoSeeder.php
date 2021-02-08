@@ -30,7 +30,7 @@ class RecursoSeeder extends Seeder
         Recurso::create(['nome' => 'Marcelo Martins', 'data_inicio' => '2019-1-1', 'data_fim' => '2020-03-31']);
         Recurso::create(['nome' => 'Jucie Andrade', 'data_inicio' => '2019-12-9', 'data_fim' => '2020-03-31']);
         Recurso::create(['nome' => 'José Netto', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
-        Recurso::create(['nome' => 'Marco Antonio', 'data_inicio' => '2020-1-6', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Marco Antonio', 'data_inicio' => '2020-1-6', 'data_fim' => '2020-12-31']);
         Recurso::create(['nome' => 'Robson Oliveira', 'data_inicio' => '2020-3-2', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Raduan Mendes', 'data_inicio' => '2020-3-2', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Fernando Silva', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
@@ -38,7 +38,7 @@ class RecursoSeeder extends Seeder
         Recurso::create(['nome' => 'Celso Freitas', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Nalva Souza', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Hugo Caldeira', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
-        Recurso::create(['nome' => 'Henrique Oliveira', 'data_inicio' => '2019-10-20', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Henrique Oliveira', 'data_inicio' => '2019-10-20', 'data_fim' => '2020-12-31']);
         Recurso::create(['nome' => 'Jessica Machado', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Celia Souza', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Luiz Souza', 'data_inicio' => '2020-3-2', 'data_fim' => '2025-12-31']);
@@ -51,7 +51,7 @@ class RecursoSeeder extends Seeder
         Recurso::create(['nome' => 'Denise Cabeceira', 'data_inicio' => '2019-1-1', 'data_fim' => '2019-12-31']);
         Recurso::create(['nome' => 'Vladir Junior', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Onei Alves', 'data_inicio' => '2019-1-1', 'data_fim' => '2019-12-31']);
-        Recurso::create(['nome' => 'Stratus A1', 'data_inicio' => '2019-1-1', 'data_fim' => '2019-12-31']);
+        Recurso::create(['nome' => 'Stratus A1', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'João Rezende', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Alexandre Queiroz', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Denilson Tose', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
@@ -60,8 +60,8 @@ class RecursoSeeder extends Seeder
         Recurso::create(['nome' => 'Caio Florio', 'data_inicio' => '2019-1-1', 'data_fim' => '2019-12-31']);
         Recurso::create(['nome' => 'Marcelo Junior', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Alexandre Filho', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
-        Recurso::create(['nome' => 'Stratus D1', 'data_inicio' => '2019-1-1', 'data_fim' => '2019-12-31']);
-        Recurso::create(['nome' => 'CD2', 'data_inicio' => '2019-1-1', 'data_fim' => '2020-12-31']);
+        Recurso::create(['nome' => 'Stratus D1', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'CD2 Manager', 'data_inicio' => '2019-1-1', 'data_fim' => '2020-12-31']);
         Recurso::create(['nome' => 'Leandro Tolentino', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Marcio Bonizi', 'data_inicio' => '2019-1-1', 'data_fim' => '2019-12-31']);
         Recurso::create(['nome' => 'Javier Leon', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
@@ -70,28 +70,35 @@ class RecursoSeeder extends Seeder
         Recurso::create(['nome' => 'Denilson Souza', 'data_inicio' => '2019-1-1', 'data_fim' => '2019-12-31']);
         Recurso::create(['nome' => 'Daniel Duarte', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Denis Melo', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
-        Recurso::create(['nome' => 'Augusto Rodrigues', 'data_inicio' => '2020-5-1', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Augusto Rodrigues', 'data_inicio' => '2020-5-1', 'data_fim' => '2020-12-31']);
         Recurso::create(['nome' => 'Pedro Marques', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Rafael Candido', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Hector Carneiro', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
-        Recurso::create(['nome' => 'Guilherme Sousa', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Guilherme Sousa', 'data_inicio' => '2019-1-1', 'data_fim' => '2020-12-31']);
         Recurso::create(['nome' => 'Consultoria Zanthus', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Elvys Janusz', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Tarcisio Fernandes', 'data_inicio' => '2019-1-1', 'data_fim' => '2019-12-31']);
         Recurso::create(['nome' => 'Marcio Santos', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
-        Recurso::create(['nome' => 'Stratus T1', 'data_inicio' => '2019-1-1', 'data_fim' => '2019-12-31']);
+        Recurso::create(['nome' => 'Stratus T1', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Bruno Neuman', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Gean Almeida', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
-        Recurso::create(['nome' => 'Stratus M1', 'data_inicio' => '2019-1-1', 'data_fim' => '2019-12-31']);
-        Recurso::create(['nome' => 'Michelini', 'data_inicio' => '2020-7-6', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Stratus M1', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Michelini', 'data_inicio' => '2020-7-6', 'data_fim' => '2020-12-31']);
         Recurso::create(['nome' => 'Henrique Souza', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
-        Recurso::create(['nome' => 'Patrick', 'data_inicio' => '2020-7-6', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Patrick', 'data_inicio' => '2020-7-6', 'data_fim' => '2020-12-31']);
         Recurso::create(['nome' => 'Gabriel Fernandes', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'CD2 Teste', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Aline Cavalini', 'data_inicio' => '2020-6-22', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Vitor Carneiro', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Vinicius Nascimento', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
         Recurso::create(['nome' => 'Rafael Ferreira', 'data_inicio' => '2019-1-1', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Bruno Conrado', 'data_inicio' => '2021-1-1', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Eveline', 'data_inicio' => '2021-1-1', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Bit Teste', 'data_inicio' => '2021-1-1', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Larissa Bertodo', 'data_inicio' => '2021-1-1', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Cristiano Souza', 'data_inicio' => '2021-1-1', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'João Felipe Camargo', 'data_inicio' => '2021-1-1', 'data_fim' => '2025-12-31']);
+        Recurso::create(['nome' => 'Camila Bandaliauskas', 'data_inicio' => '2021-1-1', 'data_fim' => '2025-12-31']);
 
     }
 }
