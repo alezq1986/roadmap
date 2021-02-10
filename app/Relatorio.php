@@ -4,6 +4,7 @@ namespace App;
 
 use App\FuncoesApoio;
 use App\Projeto;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -225,7 +226,7 @@ class Relatorio extends Model
      * @param int $normalizado
      * @param int $outliers
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public static function histogramaAtraso($roadmap, int $tipo_dado, $percentual = 1, $normalizado = 1, $outliers = 3, $faixas = 10)
     {
@@ -259,7 +260,7 @@ class Relatorio extends Model
 
             default:
 
-                throw new \Exception('Não é um tipo de dado válido.');
+                throw new Exception('Não é um tipo de dado válido.');
 
         }
 
@@ -394,7 +395,7 @@ class Relatorio extends Model
      * @param $n
      * @param $percentual
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public static function tabelaAtraso(Roadmap $roadmap, $tipo_dado, $percentual, $n = 10)
     {
@@ -416,7 +417,7 @@ class Relatorio extends Model
 
             default:
 
-                throw new \Exception('Não é um tipo de dado válido.');
+                throw new Exception('Não é um tipo de dado válido.');
 
         }
 

@@ -8,6 +8,7 @@ use App\Equipe;
 use App\Alocacao;
 use App\Roadmap;
 use App\FuncoesFilhos;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +43,7 @@ class Recurso extends Model
     /**
      * @param Atividade $atividade
      * @return int
-     * @throws \Exception
+     * @throws Exception
      */
     public static function recursosCompetentes(Atividade $atividade)
     {
@@ -75,7 +76,7 @@ class Recurso extends Model
 
         } else {
 
-            throw new \Exception('Não há recursos competentes para a tarefa.');
+            throw new Exception('Não há recursos competentes para a tarefa.');
         }
 
     }
@@ -162,7 +163,7 @@ class Recurso extends Model
     /**
      * @param \App\Roadmap $roadmap
      * @param null $prioridade
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function datasIndisponiveis(Roadmap $roadmap, $prioridade = null)
     {

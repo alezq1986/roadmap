@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -41,7 +42,11 @@ class alocarRoadmap implements ShouldQueue
 
             $alocacao = $this->roadmap->alocar();
 
-        } catch (\Exception $e) {
+            $this->roadmap->alocado = 2;
+
+            $this->roadmap->save();
+
+        } catch (Exception $e) {
 
             $this->roadmap->alocado = 0;
 
@@ -49,14 +54,6 @@ class alocarRoadmap implements ShouldQueue
 
             Log::error('alocarRoadmap', ['roadmap' => $this->roadmap->id, 'erro' => $e]);
 
-        }
-
-
-        if (!$alocacao) {
-
-            $this->roadmap->alocado = 2;
-
-            $this->roadmap->save();
         }
 
     }

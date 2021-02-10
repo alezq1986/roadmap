@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Competencia;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 class CompetenciaController extends Controller
@@ -13,7 +14,7 @@ class CompetenciaController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(Request $request)
     {
@@ -44,7 +45,7 @@ class CompetenciaController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -54,8 +55,8 @@ class CompetenciaController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -70,7 +71,7 @@ class CompetenciaController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Competencia $competencia
+     * @param Competencia $competencia
      * @return void
      */
     public function show(Competencia $competencia)
@@ -81,8 +82,8 @@ class CompetenciaController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Competencia $competencia
-     * @return \Illuminate\Http\Response
+     * @param Competencia $competencia
+     * @return Response
      */
     public function edit(Competencia $competencia)
     {
@@ -92,8 +93,8 @@ class CompetenciaController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Competencia $competencia
+     * @param Request $request
+     * @param Competencia $competencia
      * @return void
      */
     public function update(Request $request, Competencia $competencia)
@@ -111,7 +112,7 @@ class CompetenciaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Competencia $competencia
+     * @param Competencia $competencia
      * @return void
      */
     public function destroy(Competencia $competencia)

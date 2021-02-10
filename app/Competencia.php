@@ -48,6 +48,7 @@ class Competencia extends Model
     {
         DB::transaction(function () use ($request, $competencia) {
 
+            /** @noinspection PhpUndefinedFieldInspection */
             $competencia->descricao = $request->input('descricao');
 
             $competencia->save();

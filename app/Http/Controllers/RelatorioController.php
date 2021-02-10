@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Relatorio;
 use App\Roadmap;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class RelatorioController extends Controller
 {
@@ -30,13 +31,25 @@ class RelatorioController extends Controller
 
         $normalizado = $dados_ajax['normalizado'];
 
-        $resultado = Relatorio::histogramaAtraso(Roadmap::find($roadmap_id), $tipo_dado, $percentual, $normalizado, 3, 20);
+        try {
 
-        return response()->json([
+            $resultado = Relatorio::histogramaAtraso(Roadmap::find($roadmap_id), $tipo_dado, $percentual, $normalizado, 3, 20);
 
-            'resultado' => $resultado
+            return response()->json([
 
-        ]);
+                'resultado' => $resultado
+
+            ]);
+
+        } catch (Exception $e) {
+
+            Log::error('histogramaAtraso', ['erro' => $e]);
+
+            return false;
+
+        }
+
+
 
     }
 
@@ -51,13 +64,25 @@ class RelatorioController extends Controller
 
         $percentual = $dados_ajax['percentual'];
 
-        $resultado = Relatorio::tabelaAtraso(Roadmap::find($roadmap_id), $tipo_dado, $percentual);
+        try {
 
-        return response()->json([
+            $resultado = Relatorio::tabelaAtraso(Roadmap::find($roadmap_id), $tipo_dado, $percentual);
 
-            'resultado' => $resultado
+            return response()->json([
 
-        ]);
+                'resultado' => $resultado
+
+            ]);
+
+        } catch (Exception $e) {
+
+            Log::error('tabelaAtraso', ['erro' => $e]);
+
+            return false;
+
+        }
+
+
 
 
     }

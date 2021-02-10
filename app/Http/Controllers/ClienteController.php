@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Cliente;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ClienteController extends Controller
 {
@@ -14,7 +15,7 @@ class ClienteController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(Request $request)
     {
@@ -45,7 +46,7 @@ class ClienteController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -55,8 +56,8 @@ class ClienteController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -92,9 +93,9 @@ class ClienteController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param Cliente $cliente
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, Cliente $cliente)
     {
@@ -110,6 +111,7 @@ class ClienteController extends Controller
      *
      * @param Cliente $cliente
      * @return void
+     * @noinspection PhpUndefinedFieldInspection
      */
     public function destroy(Cliente $cliente)
     {

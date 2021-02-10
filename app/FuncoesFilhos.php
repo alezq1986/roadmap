@@ -2,10 +2,15 @@
 
 namespace App;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Log;
+use ReflectionClass;
+use ReflectionException;
 
 class FuncoesFilhos extends Model
 {
@@ -13,8 +18,8 @@ class FuncoesFilhos extends Model
     /**
      * @param Request $request
      * @param Model $modelo_principal
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws \ReflectionException
+     * @return RedirectResponse
+     * @throws ReflectionException
      */
     public static function criarFilhos(Request $request, Model $modelo_principal)
     {
@@ -64,7 +69,7 @@ class FuncoesFilhos extends Model
 
                                 } else {
 
-                                    $chave_estrangeira = strtolower((new \ReflectionClass($modelo_principal))->getShortName()) . "_id";
+                                    $chave_estrangeira = strtolower((new ReflectionClass($modelo_principal))->getShortName()) . "_id";
 
                                     $chave_estrangeira_valor = $modelo_principal->id;
 
@@ -102,7 +107,7 @@ class FuncoesFilhos extends Model
 
                                 }, ARRAY_FILTER_USE_KEY);
 
-                                $modelo_pivot = strtolower((new \ReflectionClass($modelo_principal))->getShortName());
+                                $modelo_pivot = strtolower((new ReflectionClass($modelo_principal))->getShortName());
 
                                 $dados[$modelo_pivot . '_id'] = $modelo_principal->id;
 
@@ -142,12 +147,20 @@ class FuncoesFilhos extends Model
                 }
 
             }
-        } catch (\Exception $e) {
 
+            $ret = true;
+
+        } catch (Exception $e) {
+
+            Log::error('criarFilhos', ['sessão' => $request->session(), 'erro' => $e]);
+
+            $ret = false;
 
         } finally {
 
             $request->session()->forget('filhos');
+
+            return $ret;
 
         }
 

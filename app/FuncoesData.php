@@ -293,7 +293,7 @@ class FuncoesData extends Model
 
         if ($prazo < 0) {
 
-            return;
+            return null;
 
         }
 

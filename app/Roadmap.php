@@ -4,6 +4,7 @@ namespace App;
 
 use App\Atividade;
 use App\Alocacao;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -192,15 +193,15 @@ class Roadmap extends Model
 
             $writer->save(str_replace('/', '-', $this->descricao) . '.xlsx');
 
-            $resultado = true;
+            return true;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             Log::error('exportarRoadmap', ['roadmap' => $this->id, 'mensagem' => $e]);
 
-        }
+            return false;
 
-        return $resultado;
+        }
 
 
     }

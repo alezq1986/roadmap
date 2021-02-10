@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUndefinedFieldInspection */
 
 namespace App;
 
@@ -7,6 +7,7 @@ use App\Competencia;
 use App\Alocacao;
 use App\Roadmap;
 use App\Recurso;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -211,9 +212,9 @@ class Atividade extends Model
 
                 $a->projeto->atualizarStatusProjeto();
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
 
-                Log::error('atualizarAtividade', ['atividade' => $a->id, 'erro' => $e]);
+                Log::error('atualizarAtividade', ['atividade' => $k, 'erro' => $e]);
 
             }
 
@@ -228,7 +229,7 @@ class Atividade extends Model
     /**
      * @param \App\Roadmap $roadmap
      * @return mixed|null
-     * @throws \Exception
+     * @throws Exception
      */
     public function alocarAtividade(Roadmap $roadmap)
     {
@@ -243,19 +244,19 @@ class Atividade extends Model
 
             if (is_null($this->data_inicio_real)) {
 
-                throw new \Exception('Atividade sem data de início e percentual 100%.');
+                throw new Exception('Atividade sem data de início e percentual 100%.');
 
             }
 
             if (is_null($this->data_fim_real)) {
 
-                throw new \Exception('Atividade sem data final e percentual 100%.');
+                throw new Exception('Atividade sem data final e percentual 100%.');
 
             }
 
             if (is_null($this->recurso_real_id)) {
 
-                throw new \Exception('Atividade sem recurso e percentual 100%.');
+                throw new Exception('Atividade sem recurso e percentual 100%.');
 
             }
 
@@ -299,7 +300,7 @@ class Atividade extends Model
                             $data_inicio_proj = $melhor_recurso['data'];
 
                             //se eu não conseguir recurso, crio uma excecão...
-                        } catch (\Exception $e) {
+                        } catch (Exception $e) {
 
                             Log::error('atualizarAtividade', ['atividade' => $this, 'erro' => $e]);
 
@@ -326,7 +327,7 @@ class Atividade extends Model
 
                         $data_inicio_proj = $melhor_recurso['data'];
 
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
 
                         Log::error('atualizarAtividade', ['atividade' => $this, 'erro' => $e]);
 
@@ -351,7 +352,7 @@ class Atividade extends Model
                     $data_inicio_proj = $melhor_recurso['data'];
 
                     //se eu não conseguir recurso, crio uma excecão...
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
 
                     Log::error('atualizarAtividade', ['atividade' => $this, 'erro' => $e]);
 
@@ -388,13 +389,17 @@ class Atividade extends Model
                 return $a;
             });
 
+            return $atividade_alocada;
+
 
         } catch (Exception $e) {
 
             Log::error('atualizarAtividade', ['alocacao' => $alocacao, 'erro' => $e]);
+
+            return null;
         }
 
-        return $atividade_alocada;
+
     }
 
 
@@ -402,7 +407,7 @@ class Atividade extends Model
      * @param \App\Roadmap $roadmap
      * @param Collection|null $lista_negra
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function calcularMelhorRecurso(Roadmap $roadmap, Collection $lista_negra = null)
     {
@@ -411,7 +416,7 @@ class Atividade extends Model
 
         if ($todos_recursos->count() == 0) {
 
-            throw new \Exception ('Não há recursos competentes para a atividade.');
+            throw new Exception ('Não há recursos competentes para a atividade.');
 
         }
 
@@ -462,7 +467,7 @@ class Atividade extends Model
 
         if (is_null($primeiro_recurso)) {
 
-            throw new \Exception ('Não há recursos com datas disponíveis para a atividade.');
+            throw new Exception ('Não há recursos com datas disponíveis para a atividade.');
 
         }
 
@@ -477,7 +482,7 @@ class Atividade extends Model
      * @param int $modo : 0 - dias corridos, 1 - exclui fins de semana, 2 - exclui fins de semana e feriados
      * @param Collection $feriados
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function calcularDataFimPorPercentual(Roadmap $roadmap, Recurso $recurso, $data_base = null, $data_inicio = null, $modo = 2, Collection $feriados = null)
     {
@@ -508,7 +513,7 @@ class Atividade extends Model
 
             if ($this->percentual_real > 0) {
 
-                throw new \Exception('Atividade sem data de início com perecentual maior que 0');
+                throw new Exception('Atividade sem data de início com perecentual maior que 0');
 
             }
 
