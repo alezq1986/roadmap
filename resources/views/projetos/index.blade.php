@@ -80,7 +80,11 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 offset-md-6">
-                                <a class="btn btn-success float-right" href="{{ route('projetos.create') }}">
+                                <a class="btn btn-primary float-right text-white" id="importar-projeto">
+                                    <i class="fa fa-arrow-alt-circle-up fa-sm"></i>
+                                    {{ __('Importar') }}
+                                </a>
+                                <a class="btn btn-success float-right mr-2" href="{{ route('projetos.create') }}">
                                     <i class="fa fa-plus-square fa-sm"></i>
                                     {{ __('Novo') }}
                                 </a>
@@ -89,7 +93,6 @@
                                     <i class="fa fa-ban fa-sm"></i>
                                     {{ __('Reprovar') }}
                                 </a>
-
                                 <div class="modal fade" id="modal_reprovar" tabindex="-1" role="dialog"
                                      aria-hidden="true">
                                     <form id="form_reprovar" method="GET" action="{{ route('projetos.reprovar') }}">
@@ -216,4 +219,10 @@
     </div>
 
 @endsection
+
+@section('scripts-especificos')
+    <script type="text/javascript" src="{{ asset('js/projeto-importa.js') }}"></script>
+
+@endsection
+
 @endauth

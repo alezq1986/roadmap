@@ -47,9 +47,15 @@ Route::resource('competencias', 'CompetenciaController');
 
 Route::resource('equipes', 'EquipeController');
 
-Route::post('/projetos/incluir-roadmap', 'ProjetoController@incluirProjetosRoadmap');
+Route::prefix('projetos')->group(function () {
 
-Route::get('projetos/reprovar', array('as' => 'projetos.reprovar', 'uses' => 'ProjetoController@reprovar'));
+    Route::post('incluir-roadmap', 'ProjetoController@incluirProjetosRoadmap');
+
+    Route::get('reprovar', array('as' => 'projetos.reprovar', 'uses' => 'ProjetoController@reprovar'));
+
+    Route::post('importar', 'ProjetoController@importarProjetosExcel');
+
+});
 
 Route::resource('projetos', 'ProjetoController');
 

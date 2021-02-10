@@ -197,4 +197,19 @@ class ProjetoController extends Controller
         ]);
     }
 
+    public function importarProjetosExcel(Request $request)
+    {
+
+
+        $importar = Projeto::importarProjetosExcel();
+
+
+        return response()->json([
+
+            'resultado' => $importar
+
+        ]);
+
+    }
+
 }
